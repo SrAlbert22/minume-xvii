@@ -1,0 +1,41 @@
+  <!-- 07 · Ubicación en vivo (NUEVO) -->
+  <section id="ubicacion">
+    <div class="titulo-sec"><span class="n">07</span><h2>Ubicación en vivo</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">Como en WhatsApp: tú decides si compartes tu ubicación y por cuánto tiempo. Solo la ven Seguridad, Traslado y Coordinación, y sirve para cuidar al equipo y saber por dónde va cada grupo entre los hoteles.</p>
+    <div class="rejilla r2">
+      <div class="tarjeta">
+        <b class="cond" style="font-size:26px">📡 Compartir mi ubicación</b>
+        <div id="compEstado" style="color:var(--suave);font-size:14px;margin-top:6px">No la estás compartiendo.</div>
+        <div class="duraciones" id="duraciones"><button data-m="60">1 hora</button><button data-m="480">8 horas</button><button data-m="cierre">Hasta el cierre de hoy</button></div>
+        <button class="boton rojo" id="bDejar" style="margin-top:12px;display:none">⏹ Dejar de compartir</button>
+        <label for="lugar" style="margin-top:16px">📍 Me moví a… (más preciso que el GPS dentro del hotel)</label>
+        <div style="display:flex;gap:8px"><select id="lugar"></select><button class="boton sec" id="bLugar" style="flex:none">Avisar</button></div>
+        <div id="lugarTxt" style="color:var(--suave);font-size:12.5px;margin-top:6px"></div>
+      </div>
+      <div class="tarjeta">
+        <b class="cond" style="font-size:26px">🔒 Tu privacidad</b>
+        <ul style="color:var(--suave);font-size:13.5px;line-height:1.7;margin:8px 0 0;padding-left:18px">
+          <li>Es solo para el staff de MINUME: los delegados no usan esta función.</li>
+          <li>Solo se comparte si tú lo activas, y se apaga sola al terminar el tiempo.</li>
+          <li>Mientras compartes, arriba se ve el aviso verde <b style="color:var(--verde)">● En vivo</b>.</li>
+          <li>La ven solo Seguridad, Traslado y Coordinación. Los demás voluntarios no.</li>
+          <li>Si tocas SOS, tu ubicación va junto con el aviso.</li>
+          <li>El GPS del teléfono marca su precisión (±5 a 20 m afuera). Dentro del hotel, "Me moví a…" te ubica en el salón exacto.</li>
+          <li>Al terminar MINUME se borra todo el historial.</li>
+        </ul>
+      </div>
+    </div>
+    <div id="panelVivo" data-roles="seguridad traslado coordinacion" style="margin-top:14px">
+      <div class="vivo-grid">
+        <div class="mapa-caja"><div id="mapaVivo"></div><div class="controles"><button id="mvHotel">🏨 Más cerca</button><button id="mvTodo">🗺️ Las dos sedes</button><button id="mv3d" class="on">🧊 3D</button></div></div>
+        <div class="tarjeta" style="padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b class="cond" style="font-size:24px">Equipo en vivo</b><span class="chip verde" id="vivoCuenta">0 compartiendo</span></div>
+          <div id="vivoAlertas"></div>
+          <div class="filtros" id="filtros"><button data-f="todos" class="on">Todos</button><button data-f="mov">En movimiento</button><button data-f="traslado">Movilización</button><button data-f="seguridad">Seguridad</button></div>
+          <div id="vivoLista"></div>
+          <button class="boton sec" id="bVer3d" style="margin-top:12px;width:100%;justify-content:center">🗺️ Verlos en el mapa de las sedes</button>
+        </div>
+      </div>
+      <p style="color:var(--suave);font-size:12.5px;margin:10px 0 0">Vista satélite real con edificios en 3D: gira con dos dedos e inclina para verlo como en Google Earth. Demo: las personas caminan de forma simulada (y más rápido de lo normal) por las rutas reales entre el Jaragua, el Sheraton y la carpa. En la versión real, cada teléfono envía su posición cada 15 segundos mientras comparte.</p>
+    </div>
+  </section>

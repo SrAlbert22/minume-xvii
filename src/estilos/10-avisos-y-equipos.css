@@ -1,0 +1,17 @@
+  /* Avisos entre sistemas y Bienestar */
+  .punto-aviso { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--amarillo); box-shadow: 0 0 0 4px rgba(255, 210, 63, .15); }
+  .punto-aviso.nuevo { background: var(--rojo); box-shadow: 0 0 0 4px rgba(255, 77, 94, .2); animation: latido 1.2s infinite; }
+  .punto-aviso.camino, .punto-aviso.atencion { background: var(--cian); box-shadow: 0 0 0 4px rgba(69, 200, 255, .15); }
+  .punto-aviso.resuelto { background: var(--verde); box-shadow: none; } .punto-aviso.derivado { background: #ff8a95; box-shadow: none; }
+  @keyframes latido { 50% { box-shadow: 0 0 0 8px rgba(255, 77, 94, .05); } }
+  .pedido .estados { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+  .caso { border-top: 4px solid var(--amarillo); } .caso.nuevo { border-top-color: var(--rojo); } .caso.camino, .caso.atencion { border-top-color: var(--cian); } .caso.resuelto { border-top-color: var(--verde); opacity: .75; } .caso.derivado { border-top-color: #ff8a95; }
+  .espera { text-align: center; min-width: 58px; } .espera b { font: 800 34px 'Barlow Condensed'; display: block; line-height: 1; } .espera small { color: var(--suave); font-size: 11px; }
+  .lista-simple { margin: 8px 0 0; padding-left: 18px; color: var(--suave); font-size: 13.5px; line-height: 1.7; }
+
+  /* Color de cada equipo */
+  :root { --equipo: var(--cian); }
+  .titulo-sec .n { color: var(--equipo); }
+  .rail a.on { background: color-mix(in srgb, var(--equipo) 22%, transparent); border-color: color-mix(in srgb, var(--equipo) 60%, transparent); }
+  .hero h1 { background: linear-gradient(90deg, #ffffff, var(--equipo)); -webkit-background-clip: text; background-clip: text; }
+  .cab { border-bottom: 2px solid color-mix(in srgb, var(--equipo) 55%, transparent); }

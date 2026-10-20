@@ -1,0 +1,36 @@
+  /* Sin internet, alertas y comunicados en la barra */
+  .red-pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 210, 63, .5); color: var(--amarillo); background: rgba(255, 210, 63, .08); border-radius: 99px; padding: 5px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; flex: none; }
+  .alertas-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--borde); color: var(--suave); border-radius: 99px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: 700; flex: none; }
+  .alertas-btn.on { color: var(--verde); border-color: rgba(47, 211, 140, .45); }
+  @media (max-width: 620px) { .alertas-btn span, .red-pill .largo { display: none; } }
+  .banner-com { display: flex; align-items: center; gap: 12px; margin: 8px 0 2px; padding: 10px 14px; border-radius: 14px; background: rgba(47, 123, 255, .14); border: 1px solid rgba(120, 160, 255, .35); border-left: 5px solid var(--cian); flex-wrap: wrap; }
+  .banner-com.amarillo { background: rgba(255, 210, 63, .1); border-color: rgba(255, 210, 63, .4); border-left-color: var(--amarillo); }
+  .banner-com.rojo { background: rgba(255, 77, 94, .16); border-color: rgba(255, 77, 94, .55); border-left-color: var(--rojo); animation: latido-rojo 1.6s ease-in-out infinite; }
+  .bc-txt { flex: 1; min-width: 200px; display: grid; gap: 2px; font-size: 14px; }
+  .bc-txt b { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
+  .bc-txt small { color: var(--suave); font-size: 12px; }
+  .bc-acc { display: flex; gap: 6px; }
+  @keyframes latido-rojo { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 94, .0); } 50% { box-shadow: 0 0 0 6px rgba(255, 77, 94, .18); } }
+
+  /* Alarma de SOS */
+  .alarma { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 20px; background: radial-gradient(circle at 50% 40%, rgba(255, 77, 94, .55), rgba(60, 0, 10, .94)); animation: alarma-fondo 1s ease-in-out infinite alternate; }
+  .alarma[hidden] { display: none; }
+  .alarma-caja { width: 100%; max-width: 480px; background: #1a0710; border: 2px solid var(--rojo); border-radius: 26px; padding: 26px; text-align: center; box-shadow: 0 30px 80px rgba(0, 0, 0, .5); }
+  .alarma-eti { display: inline-block; font: 800 15px 'Barlow Condensed'; letter-spacing: .14em; color: #fff; background: var(--rojo); padding: 5px 12px; border-radius: 99px; }
+  .alarma h2 { font: 800 clamp(34px, 8vw, 52px)/1 'Barlow Condensed'; margin: 14px 0 8px; color: #fff; }
+  .alarma p { color: #ffd6db; font-size: 16px; line-height: 1.5; margin: 0 0 18px; }
+  .alarma p small { color: #e7a9b1; font-size: 13px; }
+  .alarma-acc { display: grid; gap: 8px; }
+  .alarma-acc .boton { justify-content: center; }
+  @keyframes alarma-fondo { from { background-color: rgba(120, 0, 20, .2); } to { background-color: rgba(200, 0, 30, .35); } }
+
+  /* Comunicados */
+  .plantillas { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+  .com-lista { display: grid; gap: 10px; }
+  .com-item { border-left: 4px solid var(--cian); padding: 16px 18px; }
+  .com-item.amarillo { border-left-color: var(--amarillo); } .com-item.rojo { border-left-color: var(--rojo); }
+  .com-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .com-meta { color: var(--suave); font-size: 12.5px; margin-left: auto; }
+  .com-texto { font-size: 16px; line-height: 1.5; margin: 10px 0; }
+  .com-leido { display: grid; gap: 4px; font-size: 13px; }
+  .com-leido small { color: var(--suave); }

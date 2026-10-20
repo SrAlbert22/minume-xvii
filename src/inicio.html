@@ -1,0 +1,722 @@
+<!doctype html>
+<!-- MINUME XVII · Inicio del staff · Albert Silvestre -->
+<html lang="es-DO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inicio · MINUME XVII</title>
+<!--__APP__-->
+<!--__REPORTES__-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>window.MINUME_ENLACES = /*__ENLACES__*/ { asistencia: 'asistencia/index.html', seguridad: 'seguridad/index.html', bienestar: 'bienestar/index.html' };</script>
+<style>
+/* Centro de operaciones: arriba el estado del evento y la entrada; en el centro una columna por equipo con sus datos en vivo y sus atajos; abajo lo que todos consultan (avisos, traslados, comisiones, escalamiento y contactos). */
+:root{
+  --fondo:#050a1a; --panel:rgba(14,25,60,.78); --panel2:rgba(22,36,82,.7);
+  --borde:rgba(120,160,255,.16); --borde2:rgba(120,160,255,.3);
+  --texto:#e9eeff; --suave:#9aa8cc; --tenue:#6c7aa3;
+  --asis:#45c8ff; --segu:#ff4d5e; --bien:#2fd38c; --oro:#ffd23f; --amar:#ffb547;
+  --f-tit:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-txt:Inter,'Segoe UI',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--fondo)}
+body{margin:0;min-height:100%;color:var(--texto);font:15px/1.5 var(--f-txt);
+  background:radial-gradient(1100px 620px at 12% -12%,#152c66,transparent 60%),radial-gradient(900px 520px at 100% -5%,#1d1552,transparent 55%),var(--fondo);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--asis);outline-offset:2px}
+.envoltura{max-width:1180px;margin:0 auto;padding-block:0 40px}
+svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Barra */
+.barra{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 0;padding-top:max(12px,env(safe-area-inset-top,0px));
+  background:linear-gradient(var(--fondo) 65%,transparent);backdrop-filter:blur(6px)}
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:800 22px var(--f-tit);color:#04121d;
+  background:conic-gradient(from 210deg,var(--asis),var(--bien),var(--oro),var(--segu),var(--asis))}
+.marca b{display:block;font:800 20px/1 var(--f-tit);letter-spacing:.02em}
+.marca small{color:var(--suave);font-size:12px}
+.barra .der{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pastilla{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--borde2);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:#c3d0ff;background:rgba(10,18,44,.6);white-space:nowrap}
+.pastilla .pt{width:8px;height:8px;border-radius:50%;background:var(--bien);box-shadow:0 0 0 0 rgba(47,211,140,.6);animation:latido 2s infinite}
+.pastilla.off .pt{background:var(--amar);animation:none}
+.reloj{font:700 18px var(--f-tit);letter-spacing:.03em;font-variant-numeric:tabular-nums}
+.sim{border:1px dashed var(--borde2);background:none;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--suave)}
+.sim[aria-pressed="true"]{border-style:solid;border-color:var(--oro);color:var(--oro)}
+@media (max-width:640px){.marca small,.sim .largo{display:none}}
+
+/* Fila superior */
+.arriba{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;margin-top:6px}
+@media (max-width:900px){.arriba{grid-template-columns:1fr}}
+.caja{background:var(--panel);border:1px solid var(--borde);border-radius:22px;padding:20px;min-width:0}
+.eti{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.estado h1{font:800 clamp(34px,5.6vw,58px)/.95 var(--f-tit);margin:8px 0 6px;text-wrap:balance}
+.estado .lead{color:var(--suave);margin:0;max-width:60ch}
+.cuentas{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.cuenta{flex:1 1 130px;background:var(--panel2);border:1px solid var(--borde);border-radius:16px;padding:12px 14px}
+.cuenta b{display:block;font:800 30px/1 var(--f-tit);font-variant-numeric:tabular-nums}
+.cuenta span{font-size:12px;color:var(--suave)}
+.dias{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.dia{position:relative;border:1px solid var(--borde);border-radius:14px;padding:10px 12px;overflow:hidden}
+.dia b{display:block;font:700 17px/1.1 var(--f-tit)}
+.dia small{color:var(--suave);font-size:12px}
+.dia .barrita{position:absolute;left:0;bottom:0;height:3px;background:var(--oro);width:0;transition:width .6s}
+.dia.hoy{border-color:var(--oro);background:rgba(255,210,63,.07)}
+.dia.paso{opacity:.55}
+.momento{display:flex;gap:12px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.28)}
+.momento .ic{color:var(--oro);margin-top:2px}
+.momento b{font:700 18px/1.1 var(--f-tit);display:block;color:var(--oro)}
+.momento p{margin:2px 0 0;color:#d7ddf5;font-size:14px}
+
+.entrar h2{font:800 30px/1 var(--f-tit);margin:6px 0 4px}
+.entrar p{color:var(--suave);margin:0 0 14px;font-size:14px}
+.campo{display:flex;gap:8px}
+.campo input{flex:1;min-width:0;background:rgba(5,10,26,.7);border:1px solid var(--borde2);border-radius:14px;padding:13px 14px;font:700 22px var(--f-tit);letter-spacing:.12em;text-transform:uppercase}
+.boton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 18px;font-weight:700;background:var(--asis);color:#04121d;text-decoration:none;white-space:nowrap}
+.boton.sec{background:var(--panel2);color:var(--texto);border:1px solid var(--borde2)}
+.boton:disabled{opacity:.45;cursor:default}
+.detecta{min-height:24px;margin-top:10px;font-size:13px;font-weight:600;color:var(--suave);display:flex;align-items:center;gap:8px}
+.detecta .bola{width:10px;height:10px;border-radius:50%}
+.error{color:#ff8a95}
+.abiertas{display:grid;gap:8px;margin-top:14px}
+.abierta{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--borde);border-left:4px solid var(--c);border-radius:14px;padding:10px 12px}
+.abierta b{display:block;font-size:14px}
+.abierta small{color:var(--suave);font-size:12px}
+.abierta .ic{margin-left:auto;color:var(--c)}
+
+/* Equipos */
+.titulo{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:30px 0 12px;flex-wrap:wrap}
+.titulo h2{font:800 clamp(26px,3.6vw,34px)/1 var(--f-tit);margin:0}
+.titulo p{margin:0;color:var(--suave);font-size:13px}
+.equipos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:820px){.equipos{grid-template-columns:1fr}}
+.instalar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+@media (max-width:700px){.instalar{grid-template-columns:1fr}}
+.paso-i{background:rgba(5,10,26,.45);border:1px solid var(--borde);border-radius:16px;padding:14px}
+.paso-i b{font:800 20px var(--f-tit);display:block;margin-bottom:6px}
+.paso-i ol{margin:0;padding-left:20px;color:#d7ddf5;font-size:14px;line-height:1.6}
+.equipo{position:relative;background:var(--panel);border:1px solid var(--borde);border-radius:22px;padding:18px;overflow:hidden;min-width:0;display:flex;flex-direction:column;gap:14px}
+.equipo::before{content:"";position:absolute;inset:0 0 auto;height:120px;background:radial-gradient(260px 120px at 20% 0%,color-mix(in srgb,var(--c) 28%,transparent),transparent 70%);pointer-events:none}
+.eq-cab{position:relative;display:flex;align-items:center;gap:12px}
+.eq-letra{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--c);color:#04121d;font:800 24px var(--f-tit);flex:none}
+.eq-cab b{display:block;font:800 25px/1 var(--f-tit)}
+.eq-cab small{color:var(--suave);font-size:12px}
+.eq-cab .entrar-eq{margin-left:auto;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:none;color:var(--c);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.kpis{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kpi{background:rgba(5,10,26,.5);border:1px solid var(--borde);border-radius:14px;padding:10px}
+.kpi b{display:block;font:800 26px/1 var(--f-tit);font-variant-numeric:tabular-nums}
+.kpi span{display:block;font-size:11px;color:var(--suave);line-height:1.25;margin-top:3px}
+.kpi.alerta b{color:var(--segu)}
+.kpi.ok b{color:var(--bien)}
+.eq-ahora{position:relative;font-size:13px;color:#d7ddf5;background:rgba(5,10,26,.35);border-radius:12px;padding:10px 12px;border:1px solid var(--borde)}
+.eq-ahora b{color:var(--c)}
+.atajos{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.atajo{display:flex;align-items:center;gap:10px;text-align:left;background:var(--panel2);border:1px solid var(--borde);border-radius:14px;padding:11px 12px;font-weight:600;font-size:13.5px;line-height:1.2;transition:border-color .2s,transform .15s}
+.atajo .ic{color:var(--c)}
+.atajo:last-child:nth-child(odd){grid-column:1/-1}
+.atajo:hover{border-color:color-mix(in srgb,var(--c) 60%,transparent);transform:translateY(-2px)}
+.atajo small{display:block;color:var(--suave);font-weight:500;font-size:11.5px;margin-top:2px}
+
+/* Abajo */
+.abajo{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.abajo{grid-template-columns:1fr}}
+.cab-caja{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.cab-caja h3{font:800 24px/1 var(--f-tit);margin:0}
+.cab-caja .der{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pest{border:1px solid var(--borde);background:none;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--suave)}
+.pest.on{background:var(--panel2);color:var(--texto);border-color:var(--borde2)}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:700;background:rgba(120,160,255,.12);color:#c3d0ff;white-space:nowrap}
+.chip.rojo{background:rgba(255,77,94,.16);color:#ff8a95}
+.chip.verde{background:rgba(47,211,140,.14);color:#6ee8b2}
+.chip.amar{background:rgba(255,181,71,.15);color:#ffc978}
+.resumen{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.lista{display:grid;gap:8px}
+.aviso{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:rgba(5,10,26,.45);border:1px solid var(--borde);border-radius:14px;padding:10px 12px}
+.aviso .pt{width:10px;height:10px;border-radius:50%}
+.aviso b{display:block;font-size:14px;overflow-wrap:anywhere}
+.aviso small{display:block;color:var(--suave);font-size:12px;overflow-wrap:anywhere}
+.aviso.sos{border-color:rgba(255,77,94,.5);background:rgba(255,77,94,.08)}
+.vacio{border:1px dashed var(--borde2);border-radius:14px;padding:18px;color:var(--suave);font-size:14px;text-align:center}
+.viaje{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--borde)}
+.viaje:last-child{border-bottom:0}
+.viaje .h{font:800 22px/1 var(--f-tit);font-variant-numeric:tabular-nums}
+.viaje b{display:block;font-size:13.5px}
+.viaje small{color:var(--suave);font-size:12px}
+.viaje.ya{opacity:.4}
+.viaje.prox{background:linear-gradient(90deg,rgba(255,77,94,.12),transparent);border-radius:10px;padding-inline:8px;margin-inline:-8px}
+.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+@media (max-width:980px){.tres{grid-template-columns:1fr}}
+.buscar{display:flex;align-items:center;gap:8px;background:rgba(5,10,26,.7);border:1px solid var(--borde2);border-radius:14px;padding:0 12px}
+.buscar input{flex:1;min-width:0;background:none;border:0;padding:11px 0;outline:none}
+.res-com{display:grid;gap:6px;margin-top:10px;max-height:300px;overflow-y:auto}
+.com{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(5,10,26,.4)}
+.com b{font:800 17px var(--f-tit)}
+.com span{font-size:13px;line-height:1.3}
+.com small{display:block;color:var(--suave);font-size:12px}
+.nivel{border-left:4px solid var(--c);padding:8px 0 8px 12px;margin-bottom:10px}
+.nivel b{display:block;font:700 18px/1.1 var(--f-tit);color:var(--c)}
+.nivel p{margin:3px 0 0;font-size:13px;color:#d7ddf5}
+.contacto{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--borde);font-size:13.5px}
+.contacto:last-child{border-bottom:0}
+.contacto span{color:var(--suave)}
+.contacto b{text-align:right}
+
+.pie{margin-top:28px;border-top:1px solid var(--borde);padding-top:16px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--suave);font-size:13px}
+.pie .der{margin-left:auto}
+.cods{display:flex;gap:6px;flex-wrap:wrap}
+.cod{border:1px solid var(--borde);background:none;border-radius:99px;padding:4px 10px;font:700 12px var(--f-txt);color:#c3d0ff;letter-spacing:.04em}
+
+/* Ventana para entrar desde un atajo */
+.velo{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(3,6,18,.72);backdrop-filter:blur(4px);padding:16px}
+.ventana{width:100%;max-width:420px;background:#0d1838;border:1px solid var(--borde2);border-top:4px solid var(--c,var(--asis));border-radius:22px;padding:22px;animation:sube .3s ease-out}
+.ventana h3{font:800 28px/1 var(--f-tit);margin:6px 0 6px}
+.ventana p{margin:0 0 14px;color:var(--suave);font-size:14px}
+.ventana .acciones{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:40;background:#14214d;border:1px solid var(--borde2);border-radius:14px;padding:10px 16px;font-weight:600;transition:.3s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.subir{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));z-index:20;width:50px;height:50px;border-radius:50%;border:1px solid var(--borde2);background:rgba(13,24,56,.92);color:#fff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s,transform .25s}
+.exp-btns{display:inline-flex;gap:6px}.exp-btns .exp{display:inline-flex;align-items:center;gap:5px}.exp-btns svg{width:13px;height:13px}
+.subir.on{opacity:1;transform:none;pointer-events:auto}
+.subir:hover{border-color:var(--asis);color:var(--asis)}
+
+@keyframes latido{0%{box-shadow:0 0 0 0 rgba(47,211,140,.55)}70%{box-shadow:0 0 0 8px rgba(47,211,140,0)}100%{box-shadow:0 0 0 0 rgba(47,211,140,0)}}
+@keyframes sube{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+@keyframes entra{from{transform:translateY(10px);opacity:.0}to{transform:none;opacity:1}}
+.aviso.nuevo{animation:entra .4s ease-out}
+@media (max-width:640px){.pest,.cod,.sim{min-height:38px;padding-left:12px;padding-right:12px}.buscar input,.campo input,#vCodigo{font-size:16px}.caja{padding:16px;border-radius:18px}.atajo{min-height:52px}.entrar-eq{min-height:36px}.abierta{min-height:52px}.instalar{gap:10px}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header class="barra">
+    <div class="logo" aria-hidden="true">M</div>
+    <div class="marca"><b>MINUME XVII</b><small>Centro de operaciones del staff</small></div>
+    <div class="der">
+      <span class="reloj" id="reloj">--:--</span>
+      <span class="pastilla" id="red"><span class="pt"></span><span id="redTxt">En línea</span></span>
+      <button class="sim" id="sim" type="button" aria-pressed="false" title="Muestra la página como si fuera el 15 de noviembre a las 10:20">Simular<span class="largo"> día del evento</span></button>
+    </div>
+  </header>
+
+  <section class="arriba">
+    <div class="caja estado">
+      <span class="eti" id="eEti">Renaissance Jaragua y Sheraton · 14 al 16 de noviembre</span>
+      <h1 id="eTit">Faltan pocos días</h1>
+      <p class="lead" id="eLead"></p>
+      <div class="cuentas" id="cuentas"></div>
+      <div class="dias" id="dias"></div>
+      <div class="momento" id="momento"></div>
+    </div>
+    <form class="caja entrar" id="fEntrar" autocomplete="off">
+      <span class="eti">Entra a tu sistema</span>
+      <h2>Tu código personal</h2>
+      <p>Escríbelo y la página te lleva al sistema de tu equipo, con tu nombre y lo que te toca.</p>
+      <div class="campo">
+        <label for="codigo" class="eti" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Código personal</label>
+        <input id="codigo" placeholder="AS-0000" maxlength="9" autocapitalize="characters" spellcheck="false" inputmode="text">
+        <button class="boton" id="bEntrar" type="submit" disabled>Entrar <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="detecta" id="detecta" aria-live="polite"></div>
+      <div class="abiertas" id="abiertas"></div>
+    </form>
+  </section>
+
+  <div class="titulo"><h2>Los equipos</h2><p>Datos en vivo de la base compartida · toca un atajo para ir directo</p></div>
+  <section class="equipos" id="equipos"></section>
+
+  <div class="titulo"><h2>Lo que todos consultan</h2><p>Avisos entre equipos, movilizaciones, salones y a quién acudir</p></div>
+  <section class="abajo">
+    <div class="caja">
+      <div class="cab-caja">
+        <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M12 3l9 16H3zM12 10v4M12 17v.5"/></svg>
+        <h3>Avisos entre equipos</h3>
+        <div class="der">
+          <button class="pest on" type="button" data-f="abiertos">Abiertos</button>
+          <button class="pest" type="button" data-f="todos">Todos de hoy</button>
+          <div class="exp-btns" data-exportar="avisos"><button class="pest exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="pest exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div>
+        </div>
+      </div>
+      <div class="resumen" id="avResumen"></div>
+      <div class="lista" id="avLista"></div>
+    </div>
+    <div class="caja">
+      <div class="cab-caja">
+        <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M5 16V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10M5 11h14M5 16h14v2H5zM8 18v2M16 18v2"/></svg>
+        <h3>Próximas movilizaciones a pie</h3>
+      </div>
+      <div id="viajes"></div>
+    </div>
+  </section>
+
+  <section class="tres">
+    <div class="caja">
+      <div class="cab-caja"><svg class="ic" viewBox="0 0 24 24" style="color:var(--asis)"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"/></svg><h3>¿Dónde está la comisión?</h3></div>
+      <label class="buscar" for="qCom"><input id="qCom" placeholder="Siglas o nombre: CSNU, salud, turismo…" spellcheck="false"></label>
+      <div class="res-com" id="resCom"></div>
+    </div>
+    <div class="caja">
+      <div class="cab-caja"><svg class="ic" viewBox="0 0 24 24" style="color:var(--oro)"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><h3>¿A quién escalo?</h3></div>
+      <div class="nivel" style="--c:var(--bien)"><b>Nivel 1 · Resuélvelo tú</b><p>Desubicación, consulta de salón u horario, orientación de ruta. Registra solo si se repite.</p></div>
+      <div class="nivel" style="--c:var(--amar)"><b>Nivel 2 · Avisa a coordinación</b><p>Faltan materiales, problema de acceso, falta personal, congestión o retraso que afecta la comisión.</p></div>
+      <div class="nivel" style="--c:var(--segu)"><b>Nivel 3 · Escala de inmediato</b><p>Emergencia médica o de bienestar, seguridad o protección, conflicto grave. No intervengas fuera de tu función.</p></div>
+    </div>
+    <div class="caja">
+      <div class="cab-caja"><svg class="ic" viewBox="0 0 24 24" style="color:var(--bien)"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg><h3>Responsables</h3></div>
+      <div id="contactos"></div>
+      <p style="margin:10px 0 0;color:var(--tenue);font-size:12px">Escríbeles por el canal oficial del staff.</p>
+    </div>
+  </section>
+
+  <div class="titulo"><h2>Instálala en tu teléfono</h2><p>Abre como una app y funciona aunque no haya internet</p></div>
+  <section class="caja" id="instalar">
+    <p style="margin:0;color:var(--suave);max-width:70ch">Instala el sistema de <b style="color:var(--texto)">tu equipo</b>: entra con tu código una vez con internet y después abre aunque no haya señal. Lo que hagas sin internet se guarda en el teléfono y se envía cuando vuelve.</p>
+    <div class="instalar">
+      <div class="paso-i"><b>iPhone</b><ol><li>Abre el enlace en <b>Safari</b>.</li><li>Toca <b>Compartir</b> (el cuadrito con la flecha).</li><li>Elige <b>Agregar a pantalla de inicio</b> y toca <b>Agregar</b>.</li><li>Ábrela desde el ícono y toca <b>Activar alertas</b> para que suenen los SOS.</li></ol></div>
+      <div class="paso-i"><b>Android</b><ol><li>Abre el enlace en <b>Chrome</b>.</li><li>Toca <b>Instalar app</b> cuando aparezca, o el menú ⋮ y <b>Instalar aplicación</b>.</li><li>Ábrela desde el ícono y toca <b>Activar alertas</b>.</li></ol><button class="boton" id="bInstalar" type="button" hidden style="margin-top:10px">Instalar ahora</button></div>
+    </div>
+  </section>
+
+  <footer class="pie">
+    <span>DEMO · datos de ejemplo. Códigos de prueba:</span>
+    <div class="cods" id="cods"></div>
+    <button class="cod der" id="bPrueba" type="button" title="Crea un aviso de nivel 2 para ver cómo llega a los sistemas">Enviar aviso de prueba</button>
+  </footer>
+</div>
+
+<div class="velo" id="velo" hidden>
+  <form class="ventana" id="fVentana" autocomplete="off">
+    <span class="eti" id="vEti">Asistencia</span>
+    <h3 id="vTit">Entra con tu código</h3>
+    <p id="vTxt">Para abrir esta parte necesitas entrar con tu código personal.</p>
+    <label for="vCodigo" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Código personal</label>
+    <div class="campo"><input id="vCodigo" placeholder="AS-0000" maxlength="9" autocapitalize="characters" spellcheck="false"></div>
+    <div class="detecta" id="vDetecta" aria-live="polite"></div>
+    <div class="acciones"><button class="boton sec" type="button" id="vCerrar">Cancelar</button><button class="boton" type="submit">Entrar</button></div>
+  </form>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<button class="subir" id="subir" type="button" aria-label="Ir al inicio de la página" title="Ir al inicio de la página"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const IC = {
+  lista: 'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',
+  alerta: 'M12 3l9 16H3zM12 10v4M12 17v.5',
+  libro: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11',
+  bolsillo: 'M4 5h16v14H4zM8 9h8M8 13h5',
+  bandera: 'M5 21V4M5 4h11l-2 4 2 4H5',
+  escudo: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
+  cobertura: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+  mapa: 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 8a2 2 0 1 1 0 4 2 2 0 1 1 0-4',
+  bus: 'M5 16V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10M5 11h14M5 16h14v2H5zM8 18v2M16 18v2',
+  gente: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 11a3 3 0 0 0 0-6M21 20a6 6 0 0 0-4-5.6',
+  corazon: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',
+  tablilla: 'M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4',
+  cruz: 'M12 5v14M5 12h14',
+  reloj: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  flecha: 'M5 12h14M13 6l6 6-6 6',
+  puerta: 'M14 4h5v16h-5M4 20h10V4H4zM10 12h.01'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"/></svg>`;
+const toast = t => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2600); };
+const leerLS = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+const guardarLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+/* ---------- Datos del evento (los mismos de los sistemas) ---------- */
+const ENLACES = window.MINUME_ENLACES;
+const EQUIPOS = {
+  asistencia: { nombre: 'Subsecretaría de Asistencia', corto: 'Asistencia', letra: 'A', color: '#45c8ff', quienes: 'Asistentes de comisión y su coordinación' },
+  seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#ff4d5e', quienes: 'Seguridad, avisos y movilizaciones' },
+  bienestar: { nombre: 'Bienestar', corto: 'Bienestar', letra: 'B', color: '#2fd38c', quienes: 'Bienestar físico y emocional' },
+  eventos: { nombre: 'Eventos y Protocolo', corto: 'Eventos', letra: 'E', color: '#f472b6', quienes: 'Ceremonias, montajes e invitados' },
+  coordinacion: { nombre: 'Coordinación general', corto: 'Coordinación', letra: 'C', color: '#ffd23f', quienes: 'Ve todo el evento en un solo lugar' }
+};
+// Prefijo del código → sistema. El sistema valida el código completo al entrar.
+const PREFIJOS = { AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
+const PRUEBA = ['AS-4821', 'CO-0001', 'SE-1093', 'TR-5570', 'BI-2207', 'BI-3318', 'EP-2603', 'CG-0001'];
+const ATAJOS = {
+  asistencia: [
+    ['listas', 'lista', 'Checklist del momento', 'Lo que toca ahora'],
+    ['incidencias', 'alerta', 'Reportar incidencia', 'Nivel 1, 2 o 3'],
+    ['bitacora', 'libro', 'Bitácora', 'Qué pasó y cómo quedó'],
+    ['comunicados', 'bandera', 'Comunicados', 'Lo que manda dirección'],
+    ['comisiones-vivo', 'reloj', 'Mi comisión ahora', 'Estado y delegados'],
+    ['bolsillo', 'bolsillo', 'Guía de bolsillo', 'Reglas y contactos']
+  ],
+  seguridad: [
+    ['cobertura', 'cobertura', 'Cobertura de áreas', 'Quién está en cada punto'],
+    ['rondas', 'lista', 'Rondas', 'Marcar cada punto'],
+    ['seguridad', 'escudo', 'Avisos y SOS', 'Responder y despachar'],
+    ['traslado', 'bus', 'Movilización', 'Salidas a pie y conteo'],
+    ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
+    ['mapa', 'mapa', 'Mapa 3D', 'Salones y puntos']
+  ],
+  bienestar: [
+    ['casos', 'corazon', 'Casos en vivo', 'Atender y derivar'],
+    ['atenciones', 'tablilla', 'Registro de atenciones', 'Físico y emocional'],
+    ['protocolos', 'lista', 'Protocolos', 'Qué hacer en cada caso'],
+    ['punto', 'cruz', 'Punto de bienestar', 'Dónde está y qué tiene'],
+    ['mapa', 'mapa', 'Mapa 3D', 'Llegar al salón'],
+    ['bitacora', 'libro', 'Bitácora', 'Casos del día']
+  ],
+  eventos: [
+    ['eventos', 'reloj', 'Eventos de hoy', 'Un botón por paso'],
+    ['invitados', 'gente', 'Invitados especiales', 'Marcar quién llegó'],
+    ['comunicados', 'bandera', 'Comunicados', 'Lo que manda dirección'],
+    ['programa', 'lista', 'Programa', 'Qué viene después'],
+    ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
+    ['mapa', 'mapa', 'Mapa 3D', 'Salones del hotel']
+  ],
+  coordinacion: [
+    ['comunicados', 'bandera', 'Comunicados', 'Enviar y ver quién leyó'],
+    ['comisiones-vivo', 'reloj', 'Comisiones en vivo', 'Cómo va cada una'],
+    ['cobertura', 'cobertura', 'Cobertura de áreas', 'Puntos de seguridad'],
+    ['rondas', 'lista', 'Rondas', 'Atrasos y novedades'],
+    ['atenciones', 'corazon', 'Bienestar', 'Resumen sin nombres'],
+    ['objetos', 'bolsillo', 'Objetos perdidos', 'Guardados y entregados']
+  ]
+};
+const COMISIONES = [
+  ['PNUD', 'Programa de las Naciones Unidas para el Desarrollo'], ['CDT', 'Comisión de Ciencia y Tecnología para el Desarrollo'],
+  ['COP31', 'Conferencia de las Partes'], ['AMS', 'Asamblea Mundial de la Salud'], ['CSNU', 'Consejo de Seguridad de las Naciones Unidas'],
+  ['ONUDC', 'Oficina de las Naciones Unidas contra la Droga y el Delito'], ['CIJ', 'Corte Internacional de Justicia'],
+  ['FS-CDH', 'Foro Social del Consejo de Derechos Humanos'], ['ONUDI', 'Organización de las Naciones Unidas para el Desarrollo Industrial'],
+  ['UNCTAD', 'Conferencia de las Naciones Unidas sobre Comercio y Desarrollo'], ['OMA', 'Organización Mundial de Aduanas'],
+  ['OMT', 'Organización Mundial del Turismo'], ['CIME', 'Conferencia Iberoamericana de Ministros de Educación'],
+  ['CRPD', 'Comité sobre los Derechos de las Personas con Discapacidad'], ['UNESCO-JD', 'UNESCO — Comité de Juventud y Deporte']
+];
+const SEDES = { jaragua: 'Renaissance Jaragua', sheraton: 'Sheraton', malecon: 'Malecón Terrace' };
+const ASIGNA = {
+  CSNU: ['jaragua', 'Anacaona 1'], AMS: ['jaragua', 'Anacaona 2'], CIJ: ['jaragua', 'Anacaona 3'], PNUD: ['jaragua', 'Marién'],
+  COP31: ['jaragua', 'Maguá'], ONUDC: ['jaragua', 'Higüey'], CDT: ['jaragua', 'Maguana'], 'FS-CDH': ['jaragua', 'Las Olas'],
+  ONUDI: ['sheraton', 'Samaná'], UNCTAD: ['sheraton', 'Bonanza'], OMA: ['sheraton', 'Constanza'], OMT: ['sheraton', 'Yarey'],
+  CIME: ['sheraton', 'Da Vinci'], CRPD: ['sheraton', 'Este I'], 'UNESCO-JD': ['sheraton', 'Board Room']
+};
+// Movilizaciones a pie: Jaragua → Sheraton unos 240 m (3 min); Sheraton → Malecón Terrace unos 140 m (2 min)
+const VIAJES = [
+  { h: '7:30', de: 'jaragua', a: 'sheraton', nota: 'Comisiones del Sheraton después de la acreditación', estado: 'A tiempo' },
+  { h: '12:15', de: 'sheraton', a: 'malecon', nota: 'Almuerzo en el Malecón Terrace', estado: 'A tiempo' },
+  { h: '12:30', de: 'jaragua', a: 'malecon', nota: 'Almuerzo en el Malecón Terrace', estado: 'A tiempo' },
+  { h: '13:45', de: 'malecon', a: 'jaragua', nota: 'Regreso a sesiones', estado: 'A tiempo' },
+  { h: '13:45', de: 'malecon', a: 'sheraton', nota: 'Regreso a sesiones', estado: 'A tiempo' },
+  { h: '18:30', de: 'sheraton', a: 'jaragua', nota: 'Cierre de jornada en el Jaragua', estado: 'A tiempo' }
+];
+const RESPONSABLES = [
+  ['Coordinación de Asistencia', 'Beatriz Pérez'], ['Subsecretario de Asistencia', 'Baldwin Ureña'], ['Gestión de Voluntarios', 'Adrian Triunfer'],
+  ['Bienestar', 'Laura Melián'], ['Seguridad / Traslado', 'Brahyant Pérez'], ['Eventos / Protocolo', 'Daniela Sirit'], ['Soporte SGL', 'Kervin Diaz']
+];
+const MOMENTOS = {
+  pre: ['Antes · Pre-MINUME', 'Conoce tu comisión, tu mesa directiva, tus horarios y tus canales. Nunca llegues conociendo solo el nombre de tu comisión.'],
+  montaje: ['Abre · Montaje y apertura', 'Verifica salón, placards, materiales, audiovisuales y circulación. Deja la comisión lista antes de que entren los delegados.'],
+  sesiones: ['Sesión', 'Observa, apoya, conecta y registra. Orienta solo con información confirmada.'],
+  transiciones: ['Mueve · Entre actividades', 'Confirma destino y hora antes de comunicarlo. Instrucciones cortas, iguales para todos, y vigila pasillos y accesos.'],
+  cierre: ['Cierra · Cierre de comisión', 'Checklist de cierre, bitácora cerrada y novedades reportadas a coordinación antes de retirarte.'],
+  fin: ['MINUME XVII terminó', 'Gracias por tu trabajo. Revisa que tu bitácora y tus reportes estén cerrados.']
+};
+// Lo que cada equipo hace en cada momento del día
+const FOCO = {
+  asistencia: { pre: 'Llena tu ficha rápida y el checklist de Pre-MINUME.', montaje: 'Checklist de montaje: salón, placards y audiovisuales.', sesiones: 'Checklist de sesión y bitácora al día.', transiciones: 'Mueve a tu comisión con la secuencia acordada.', cierre: 'Cierre en 5 minutos y bitácora cerrada.', fin: 'Entrega tu reporte final.' },
+  seguridad: { pre: 'Revisa tu puesto y tus turnos en Cobertura de áreas.', montaje: 'Puntos de seguridad y accesos listos en el mapa.', sesiones: 'Atiende avisos y SOS; vigila accesos.', transiciones: 'Pasillos y el camino Jaragua – Sheraton.', cierre: 'Salida ordenada y último grupo.', fin: 'Cierra la bitácora del equipo.' },
+  eventos: { pre: 'Revisa los eventos y la lista de invitados.', montaje: 'Monta cada evento y marca su lista.', sesiones: 'Avanza cada evento con su botón y recibe a los invitados.', transiciones: 'Prepara el siguiente evento.', cierre: 'Marca los eventos terminados.', fin: 'Revisa que todo quedó cerrado.' },
+  coordinacion: { pre: 'Prepara los comunicados y revisa que cada equipo tenga sus datos.', montaje: 'Confirma que cada sede y cada punto esté listo.', sesiones: 'Mira comisiones, cobertura y avisos en vivo.', transiciones: 'Vigila traslados y comisiones que no han vuelto.', cierre: 'Revisa que todo quede cerrado y descarga los reportes.', fin: 'Descarga los reportes del evento.' },
+  bienestar: { pre: 'Repasa los protocolos y el punto de bienestar.', montaje: 'Punto de bienestar abierto y equipado.', sesiones: 'Casos en vivo: atender, derivar y cerrar.', transiciones: 'Atento a desmayos y calor en los traslados.', cierre: 'Cierra los casos abiertos del día.', fin: 'Reporte de casos del evento.' }
+};
+
+/* Lo que coordinación edita en «Datos del evento» (salones, movilizaciones y responsables) */
+function aplicarConfigInicio() {
+  const c = k => leerLS('minume.compartido.config.' + k, null);
+  const vieja = l => l.some(x => x && ['sede', 'de', 'a'].some(k => x[k] && !SEDES[x[k]]));
+  const com = c('comisiones'); if (com && !vieja(com)) com.forEach(r => { ASIGNA[r.com] = [r.sede, r.salon]; });
+  const bus = c('autobuses'); if (bus && !vieja(bus)) VIAJES.splice(0, VIAJES.length, ...bus.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
+  const res = c('responsables'); if (res) RESPONSABLES.splice(0, RESPONSABLES.length, ...res.map(r => [r.area, r.persona]));
+  $('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join('');
+}
+/* ---------- Reloj (real o simulado para la reunión) ---------- */
+const SIM_INICIO = new Date('2026-11-15T10:20:00-04:00').getTime();
+let sim = leerLS('minume.portal.sim', null); // { desde: ms reales cuando se activó }
+const ahora = () => sim ? new Date(SIM_INICIO + (Date.now() - sim.desde)) : new Date();
+$('#sim').addEventListener('click', () => {
+  sim = sim ? null : { desde: Date.now() }; guardarLS('minume.portal.sim', sim);
+  toast(sim ? 'Simulando el 15 de noviembre a las 10:20' : 'Hora real');
+  pintarTodo();
+});
+const DIAS = [
+  { f: '2026-11-14', t: 'Vie 14', d: 'Montaje y acreditación', ini: '2026-11-14T15:00:00-04:00', fin: '2026-11-14T23:00:00-04:00' },
+  { f: '2026-11-15', t: 'Sáb 15', d: 'Sesiones', ini: '2026-11-15T07:00:00-04:00', fin: '2026-11-15T20:00:00-04:00' },
+  { f: '2026-11-16', t: 'Dom 16', d: 'Sesiones y clausura', ini: '2026-11-16T07:00:00-04:00', fin: '2026-11-16T20:00:00-04:00' }
+];
+// Todo se calcula en hora de República Dominicana, aunque el teléfono tenga otra zona horaria
+const TZ = 'America/Santo_Domingo';
+const FMT = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+const dr = d => { const p = Object.fromEntries(FMT.formatToParts(d).map(x => [x.type, x.value])); return { f: `${p.year}-${p.month}-${p.day}`, h: +p.hour % 24, m: +p.minute }; };
+const fechaLocal = d => dr(d).f;
+const minutos = d => { const x = dr(d); return x.h * 60 + x.m; };
+const aMin = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+const hora = t => { const x = dr(new Date(t)); return `${x.h}:${String(x.m).padStart(2, '0')}`; };
+function momentoDe(d) {
+  const f = fechaLocal(d), m = minutos(d);
+  if (f < '2026-11-14') return 'pre';
+  if (f === '2026-11-14') return m >= 19 * 60 ? 'montaje' : 'pre';
+  if (f > '2026-11-16') return 'fin';
+  if (m < 8 * 60) return 'montaje';
+  if (m < aMin('12:30')) return 'sesiones';
+  if (m < aMin('14:00')) return 'transiciones';
+  if (m < aMin('18:30')) return 'sesiones';
+  return f === '2026-11-16' ? 'fin' : 'cierre';
+}
+const enEvento = d => { const f = fechaLocal(d); return f === '2026-11-15' || f === '2026-11-16'; };
+
+function pintarEstado() {
+  const d = ahora(), mo = momentoDe(d);
+  $('#reloj').textContent = d.toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit', timeZone: TZ }) + (sim ? ' · 15 nov' : '');
+  const hasta = (iso) => Math.max(0, new Date(iso).getTime() - d.getTime());
+  const fmt = ms => { const dd = Math.floor(ms / 86400000), hh = Math.floor(ms % 86400000 / 3600000), mm = Math.floor(ms % 3600000 / 60000); return dd ? [dd, dd === 1 ? 'día' : 'días', hh, 'h'] : [hh, 'h', mm, 'min']; };
+  const hm = dr(d).h;
+  const saludo = hm < 12 ? 'Buenos días' : hm < 19 ? 'Buenas tardes' : 'Buenas noches';
+  if (mo === 'pre') {
+    const ms = hasta('2026-11-14T19:00:00-04:00'), [a, ua] = fmt(ms);
+    $('#eTit').textContent = ms ? `Faltan ${a} ${ua} para el montaje` : 'Hoy empieza el montaje';
+    $('#eLead').textContent = `${saludo}. Cada equipo entra a su propio sistema; los tres comparten los avisos, así que un caso que Asistencia escala le llega al instante a Seguridad o a Bienestar.`;
+  } else if (mo === 'fin') {
+    $('#eTit').textContent = 'MINUME XVII terminó';
+    $('#eLead').textContent = 'Cierra tu bitácora y entrega tus reportes. Gracias por tu trabajo.';
+  } else {
+    const dia = DIAS.findIndex(x => x.f === fechaLocal(d)) + 1;
+    $('#eTit').textContent = `${saludo} · Día ${dia} de 3`;
+    $('#eLead').textContent = `Ahora: ${MOMENTOS[mo][0]}. Entra a tu sistema para ver tu checklist y lo que te toca.`;
+  }
+  const s = hasta('2026-11-15T08:00:00-04:00'), [s1, su1, s2, su2] = fmt(s);
+  const abiertos = leerAvisos().filter(a => !CERRADO(a)).length;
+  const prox = proximoViaje(d);
+  $('#cuentas').innerHTML = [
+    [s ? `${s1}<small style="font-size:16px"> ${su1}</small> ${s2}<small style="font-size:16px"> ${su2}</small>` : 'En curso', s ? 'para la primera sesión' : 'sesiones'],
+    [String(abiertos), abiertos === 1 ? 'aviso abierto entre equipos' : 'avisos abiertos entre equipos'],
+    [prox ? prox.h : '—', prox ? `próxima salida a pie · ${SEDES[prox.de]} → ${SEDES[prox.a]}` : 'sin movilizaciones pendientes hoy'],
+    [String(COMISIONES.length), 'comisiones en 3 sedes']
+  ].map(([b, t]) => `<div class="cuenta"><b>${b}</b><span>${t}</span></div>`).join('');
+  $('#dias').innerHTML = DIAS.map(x => {
+    const ini = new Date(x.ini).getTime(), fin = new Date(x.fin).getTime(), t = d.getTime();
+    const pct = t <= ini ? 0 : t >= fin ? 100 : (t - ini) / (fin - ini) * 100;
+    const cl = fechaLocal(d) === x.f ? 'hoy' : t > fin ? 'paso' : '';
+    return `<div class="dia ${cl}"><b>${x.t} nov</b><small>${x.d}</small><span class="barrita" style="width:${pct}%"></span></div>`;
+  }).join('');
+  $('#momento').innerHTML = `${ic('reloj')}<div><b>${mo === 'pre' ? 'Ahora te toca · ' : 'Momento actual · '}${MOMENTOS[mo][0]}</b><p>${MOMENTOS[mo][1]}</p></div>`;
+  return mo;
+}
+
+/* ---------- Sesiones abiertas y entrada con código ---------- */
+const sesion = s => leerLS(`minume.${s}.usuario`, null);
+function detectar(cod) {
+  const c = (cod || '').trim().toUpperCase(), p = PREFIJOS[c.slice(0, 2)];
+  if (c.startsWith('AC')) return { error: 'Acreditación todavía no tiene sistema propio. Pídele tu acceso a coordinación.' };
+  if (!c) return null;
+  if (!p) return c.length >= 2 ? { error: 'Ese código no corresponde a ningún equipo. Revisa las dos primeras letras.' } : null;
+  return { sis: p[0], rol: p[1], completo: /^[A-Z]{2}-\d{4}$/.test(c), codigo: c };
+}
+function pintarDetecta(el, r) {
+  if (!r) { el.innerHTML = ''; return; }
+  if (r.error) { el.innerHTML = `<span class="error">${r.error}</span>`; return; }
+  const e = EQUIPOS[r.sis];
+  el.innerHTML = `<span class="bola" style="background:${e.color}"></span>${r.rol} · entra a <b style="color:${e.color}">${e.nombre}</b>${r.completo ? '' : ' · faltan números'}`;
+}
+function abrir(sis, codigo, seccion) {
+  const base = ENLACES[sis];
+  location.href = codigo ? `${base}#entrar=${encodeURIComponent(codigo)}${seccion ? '/' + seccion : ''}` : `${base}${seccion ? '#' + seccion : ''}`;
+}
+$('#codigo').addEventListener('input', e => {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  if (/^[A-Z]{2}\d/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
+  const r = detectar(e.target.value); pintarDetecta($('#detecta'), r);
+  $('#bEntrar').disabled = !(r && r.completo);
+});
+$('#fEntrar').addEventListener('submit', e => { e.preventDefault(); const r = detectar($('#codigo').value); if (r && r.completo) abrir(r.sis, r.codigo); });
+function pintarAbiertas() {
+  const l = Object.keys(EQUIPOS).map(s => [s, sesion(s)]).filter(([, u]) => u);
+  $('#abiertas').innerHTML = l.length ? `<span class="eti" style="margin-top:4px">Ya entraste en este dispositivo</span>` + l.map(([s, u]) => `<button class="abierta" type="button" data-abrir="${s}" style="--c:${EQUIPOS[s].color}"><div><b>Continuar como ${esc(u.nombre)}</b><small>${EQUIPOS[s].nombre}${u.comision ? ' · ' + esc(u.comision) : ''}</small></div>${ic('flecha')}</button>`).join('') : '';
+}
+$('#abiertas').addEventListener('click', e => { const b = e.target.closest('[data-abrir]'); if (b) abrir(b.dataset.abrir); });
+
+/* ---------- Ventana para atajos sin sesión ---------- */
+let pendiente = null;
+function pedirCodigo(sis, seccion, titulo) {
+  pendiente = { sis, seccion };
+  const e = EQUIPOS[sis];
+  $('#fVentana').style.setProperty('--c', e.color);
+  $('#vEti').textContent = e.nombre; $('#vTit').textContent = titulo;
+  $('#vTxt').textContent = `Entra con tu código de ${e.corto} y te llevamos directo a esta parte.`;
+  $('#vCodigo').value = ''; $('#vDetecta').innerHTML = '';
+  $('#velo').hidden = false; $('#vCodigo').focus();
+}
+const cerrarVentana = () => { $('#velo').hidden = true; pendiente = null; };
+$('#vCerrar').addEventListener('click', cerrarVentana);
+$('#velo').addEventListener('click', e => { if (e.target.id === 'velo') cerrarVentana(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#velo').hidden) cerrarVentana(); });
+$('#vCodigo').addEventListener('input', e => {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  if (/^[A-Z]{2}\d/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
+  const r = detectar(e.target.value);
+  if (r && r.sis && pendiente && r.sis !== pendiente.sis) { $('#vDetecta').innerHTML = `<span class="error">Ese código es de ${EQUIPOS[r.sis].nombre}, no de ${EQUIPOS[pendiente.sis].nombre}.</span>`; return; }
+  pintarDetecta($('#vDetecta'), r);
+});
+$('#fVentana').addEventListener('submit', e => {
+  e.preventDefault();
+  const r = detectar($('#vCodigo').value);
+  if (!r || !r.completo || r.sis !== pendiente.sis) { $('#vCodigo').focus(); return; }
+  abrir(pendiente.sis, r.codigo, pendiente.seccion);
+});
+
+/* ---------- Avisos compartidos (la misma clave que usan los sistemas) ---------- */
+const CLAVE_AVISOS = 'minume.compartido.avisos';
+const EST = { nuevo: ['Enviado', 'amar', '#ffb547'], visto: ['Visto', 'amar', '#ffb547'], camino: ['En camino', '', '#45c8ff'], atencion: ['En atención', '', '#45c8ff'], resuelto: ['Resuelto', 'verde', '#2fd38c'], derivado: ['Derivado al 9-1-1', 'rojo', '#ff4d5e'] };
+const CERRADO = a => a.estado === 'resuelto' || a.estado === 'derivado';
+const leerAvisos = () => leerLS(CLAVE_AVISOS, []);
+const esSOS = a => /^SOS/i.test(a.tipo || '');
+const hoy = a => fechaLocal(new Date(a.t)) === fechaLocal(new Date());
+let filtro = 'abiertos', vistos = new Set(leerAvisos().map(a => a.id));
+function pintarAvisos() {
+  const todos = leerAvisos().slice().sort((a, b) => b.t - a.t);
+  const abiertos = todos.filter(a => !CERRADO(a));
+  const l = (filtro === 'abiertos' ? abiertos : todos.filter(hoy)).slice(0, 12);
+  const sos = abiertos.filter(esSOS).length;
+  $('#avResumen').innerHTML = [
+    sos ? `<span class="chip rojo">${sos} SOS activo${sos > 1 ? 's' : ''}</span>` : '',
+    ...Object.keys(EQUIPOS).map(s => { const n = abiertos.filter(a => a.para === s).length; return `<span class="chip" style="color:${EQUIPOS[s].color}">${n} para ${EQUIPOS[s].corto}</span>`; }),
+    `<span class="chip verde">${todos.filter(a => CERRADO(a) && hoy(a)).length} cerrados hoy</span>`
+  ].join('');
+  $('#avLista').innerHTML = l.length ? l.map(a => {
+    const [e, cl, col] = EST[a.estado] || EST.nuevo, lugar = a.salon ? 'Salón ' + a.salon : a.donde || a.sede || '';
+    const de = EQUIPOS[a.de]?.corto || a.de || '', para = EQUIPOS[a.para]?.corto || a.para || '';
+    const nuevo = !vistos.has(a.id) ? ' nuevo' : '';
+    return `<div class="aviso${esSOS(a) && !CERRADO(a) ? ' sos' : ''}${nuevo}"><span class="pt" style="background:${col}"></span><div><b>${esc(a.tipo)}${lugar ? ' · ' + esc(lugar) : ''}</b><small>${esc(de)} → ${esc(para)} · ${hora(a.t)}${a.por ? ' · ' + esc(a.por) : ''}${a.texto && a.texto !== a.tipo ? ' · ' + esc(a.texto) : ''}${a.quien ? ' · ' + esc(a.quien) : ''}</small></div><span class="chip ${cl}">${e}</span></div>`;
+  }).join('') : `<div class="vacio">${filtro === 'abiertos' ? 'No hay avisos abiertos. Cuando alguien escala un caso de nivel 2 o 3 o activa un SOS, aparece aquí al instante.' : 'Hoy no se ha enviado ningún aviso.'}</div>`;
+  todos.forEach(a => vistos.add(a.id));
+}
+$$('.pest[data-f]').forEach(b => b.addEventListener('click', () => { filtro = b.dataset.f; $$('.pest[data-f]').forEach(x => x.classList.toggle('on', x === b)); pintarAvisos(); }));
+window.toastMinume = toast;
+document.addEventListener('click', e => {
+  const b = e.target.closest('.exp-btns [data-fmt]'); if (!b) return;
+  const l = leerAvisos().slice().sort((a, x) => x.t - a.t), abiertos = l.filter(a => !CERRADO(a));
+  window.exportarReporte(b.dataset.fmt, {
+    titulo: 'Avisos entre equipos', archivo: `avisos-minume-${fechaLocal(new Date())}`, equipo: 'Centro de operaciones del staff', color: '#45c8ff', letra: 'M', nota: 'Datos de ejemplo · MINUME XVII',
+    resumen: [[l.length, 'avisos en total'], [abiertos.length, 'abiertos'], [abiertos.filter(esSOS).length, 'SOS activos'], [l.filter(CERRADO).length, 'cerrados']],
+    columnas: [{ t: 'Fecha', w: 11, pdf: 20 }, { t: 'Hora', w: 9, pdf: 15 }, { t: 'De', w: 13, pdf: 22 }, { t: 'Para', w: 13, pdf: 22 }, { t: 'Tipo', w: 26 }, { t: 'Detalle', w: 34 }, { t: 'Comisión', w: 10, pdf: 17 }, { t: 'Lugar', w: 18 }, { t: 'Enviado por', w: 18 }, { t: 'Estado', w: 15, pdf: 22 }, { t: 'Atendió', w: 18 }],
+    filas: l.map(a => [fechaLocal(new Date(a.t)), hora(a.t), EQUIPOS[a.de]?.corto || a.de, EQUIPOS[a.para]?.corto || a.para, a.tipo, a.texto, a.comision, a.salon ? 'Salón ' + a.salon : a.donde || a.sede, a.por, (EST[a.estado] || EST.nuevo)[0], a.quien]),
+    estadoCol: 9, estado: v => /Resuelto/.test(v) ? 'verde' : /9-1-1/.test(v) ? 'rojo' : /Enviado|Visto/.test(v) ? 'amarillo' : 'azul',
+  });
+});
+$('#bPrueba').addEventListener('click', () => {
+  const l = leerAvisos();
+  l.push({ id: 'av' + Date.now().toString(36) + 'p', para: 'seguridad', de: 'asistencia', estado: 'nuevo', t: Date.now(), tipo: 'Nivel 2 · prueba', texto: 'Aviso de prueba enviado desde el Inicio', comision: 'CSNU', salon: 'Anacaona 1', sede: 'Renaissance Jaragua', por: 'Prueba del Inicio' });
+  guardarLS(CLAVE_AVISOS, l.slice(-80)); toast('Aviso de prueba enviado a Seguridad'); pintarTodo();
+});
+
+/* ---------- Traslados ---------- */
+function proximoViaje(d) { if (!enEvento(d)) return null; const m = minutos(d); return VIAJES.find(v => aMin(v.h) >= m - 5) || null; }
+function pintarViajes() {
+  const d = ahora(), ev = enEvento(d), m = minutos(d), prox = proximoViaje(d);
+  $('#viajes').innerHTML = (ev ? '' : `<p style="margin:0 0 8px;color:var(--suave);font-size:13px">Horario de cada día de sesiones (15 y 16 de noviembre).</p>`) + VIAJES.map(v => {
+    const ya = ev && aMin(v.h) < m - 5, es = prox === v, falta = es ? aMin(v.h) - m : 0;
+    const est = es && falta > 0 ? `<span class="chip rojo">en ${falta} min</span>` : `<span class="chip ${/Retras/.test(v.estado) ? 'amar' : 'verde'}">${v.estado}</span>`;
+    return `<div class="viaje${ya ? ' ya' : ''}${es ? ' prox' : ''}"><span class="h">${v.h}</span><div><b>${SEDES[v.de]} → ${SEDES[v.a]}</b><small>${v.nota}</small></div>${est}</div>`;
+  }).join('');
+}
+
+/* ---------- Comisiones ---------- */
+const sinTilde = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function pintarComisiones() {
+  const q = sinTilde($('#qCom').value.trim());
+  const l = COMISIONES.filter(([c, n]) => !q || sinTilde(c + ' ' + n).includes(q));
+  $('#resCom').innerHTML = l.length ? l.map(([c, n]) => { const [s, sal] = ASIGNA[c]; return `<div class="com"><b>${c}</b><span>${sal}<small>${SEDES[s]} · ${n}</small></span></div>`; }).join('') : '<div class="vacio">No encontré esa comisión. Prueba con las siglas.</div>';
+}
+$('#qCom').addEventListener('input', pintarComisiones);
+
+/* ---------- Equipos ---------- */
+const comis = () => leerLS('minume.compartido.comisiones', {});
+const evCurso = () => Object.values(leerLS('minume.compartido.eventos', {})).filter(x => x.est === 'curso').length;
+const evProblema = () => Object.values(leerLS('minume.compartido.eventos', {})).filter(x => x.problema).length;
+const invLlegaron = () => Object.values(leerLS('minume.compartido.invitados', {})).filter(x => x.est === 'llego' || x.est === 'sentado').length;
+const enSesion = () => Object.values(comis()).filter(x => x.est === 'sesion').length;
+const conProblema = () => Object.values(comis()).filter(x => x.est === 'detenida' || x.est === 'faltan').length;
+function pintarEquipos(mo) {
+  const av = leerAvisos(), abiertos = av.filter(a => !CERRADO(a)), d = ahora(), prox = proximoViaje(d);
+  const k = {
+    asistencia: [
+      [abiertos.filter(a => a.de === 'asistencia').length, 'escalados sin cerrar', 'alerta'],
+      [enSesion(), 'comisiones en sesión', 'ok'],
+      [av.filter(a => a.de === 'asistencia' && CERRADO(a) && hoy(a)).length, 'resueltos hoy', 'ok']
+    ],
+    seguridad: [
+      [abiertos.filter(a => a.para === 'seguridad' && esSOS(a)).length, 'SOS activos', 'alerta'],
+      [abiertos.filter(a => a.para === 'seguridad').length, 'avisos abiertos', ''],
+      [prox ? prox.h : '—', prox ? 'próxima salida' : 'sin salidas hoy', '']
+    ],
+    bienestar: [
+      [abiertos.filter(a => a.para === 'bienestar').length, 'casos abiertos', 'alerta'],
+      [leerLS('minume.compartido.atenciones', []).filter(x => !x.sale).length, 'en el punto ahora', ''],
+      [av.filter(a => a.para === 'bienestar' && a.estado === 'resuelto' && hoy(a)).length, 'atendidos hoy', 'ok']
+    ],
+    eventos: [
+      [evCurso(), 'eventos en curso', 'ok'],
+      [evProblema(), 'eventos con problema', 'alerta'],
+      [invLlegaron(), 'invitados llegaron', '']
+    ],
+    coordinacion: [
+      [enSesion(), 'comisiones en sesión', 'ok'],
+      [conProblema(), 'comisiones con problema', 'alerta'],
+      [abiertos.length, 'avisos abiertos', '']
+    ]
+  };
+  $('#equipos').innerHTML = Object.entries(EQUIPOS).map(([s, e]) => {
+    const u = sesion(s);
+    return `<article class="equipo" style="--c:${e.color}">
+      <div class="eq-cab"><span class="eq-letra">${e.letra}</span><div><b>${e.nombre}</b><small>${u ? 'Entraste como ' + esc(u.nombre) : e.quienes}</small></div><button class="entrar-eq" type="button" data-eq="${s}">${u ? 'Abrir' : 'Entrar'}</button></div>
+      <div class="kpis">${k[s].map(([n, t, cl]) => `<div class="kpi ${cl && Number(n) > 0 ? cl : ''}"><b>${n}</b><span>${t}</span></div>`).join('')}</div>
+      <div class="eq-ahora"><b>Ahora:</b> ${FOCO[s][mo]}</div>
+      <div class="atajos">${ATAJOS[s].map(([sec, i, t, sub]) => `<button class="atajo" type="button" data-eq="${s}" data-sec="${sec}" data-t="${t}">${ic(i)}<span>${t}<small>${sub}</small></span></button>`).join('')}</div>
+    </article>`;
+  }).join('');
+}
+$('#equipos').addEventListener('click', e => {
+  const b = e.target.closest('[data-eq]'); if (!b) return;
+  const s = b.dataset.eq, sec = b.dataset.sec || '';
+  if (sesion(s)) abrir(s, null, sec);
+  else pedirCodigo(s, sec, b.dataset.t || 'Entra con tu código');
+});
+
+/* ---------- Resto ---------- */
+$('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${a}</span><b>${p}</b></div>`).join('');
+$('#cods').innerHTML = PRUEBA.map(c => `<button class="cod" type="button" data-c="${c}">${c}</button>`).join('');
+$('#cods').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; const i = $('#codigo'); i.value = b.dataset.c; i.dispatchEvent(new Event('input')); i.focus(); });
+function red() { const on = navigator.onLine !== false; $('#red').classList.toggle('off', !on); $('#redTxt').textContent = on ? 'En línea' : 'Sin internet · se guarda y sincroniza después'; }
+addEventListener('online', red); addEventListener('offline', red);
+$('#sim').setAttribute('aria-pressed', String(!!sim));
+
+function pintarTodo() {
+  $('#sim').setAttribute('aria-pressed', String(!!sim));
+  const mo = pintarEstado(); pintarEquipos(mo); pintarAvisos(); pintarViajes(); pintarAbiertas();
+}
+let firma = JSON.stringify(leerAvisos().map(a => [a.id, a.estado]));
+addEventListener('storage', e => { if (!e.key || e.key.startsWith('minume.compartido.') || e.key.endsWith('.usuario')) { aplicarConfigInicio(); pintarComisiones(); pintarTodo(); } });
+setInterval(() => {
+  const f = JSON.stringify(leerAvisos().map(a => [a.id, a.estado]));
+  if (f !== firma) { const antes = JSON.parse(firma).map(x => x[0]); firma = f; const nuevos = leerAvisos().filter(a => !antes.includes(a.id)); if (nuevos.length) toast(`Nuevo aviso para ${EQUIPOS[nuevos.at(-1).para]?.corto || 'un equipo'}: ${nuevos.at(-1).tipo}`); pintarTodo(); }
+  else { pintarEstado(); pintarViajes(); }
+}, 2000);
+addEventListener('pageshow', pintarTodo);
+let pedidoInstalar = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstalar = e; $('#bInstalar').hidden = false; });
+$('#bInstalar').addEventListener('click', async () => { if (!pedidoInstalar) return; pedidoInstalar.prompt(); await pedidoInstalar.userChoice.catch(() => {}); pedidoInstalar = null; $('#bInstalar').hidden = true; });
+addEventListener('scroll', () => $('#subir').classList.toggle('on', scrollY > 600), { passive: true });
+$('#subir').addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+red(); aplicarConfigInicio(); pintarComisiones(); pintarTodo();
+})();
+</script>
+</body>
+</html>

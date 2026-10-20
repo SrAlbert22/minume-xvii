@@ -1,0 +1,45 @@
+  <!-- Acreditación con QR (NUEVO) -->
+  <section id="acreditacion">
+    <div class="titulo-sec"><span class="n">QR</span><h2>Mi gafete de staff</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">Cada persona tiene su gafete digital con un QR propio. En la mesa de acreditación o en la puerta lo escanean y queda registrado quién llegó y a qué hora. Sin listas de papel.</p>
+    <div class="rejilla r2">
+      <div class="gafete" id="gafete">
+        <div class="gaf-cab"><div class="logo">M</div><div><b>MINUME XVII</b><small>Gafete digital · 14 al 16 de noviembre</small></div><span class="chip amarillo" id="gEstado">Pendiente</span></div>
+        <div class="gaf-cuerpo">
+          <div class="gaf-av" id="gAv">—</div>
+          <div><b id="gNombre">—</b><div class="gaf-rol" id="gRol">—</div><small id="gDet">—</small></div>
+        </div>
+        <div class="qr-caja"><div id="qr"></div></div>
+        <div class="qr-tiempo"><i id="qrBarra"></i></div>
+        <div class="gaf-pie"><span id="gId">ACR-—</span><span id="qrSeg">El QR cambia en 30 s</span></div>
+        <button class="boton sec" id="bQrGrande" style="margin-top:12px;width:100%;justify-content:center">⛶ Mostrar mi QR en grande</button>
+      </div>
+      <div class="tarjeta">
+        <b class="cond" style="font-size:26px">¿Cómo funciona?</b>
+        <div class="pasos-emerg azul" style="margin-top:10px">
+          <div>Al llegar a tu sede, abre esta sección y sube el brillo de la pantalla.</div>
+          <div>Muéstrale tu QR a la mesa de acreditación o a Seguridad en la puerta.</div>
+          <div>Al escanearlo, tu gafete se pone en verde ✓ con la hora de llegada, y coordinación ve quién falta.</div>
+        </div>
+        <div class="respaldo">🔒 <span>El QR cambia cada 30 segundos y va firmado: una captura de pantalla o un QR inventado no sirve. Tampoco lleva tu código de entrada, así que nadie puede usarlo para entrar a tu cuenta.</span></div>
+      </div>
+    </div>
+    <div id="panelEscaner" data-roles="seguridad coordinacion" style="margin-top:14px">
+      <div class="rejilla r2">
+        <div class="tarjeta">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b class="cond" style="font-size:26px">🚪 Control de puerta</b><span class="chip verde" id="acrCuenta">0 de 0</span></div>
+          <div style="color:var(--suave);font-size:13.5px">Para Seguridad en la puerta: escanea el gafete de un miembro del staff para ver si es válido.</div>
+          <div class="visor"><video id="video" playsinline muted></video><div class="mira"></div><div class="visor-msg" id="visorMsg">La cámara está apagada.</div></div>
+          <button class="boton" id="bCamara" style="margin-top:12px">📷 Abrir la cámara</button>
+          <div class="prueba" id="simular"><b>Probar sin cámara (solo en esta demo):</b><br><button data-sim="ok">Gafete válido</button><button data-sim="repetido">Ya acreditado</button><button data-sim="vencido">Captura vieja</button><button data-sim="falso">QR inventado</button></div>
+        </div>
+        <div class="tarjeta">
+          <div id="resultado" class="resultado">Escanea un gafete para ver el resultado aquí.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px"><b class="cond" style="font-size:22px">Últimas llegadas</b><small style="color:var(--suave)" id="acrFaltan"></small></div>
+          <div class="barra" style="margin:6px 0 4px"><i id="acrBarra" style="width:0"></i></div>
+          <div class="filtros" id="acrVer" style="margin-top:10px"><button data-v="llegaron" class="on">Llegaron</button><button data-v="faltan">Quién falta</button></div>
+          <div id="acrLista"></div>
+        </div>
+      </div>
+    </div>
+  </section>

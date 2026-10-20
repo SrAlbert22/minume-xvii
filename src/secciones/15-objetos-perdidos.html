@@ -1,0 +1,29 @@
+  <!-- Objetos perdidos -->
+  <section id="objetos" data-roles="asistencia seguridad traslado coordinacion bienestar eventos">
+    <div class="titulo-sec"><span class="n">00</span><h2>Objetos perdidos</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">Lo que se encuentra se registra aquí con dónde quedó guardado. Cuando alguien busca algo, la página te muestra si ya apareció algo parecido.</p>
+    <div class="tiles" id="obTiles"></div>
+    <div class="rejilla r2" style="margin-top:14px">
+      <div class="tarjeta">
+        <div class="pestanas" id="obModo"><button data-m="encontrado" class="on">Encontré algo</button><button data-m="buscado">Alguien perdió algo</button></div>
+        <label for="obQue" id="obQueL">¿Qué encontraste?</label>
+        <input id="obQue" placeholder="Ejemplo: celular negro con funda azul">
+        <div class="rejilla r2" style="gap:10px">
+          <div><label for="obCat">Tipo de objeto</label><select id="obCat"></select></div>
+          <div><label for="obCom">Comisión (si se sabe)</label><select id="obCom"></select></div>
+        </div>
+        <label for="obDonde" id="obDondeL">¿Dónde lo encontraste?</label>
+        <input id="obDonde" list="obLugares" placeholder="Salón, pasillo, autobús…"><datalist id="obLugares"></datalist>
+        <div id="obSoloEnc"><label for="obGuarda">¿Dónde queda guardado?</label><select id="obGuarda"></select></div>
+        <div id="obSoloBus" hidden><label for="obQuien">¿Quién lo busca?</label><input id="obQuien" placeholder="Nombre de la persona"></div>
+        <button class="boton" id="obGuardar" style="margin-top:12px">Registrar</button>
+      </div>
+      <div class="tarjeta">
+        <div class="pestanas" id="obVer"><button data-v="guardados" class="on">Guardados</button><button data-v="buscados">Los buscan</button><button data-v="entregados">Entregados</button></div>
+        <label for="obBuscar" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Buscar</label>
+        <input id="obBuscar" placeholder="Buscar: celular, llaves, AMS…">
+        <div id="obLista" style="margin-top:8px"></div>
+        <div style="margin-top:12px"><div class="exp-btns" data-exportar="objetos"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></div>
+      </div>
+    </div>
+  </section>

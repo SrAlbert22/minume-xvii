@@ -1,0 +1,18 @@
+  /* Bitácora y bolsillo */
+  .bit { padding: 10px 0; border-bottom: 1px solid var(--borde); font-size: 14px; }
+  .bit small { color: var(--suave); display: block; }
+  .bolsillo h3 { margin: 0 0 8px; font-size: 24px; }
+  .bolsillo ul { margin: 0; padding-left: 18px; color: var(--suave); font-size: 13.5px; line-height: 1.7; }
+
+  /* Mejoras */
+  .mejora { display: flex; gap: 12px; align-items: flex-start; }
+  .mejora .ic { width: 36px; height: 36px; border-radius: 11px; background: rgba(47, 211, 140, .15); color: var(--verde); display: grid; place-items: center; font-weight: 900; flex: none; }
+  .mejora b { display: block; } .mejora p { margin: 2px 0 0; color: var(--suave); font-size: 13px; line-height: 1.5; }
+
+  /* Modal SOS */
+  .sos-velo { position: fixed; inset: 0; background: rgba(40, 0, 8, .7); display: none; place-items: center; z-index: 50; padding: 16px; }
+  .sos-velo.on { display: grid; }
+  .sos-velo .tarjeta { max-width: 460px; border-color: rgba(255, 77, 94, .5); background: #1a0a16; }
+  footer { color: var(--suave); font-size: 12px; text-align: center; padding: 30px 18px; border-top: 1px solid var(--borde); }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(80px); background: #0f1d44; border: 1px solid var(--borde); color: #fff; padding: 11px 16px; border-radius: 14px; font-size: 14px; z-index: 60; transition: transform .3s; }
+  .toast.on { transform: translateX(-50%) translateY(0); }

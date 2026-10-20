@@ -1,0 +1,18 @@
+  <!-- Bienestar: casos (solo el sistema de Bienestar) -->
+  <section id="casos" data-roles="bienestar">
+    <div class="titulo-sec"><span class="n">01</span><h2>Casos de bienestar</h2></div>
+    <p class="lead">Los avisos que escalan Asistencia o Seguridad, los SOS por una persona enferma y los casos que abre el equipo en piso. Cada caso dice dónde está la persona, quién la reporta y cuántos minutos lleva esperando.</p>
+    <div class="filtros" id="casoFiltro"><button data-f="abiertos" class="on">Abiertos</button><button data-f="resueltos">Cerrados</button><button data-f="todos">Todos</button></div>
+    <div id="casosLista" class="rejilla r2"></div>
+    <div class="tarjeta" style="margin-top:14px">
+      <b class="cond" style="font-size:24px">Abrir un caso en piso</b>
+      <div class="rejilla r3">
+        <div><label for="cTipo">Tipo</label><select id="cTipo"><option>Malestar físico</option><option>Crisis emocional o ansiedad</option><option>Lesión leve</option><option>Hidratación o calor</option><option>Otro</option></select></div>
+        <div><label for="cCom">Comisión</label><select id="cCom"></select></div>
+        <div><label for="cDonde">Dónde está</label><input id="cDonde" placeholder="Salón o zona"></div>
+        <div class="ancho"><label for="cTexto">Qué pasa (sin diagnóstico ni datos médicos)</label><input id="cTexto" placeholder="Ej.: delegada mareada en el pasillo del foyer"></div>
+      </div>
+      <button class="boton" id="cAbrir" style="margin-top:12px">Abrir caso</button>
+      <div class="respaldo"><span>Anota solo lo necesario para ubicar y atender a la persona. La página no guarda datos de salud.</span></div>
+    </div>
+  </section>

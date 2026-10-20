@@ -1,0 +1,9 @@
+dist/
+enviar/
+__pycache__/
+*.pyc
+*.blend1
+blender/sheraton/recorrido_cuadros/
+.vercel/
+.DS_Store
+Thumbs.db

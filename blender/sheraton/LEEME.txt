@@ -1,0 +1,38 @@
+SHERATON SANTO DOMINGO EN 3D · Albert Silvestre
+================================================
+
+Archivos
+  construir_sheraton.py         arma todo el modelo (se puede volver a correr cuando cambie algo)
+  Sheraton_Santo_Domingo.blend  el modelo listo para abrir en Blender 5.2
+  renders/                      imágenes: vista general, desde el mar, salones sin techo,
+                                Samaná montado como comité, Yarey en teatro, lobby,
+                                Malecón Terrace y la ruta desde el Jaragua
+  Recorrido_Sheraton.mp4        recorrido animado (48 segundos)
+
+Cómo se vuelve a generar
+  blender -b --factory-startup -P construir_sheraton.py -- render          (modelo + imágenes)
+  blender -b --factory-startup -P construir_sheraton.py -- render video    (además, el recorrido)
+  Usa la foto satelital y los contornos de la carpeta MINUME-Sedes-Blender.
+
+En Blender
+  - Escena "Sheraton Santo Domingo": el modelo. Para ver por dentro, oculta la colección
+    "Techos (se ocultan para ver por dentro)" con el ojo.
+  - Escena "Recorrido (animación)": la cámara que hace el video.
+  - Arriba del script están los ajustes: número de pisos y el montaje de cada salón
+    (herradura, teatro, escuela, directorio). Cambia y vuelve a correrlo.
+
+Qué es real
+  - Contorno y orientación de la torre (OpenStreetMap, way 1454933037) y la fachada oeste en
+    diente de sierra tal como se ve en la foto satelital.
+  - Medidas y alturas de techo de los salones, del plano de renta de salones del hotel:
+      Samaná 9.3 x 16 m · Bonanza 12.3 x 16 m · Constanza 9.2 x 16 m (juntos = Gran Salón 31 x 16 m, techo 4.2 m)
+      Yarey 15.6 x 22.3 m (techo 3.3 m) · Da Vinci 14 x 11 m (techo 3.1 m)
+      Este I 11 x 5.5 m · Este II a VI 7.5 x 5.5 m (techo 2.6 m) · Malecón Terrace 36 x 23 m
+  - Yarey en teatro queda con 300 sillas, igual que su capacidad en el plano.
+  - La ruta a pie desde el Jaragua (trazada sobre la foto satelital).
+
+Qué es estimado (confírmalo en la visita)
+  - En qué parte del podio queda cada salón y cómo se conectan los pasillos.
+  - Número de pisos: las fichas dicen 10 u 11; está en 11 (se cambia en PISOS).
+  - Lobby, entrada principal, entrada oeste, piscina y jardines: por la foto satelital.
+  - Interiores, muebles y colores.

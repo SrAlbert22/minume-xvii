@@ -1,0 +1,71 @@
+  /* Mapa de las sedes */
+  .sedes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .sedes button { border: 1px solid var(--borde); background: rgba(255, 255, 255, .03); color: var(--texto); padding: 9px 14px; border-radius: 14px; cursor: pointer; text-align: left; }
+  .sedes button small { display: block; color: var(--suave); font-size: 11px; }
+  .sedes button.on { border-color: #9b2cff; background: rgba(155, 44, 255, .14); }
+  .mapa-sedes-rejilla { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; align-items: start; }
+  .lienzo-caja { position: relative; height: min(70vh, 620px); border-radius: var(--radio); overflow: hidden; border: 1px solid var(--borde); background: #0a1228; }
+  #mapaSedes { position: absolute; inset: 0; }
+  .capa-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--suave); padding: 30px; background: rgba(5, 10, 26, .75); z-index: 4; }
+  .capa-msg b { color: var(--texto); font: 800 26px 'Barlow Condensed'; display: block; }
+  .controles { position: absolute; top: 12px; left: 12px; display: flex; gap: 7px; flex-wrap: wrap; max-width: calc(100% - 70px); z-index: 3; }
+  .controles button { background: rgba(5, 10, 26, .85); border: 1px solid var(--borde); color: var(--texto); padding: 8px 12px; border-radius: 99px; font-weight: 600; font-size: 12.5px; cursor: pointer; backdrop-filter: blur(8px); }
+  .controles button.on { background: var(--azul); border-color: var(--azul); }
+  .controles button.admin.on { background: var(--amarillo); color: #1d1500; }
+  .controles button.seg.on { background: var(--rojo); border-color: var(--rojo); }
+  .ficha { position: absolute; left: 12px; bottom: 12px; max-width: min(340px, calc(100% - 24px)); background: rgba(5, 10, 26, .9); border: 1px solid var(--borde); border-radius: 16px; padding: 12px 14px; backdrop-filter: blur(10px); z-index: 3; font-size: 13px; color: var(--suave); }
+  .ficha b { font: 800 21px 'Barlow Condensed'; display: block; color: var(--texto); }
+  .ficha .mini { margin-top: 8px; }
+  .modal { position: absolute; inset: 0; background: rgba(0, 0, 0, .45); display: none; place-items: center; z-index: 6; }
+  .modal.on { display: grid; }
+
+  /* Marcas sobre el mapa */
+  .lugar-mapa { display: flex; align-items: center; gap: 5px; padding: 3px 8px 3px 3px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, .25); background: rgba(5, 10, 26, .82); color: #fff; font: 600 11.5px Inter, sans-serif; white-space: nowrap; cursor: pointer; }
+  .lugar-mapa i { font-style: normal; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 800; background: #c3c9d6; color: #04121d; }
+  .lugar-mapa small { color: var(--cian); font-weight: 700; }
+  .lugar-mapa.s-jaragua i { background: #e6c28a; } .lugar-mapa.s-sheraton i { background: #86a9e8; } .lugar-mapa.s-malecon i { background: #fff; }
+  .lugar-mapa.t-lobby, .lugar-mapa.t-terraza { font-size: 12.5px; padding-right: 10px; border-color: rgba(255, 255, 255, .5); }
+  .lugar-mapa.t-referencia { opacity: .7; }
+  .lugar-mapa.t-encuentro i { background: var(--verde); }
+  .lugar-mapa.mio { background: #9b2cff; border-color: #f3dcff; }
+  .punto-mapa { display: flex; align-items: center; gap: 5px; padding: 3px 9px 3px 3px; border-radius: 99px; border: 1px solid var(--borde); background: rgba(5, 10, 26, .9); color: #fff; font: 600 11.5px Inter, sans-serif; white-space: nowrap; cursor: pointer; }
+  .punto-mapa i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; }
+  .punto-mapa.editando { outline: 2px solid var(--amarillo); }
+  .lejos .lugar-mapa:not(.t-lobby):not(.t-terraza):not(.mio) span, .lejos .punto-mapa span { display: none; }
+  .lejos .lugar-mapa:not(.t-lobby):not(.t-terraza):not(.mio), .lejos .punto-mapa { padding-right: 3px; }
+  .lejos .lugar-mapa.t-referencia { display: none; }
+  .destino-mapa i { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #9b2cff; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(155, 44, 255, .35), 0 6px 18px rgba(0, 0, 0, .5); }
+  .origen-mapa { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 4px solid #9b2cff; box-shadow: 0 0 10px rgba(155, 44, 255, .8); }
+  .yo-mapa { width: 22px; height: 22px; }
+  .yo-mapa i { position: relative; display: block; width: 22px; height: 22px; border-radius: 50%; background: #3b8bff; border: 3px solid #fff; box-shadow: 0 0 0 0 rgba(59, 139, 255, .6); animation: latido 1.8s infinite; }
+  .yo-mapa i::after { content: ''; position: absolute; left: 50%; top: -9px; margin-left: -5px; border: 5px solid transparent; border-bottom: 8px solid #3b8bff; }
+  @keyframes latido { 70% { box-shadow: 0 0 0 14px rgba(59, 139, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 139, 255, 0); } }
+
+  /* Panel «Cómo llegar» */
+  .como-llegar { padding: 16px; }
+  .como-llegar select { width: 100%; }
+  .r-cambiar { display: flex; justify-content: flex-end; margin: 6px 0 -4px; }
+  .r-botones { display: flex; gap: 8px; margin-top: 12px; } .r-botones .boton { flex: 1; justify-content: center; }
+  .r-rapidas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .r-rapidas button { border: 1px solid rgba(155, 44, 255, .45); background: rgba(155, 44, 255, .1); color: #e7d2ff; padding: 6px 10px; border-radius: 99px; font: 600 12px Inter, sans-serif; cursor: pointer; }
+  .r-rapidas button:hover { background: rgba(155, 44, 255, .25); }
+  .r-gps { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .r-gps small { color: var(--suave); font-size: 12px; width: 100%; }
+  #rSeguir.on { background: #3b8bff; border-color: #3b8bff; color: #fff; }
+  .r-card { margin-top: 14px; border-top: 1px solid var(--borde); padding-top: 12px; }
+  .r-resumen { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+  .r-resumen b { font: 800 34px 'Barlow Condensed'; color: #c58bff; }
+  .r-resumen span { color: var(--suave); font-size: 13px; }
+  .r-resumen .r-dest { width: 100%; color: var(--texto); font-weight: 700; font-size: 14px; }
+  .r-pasos { margin: 10px 0 0; padding: 0; list-style: none; counter-reset: paso; }
+  .r-pasos li { position: relative; padding: 0 0 12px 34px; font-size: 13.5px; line-height: 1.5; counter-increment: paso; }
+  .r-pasos li::before { content: counter(paso); position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: #9b2cff; color: #fff; font: 700 12px Inter, sans-serif; display: grid; place-items: center; }
+  .r-pasos li:not(:last-child)::after { content: ''; position: absolute; left: 10px; top: 24px; bottom: 2px; width: 2px; background: rgba(155, 44, 255, .4); }
+  .r-pasos li.fin::before { content: '✓'; background: var(--verde); }
+  .r-nota { color: var(--suave); font-size: 12px; }
+  .r-nota .boton { margin-top: 6px; }
+
+  @media (max-width: 980px) {
+    .mapa-sedes-rejilla { grid-template-columns: 1fr; }
+    .lienzo-caja { height: min(62vh, 520px); }
+  }

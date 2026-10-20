@@ -1,0 +1,33 @@
+  <!-- Registro de atenciones de Bienestar -->
+  <section id="atenciones" data-roles="bienestar coordinacion">
+    <div class="titulo-sec"><span class="n">00</span><h2>Registro de atenciones</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead" id="atLead">Cada persona que llega al punto de bienestar: por qué vino, qué se hizo y cómo salió. Bienestar físico y bienestar emocional llevan su propio registro.</p>
+    <div class="tiles" id="atTiles"></div>
+    <div class="rejilla r2" style="margin-top:14px" id="atCuerpo">
+      <div class="tarjeta" id="atFormCaja">
+        <b class="cond" style="font-size:24px">Registrar una llegada</b>
+        <div class="pestanas" id="atFormArea" style="margin-top:10px"><button data-a="fisico">Bienestar físico</button><button data-a="emocional">Bienestar emocional</button></div>
+        <div class="rejilla r2" style="gap:10px">
+          <div><label for="atNombre">Nombre</label><input id="atNombre" placeholder="Nombre y apellido"></div>
+          <div><label for="atPersona">Es</label><select id="atPersona"></select></div>
+        </div>
+        <div class="rejilla r2" style="gap:10px">
+          <div><label for="atCom">Comisión</label><select id="atCom"></select></div>
+          <div><label for="atMotivo">Motivo</label><select id="atMotivo"></select></div>
+        </div>
+        <label for="atQue">Qué le pasa</label>
+        <textarea id="atQue" placeholder="En sus palabras, corto"></textarea>
+        <label for="atHizo">Qué se hizo</label>
+        <textarea id="atHizo" placeholder="Agua, reposo, respiración, se llamó a…"></textarea>
+        <label class="check-linea"><input type="checkbox" id="atSeguir"> Requiere seguimiento</label>
+        <button class="boton" id="atGuardar" style="margin-top:12px">Registrar llegada</button>
+        <p class="cob-sub" style="font-size:12.5px">Son datos sensibles: solo Bienestar ve nombres y detalles. Coordinación ve el resumen sin nombres.</p>
+      </div>
+      <div class="tarjeta">
+        <div class="cob-cab" style="margin-bottom:6px"><div class="pestanas" id="atVer" style="margin:0"><button data-v="punto" class="on">En el punto ahora</button><button data-v="hoy">Todo hoy</button></div>
+          <div class="pestanas" id="atArea" style="margin:0 0 0 auto"><button data-a="todas">Todas</button><button data-a="fisico">Físico</button><button data-a="emocional">Emocional</button></div></div>
+        <div id="atLista"></div>
+        <div id="atExp" style="margin-top:12px"><div class="exp-btns" data-exportar="atenciones"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></div>
+      </div>
+    </div>
+  </section>

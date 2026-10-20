@@ -1,0 +1,64 @@
+  <!-- 00 · Inicio -->
+  <section id="inicio" style="margin-top:10px">
+    <div class="hero">
+      <div>
+        <span class="chip">🔷 Bienvenida · MINUME XVII</span>
+        <h1>Asistencia</h1>
+        <div class="sub">BIENVENIDA Y ACREDITACIÓN</div>
+        <p class="lead">Tu misión: que tu comisión esté lista, acompañada y funcionando. Regístrate, confirma tu comisión y tu etapa, y te mostramos solo lo que necesitas: tu salón en 3D, tus listas, la seguridad y los traslados.</p>
+        <div class="cuenta">
+          <div><b id="dMontaje">—</b><small>para el montaje · 14 nov</small></div>
+          <div><b id="dSesiones">—</b><small>para las sesiones · 15 nov</small></div>
+          <div><b>15</b><small>comisiones · 1 asistente por cada una</small></div>
+        </div>
+      </div>
+      <div class="tarjeta" id="flujo">
+        <div class="pasos"><div class="paso on" id="p1"><b>1</b>Registro</div><div class="paso" id="p2"><b>2</b>Comisión</div><div class="paso" id="p3"><b>3</b>Etapa</div></div>
+        <div id="paso1">
+          <h3 style="margin:0;font-size:28px">Te damos la bienvenida. ¿Cómo te llamas?</h3>
+          <label for="nombre">Tu nombre</label>
+          <input id="nombre" placeholder="Nombre y apellido" autocomplete="off">
+          <button class="boton" id="b1" style="margin-top:14px">Continuar →</button>
+        </div>
+        <div id="paso2" hidden>
+          <h3 style="margin:0 0 10px;font-size:28px">¿En qué comisión estás asignado?</h3>
+          <div class="comis" id="comis"></div>
+          <button class="boton" id="b2" style="margin-top:14px">Confirmar comisión →</button>
+        </div>
+        <div id="paso3" hidden>
+          <h3 style="margin:0 0 10px;font-size:28px">¿En qué etapa estás?</h3>
+          <div class="etapas">
+            <button class="etapa" data-e="pre"><b>Antes · Pre-MINUME</b><small>Conoce tu comisión y llega preparado</small></button>
+            <button class="etapa" data-e="montaje"><b>Abre · Montaje y apertura</b><small>Deja la comisión lista antes de que entren</small></button>
+            <button class="etapa on" data-e="sesiones"><b>Sesión</b><small>Presencia activa, no invasiva</small></button>
+            <button class="etapa" data-e="transiciones"><b>Mueve · Entre actividades</b><small>Comidas, coffee break, eventos y plenarias</small></button>
+            <button class="etapa" data-e="cierre"><b>Cierra · Cierre de comisión</b><small>Salón, materiales, bitácora y novedades</small></button>
+          </div>
+          <button class="boton" id="b3" style="margin-top:14px">Listo, ver lo que necesito →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mi-panel" id="miPanel" hidden>
+      <div class="tarjeta grande">
+        <span class="chip verde">Tu comisión</span>
+        <b id="mpCodigo" style="margin-top:10px;color:var(--cian)">—</b>
+        <div id="mpNombre" style="color:var(--suave);margin-top:4px">—</div>
+        <div class="dato" style="margin-top:12px"><span>Sede</span><b id="mpSede">—</b></div>
+        <div class="dato"><span>Salón</span><b id="mpSalon">—</b></div>
+        <div class="dato"><span>Tu próximo traslado</span><b id="mpTraslado">—</b></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+          <a class="boton" href="#mapa">🧭 Cómo llegar a mi salón</a><a class="boton sec" href="#traslado">🚶 Movilizaciones</a>
+        </div>
+      </div>
+      <div class="tarjeta" style="display:flex;gap:16px;align-items:center">
+        <div class="anillo"><svg width="92" height="92" viewBox="0 0 92 92"><circle cx="46" cy="46" r="38" stroke="rgba(255,255,255,.08)" stroke-width="9" fill="none"/><circle id="mpArco" cx="46" cy="46" r="38" stroke="url(#gv)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="239"/><defs><linearGradient id="gv"><stop offset="0" stop-color="#2fd38c"/><stop offset="1" stop-color="#45c8ff"/></linearGradient></defs></svg><b id="mpPct">0%</b></div>
+        <div><b class="cond" style="font-size:24px">Tu avance</b><div style="color:var(--suave);font-size:13.5px">de las listas de tu etapa</div><div id="mpEtapa" class="chip" style="margin-top:8px">Sesiones</div></div>
+      </div>
+      <div class="tarjeta">
+        <b class="cond" style="font-size:24px">Ahora mismo te toca</b>
+        <div id="mpAhora" style="color:var(--suave);font-size:14px;line-height:1.6;margin-top:6px">—</div>
+      </div>
+    </div>
+    <div id="tablero"></div>
+  </section>

@@ -1,0 +1,28 @@
+SEDES DE MINUME XVII EN 3D — Renaissance Jaragua y Sheraton Santo Domingo
+Hecho por Albert Silvestre
+
+ARCHIVOS
+  Sedes_MINUME_Jaragua_Sheraton.blend   Escena para abrir en Blender 5.2
+  construir_sedes.py                    Vuelve a armar todo desde cero
+  renders/                              4 vistas listas (general, ruta entre hoteles, Malecón Terrace, desde arriba)
+  sedes_minume.glb                      Hoteles, carpa y rutas para usar en la web
+  rutas_y_puntos.json                   Coordenadas GPS de las rutas y de cada punto
+  rutas_sobre_satelite.jpg              Las rutas dibujadas sobre la foto satelital
+  satelite_zona.jpg                     Foto satelital de la zona (Esri World Imagery)
+  datos_osm_zona.json                   Contornos de edificios y calles (OpenStreetMap)
+
+PARA REGENERAR (por ejemplo, después de mover un salón en construir_sedes.py)
+  "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --factory-startup -P construir_sedes.py -- render
+  Si tienes el .blend abierto, cierra sin guardar y vuelve a abrirlo para ver la versión nueva.
+
+QUÉ ES REAL Y QUÉ ES ESTIMADO
+  Real (medido):
+    - Forma y posición de los edificios: OpenStreetMap, coincide con la foto satelital.
+    - Rutas: trazadas sobre la foto satelital siguiendo los caminos internos.
+        Jaragua → Sheraton: 242 m, unos 3 minutos a pie.
+        Sheraton → Malecón Terrace: 140 m, unos 2 minutos.
+    - Malecón Terrace: es la carpa del Sheraton (techo blanco al norte del hotel, junto a Pasteur 8).
+  Estimado:
+    - Alturas: Jaragua 10 pisos y Sheraton 10-11 pisos según las fichas de los hoteles.
+    - Posición de cada salón dentro del hotel (pines). Se ajusta en la lista SALONES de construir_sedes.py
+      cuando tengamos el recorrido confirmado con la gente del hotel.

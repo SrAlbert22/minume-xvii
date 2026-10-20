@@ -1,0 +1,19 @@
+  <!-- Cobertura de áreas (Seguridad y Traslado) -->
+  <section id="cobertura" data-roles="seguridad traslado coordinacion">
+    <div class="titulo-sec"><span class="n">00</span><h2>Cobertura de áreas</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">Cada punto del evento, quién debe estar ahí en este turno y si ya llegó. Si un punto se queda solo, manda un refuerzo de los que están libres. Puntos, turnos y personas son de ejemplo: en la versión real salen del Excel de agenda del equipo.</p>
+    <div class="cob-top"><span class="chip" id="cobReloj">Ahora</span><button class="boton sec ed-abrir" type="button" data-editar="turnos" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Asignar personas</button><button class="boton sec ed-abrir" type="button" data-editar="puntos" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Puntos</button><button class="boton sec ed-abrir" type="button" data-editar="staff" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Staff</button><span style="margin-left:auto"><div class="exp-btns" data-exportar="cobertura"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></span></div>
+    <div class="tiles" id="cobTiles"></div>
+    <div class="rejilla r2" style="margin-top:14px"><div class="tarjeta" id="cobMio"></div><div class="tarjeta" id="cobAlertas"></div></div>
+    <div class="tarjeta" style="margin-top:14px">
+      <div class="cob-cab"><b class="cond" style="font-size:24px">Puntos ahora</b>
+        <div class="pestanas" id="cobSedes"><button data-s="todas" class="on">Todas</button><button data-s="jaragua">Jaragua</button><button data-s="sheraton">Sheraton</button><button data-s="malecon">Malecón Terrace</button></div></div>
+      <div class="cob-lista" id="cobLista"></div>
+    </div>
+    <div class="rejilla r2" style="margin-top:14px">
+      <div class="tarjeta"><b class="cond" style="font-size:24px">Libres para reforzar</b><p class="cob-sub" style="margin-bottom:6px">Quién no tiene puesto en este momento y hasta qué hora.</p><div id="cobLibres"></div></div>
+      <div class="tarjeta"><b class="cond" style="font-size:24px">Plan del día</b>
+        <div class="cob-plan-cab"><label for="cobPlanSel" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Punto</label><select id="cobPlanSel"></select></div>
+        <div class="cob-plan" id="cobPlan"></div></div>
+    </div>
+  </section>

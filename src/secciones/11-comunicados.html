@@ -1,0 +1,18 @@
+  <!-- Comunicados de dirección -->
+  <section id="comunicados" data-roles="asistencia acreditacion seguridad traslado coordinacion bienestar eventos">
+    <div class="titulo-sec"><span class="n">00</span><h2>Comunicados</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">Lo que dirección necesita que todos sepan: cambios de salón, de horario o de código. Cada persona toca «Leído» y coordinación ve quién falta por enterarse.</p>
+    <div class="tarjeta" id="comRedactar" hidden style="margin-bottom:14px">
+      <b class="cond" style="font-size:24px">Enviar un comunicado</b>
+      <div class="plantillas" id="comPlant"></div>
+      <label for="comTexto">Mensaje</label>
+      <textarea id="comTexto" placeholder="Ejemplo: La CSNU cambia al salón Marién a partir de las 2:00."></textarea>
+      <div class="rejilla r2" style="gap:10px">
+        <div><label for="comPara">Para</label><select id="comPara"><option value="todos">Todo el staff</option><option value="asistencia">Asistencia</option><option value="seguridad">Seguridad y Traslado</option><option value="bienestar">Bienestar</option><option value="eventos">Eventos y Protocolo</option></select></div>
+        <div><label for="comTipo">Tipo</label><select id="comTipo"><option value="info">Información</option><option value="importante">Importante</option><option value="urgente">Urgente (suena en los teléfonos)</option></select></div>
+      </div>
+      <button class="boton" id="comEnviar" style="margin-top:12px">Enviar comunicado</button>
+    </div>
+    <div id="comExp" hidden style="margin-bottom:12px"><div class="exp-btns" data-exportar="comunicados"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></div>
+    <div class="com-lista" id="comLista"></div>
+  </section>

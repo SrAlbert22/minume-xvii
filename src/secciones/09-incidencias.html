@@ -1,0 +1,30 @@
+  <!-- Incidencias (Manual, cap. 07) -->
+  <section id="incidencias" data-roles="asistencia seguridad coordinacion">
+    <div class="titulo-sec"><span class="n">05</span><h2>Incidencias: resuelve lo simple, escala lo importante</h2></div>
+    <div class="rejilla r3 semaforo">
+      <div class="tarjeta" style="border-top-color:var(--verde)"><b class="cond" style="font-size:24px;color:var(--verde)">Nivel 1 · Puedes resolver</b><ul><li>Desubicación</li><li>Consulta de salón u horario</li><li>Orientación de ruta o necesidad logística simple</li></ul><p class="resp">Resuelve en piso. Registra solo si se vuelve recurrente o afecta la operación.</p></div>
+      <div class="tarjeta" style="border-top-color:var(--amarillo)"><b class="cond" style="font-size:24px;color:var(--amarillo)">Nivel 2 · Necesitas coordinación</b><ul><li>Falta de materiales o problema de acceso</li><li>Ausencia de personal o congestión</li><li>Retraso significativo o algo que afecta la comisión</li></ul><p class="resp">Informa a Beatriz, sigue la instrucción y registra la novedad.</p></div>
+      <div class="tarjeta" style="border-top-color:var(--rojo)"><b class="cond" style="font-size:24px;color:#ff8a95">Nivel 3 · Escala de inmediato</b><ul><li>Emergencia médica o de bienestar</li><li>Seguridad o protección → <a href="#seguridad">Seguridad</a></li><li>Conflicto grave o algo fuera de tus atribuciones</li></ul><p class="resp">Activa el área competente y mantén el apoyo logístico. No intervengas fuera de tu función.</p></div>
+    </div>
+    <div class="tarjeta" style="margin-top:14px;border-left:4px solid var(--verde)">
+      <b class="cond" style="font-size:22px">Si es bienestar físico o emocional</b>
+      <p style="color:var(--suave);font-size:13.5px;margin:4px 0 0;line-height:1.55">Identifica la situación, mantén la calma, evita exponer a la persona y contacta de inmediato a Bienestar (normalmente lo hace el gestor de riesgos). Tu función es activar la ayuda y facilitar el acceso, no diagnosticar ni intervenir clínicamente.</p>
+    </div>
+    <div class="tarjeta" style="margin-top:14px">
+      <b class="cond" style="font-size:24px">Reportar en 20 segundos</b>
+      <div style="color:var(--suave);font-size:13.5px">Llena los datos y la página arma el mensaje con la fórmula del manual. Cópialo al canal y queda en tu bitácora.</div>
+      <div class="rejilla r3" style="margin-top:4px">
+        <div><label for="iNivel">Nivel</label><select id="iNivel"><option value="1">Nivel 1 · Puedo resolver</option><option value="2" selected>Nivel 2 · Necesito coordinación</option><option value="3">Nivel 3 · Escalar de inmediato</option></select></div>
+        <div><label for="iImpacto">Impacto</label><select id="iImpacto"><option>Bajo</option><option selected>Moderado</option><option>Alto</option></select></div>
+        <div><label for="iArea">A quién avisas</label><select id="iArea"></select></div>
+      </div>
+      <div class="rejilla r2">
+        <div class="ancho"><label for="iTexto">Situación: ¿qué pasa?</label><input id="iTexto" placeholder="Ej.: Faltan dos placards de delegaciones"></div>
+        <div class="ancho"><label for="iHice">Ya hice</label><input id="iHice" placeholder="Ej.: Coloqué una solución temporal"></div>
+        <div><label for="iNecesito">Necesito</label><input id="iNecesito" placeholder="Ej.: Reposición de los placards"></div>
+        <div><label for="iDonde">Estoy en</label><input id="iDonde" placeholder="Tu salón"></div>
+      </div>
+      <div class="formula" id="iVista"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="boton" id="bReportar">Registrar en la bitácora</button><button class="boton sec" id="bCopiar">Copiar mensaje</button></div>
+    </div>
+  </section>
