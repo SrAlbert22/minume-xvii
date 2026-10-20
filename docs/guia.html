@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es-DO">
+<head>
+<meta charset="utf-8">
+<title>MINUME XVII · Guía de los sistemas del staff</title>
+<!-- Guía para imprimir en PDF · Albert Silvestre -->
+<style>
+  @page { size: Letter; margin: 16mm 15mm 18mm; }
+  @page :first { margin: 0; }
+  :root { --navy: #071433; --azul: #2f6bff; --cian: #2bb3e8; --morado: #8b2cff; --texto: #1d2433; --suave: #5b6478; --linea: #dfe4ee; --fondo: #f4f6fb; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 10.5pt/1.5 'Segoe UI', Inter, Arial, sans-serif; color: var(--texto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .portada { height: 279.4mm; width: 215.9mm; background: radial-gradient(120% 80% at 90% 0%, #1a3f9e 0%, #0b1f55 40%, var(--navy) 75%); color: #fff; padding: 26mm 22mm; display: flex; flex-direction: column; page-break-after: always; position: relative; overflow: hidden; }
+  .portada .marca { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .5px; }
+  .portada .logo { width: 46px; height: 46px; border-radius: 12px; background: var(--cian); color: var(--navy); display: grid; place-items: center; font-size: 26px; font-weight: 900; }
+  .portada h1 { font: 900 54pt/1 'Segoe UI', Arial; margin: 30mm 0 6mm; letter-spacing: -1px; }
+  .portada h1 span { color: var(--cian); }
+  .portada .sub { font-size: 16pt; color: #c8d6ff; max-width: 150mm; }
+  .portada .linea { width: 70mm; height: 4px; background: linear-gradient(90deg, var(--cian), var(--morado)); margin: 10mm 0; border-radius: 4px; }
+  .portada img { position: absolute; left: 22mm; right: 22mm; bottom: 46mm; width: calc(100% - 44mm); border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+  .portada .pie { margin-top: auto; display: flex; justify-content: space-between; color: #9fb2e6; font-size: 10pt; }
+  .portada .pie b { color: #fff; }
+  h2 { break-after: avoid; font: 800 19pt/1.2 'Segoe UI', Arial; color: var(--navy); margin: 0 0 3mm; padding-top: 2mm; display: flex; align-items: center; gap: 10px; }
+  h2 .n { font-size: 10pt; background: var(--navy); color: #fff; border-radius: 6px; padding: 2px 8px; }
+  section { margin-bottom: 9mm; }
+  section.salto { page-break-before: always; }
+  .lead { break-inside: avoid; font-size: 11.5pt; color: #2a3247; border-left: 4px solid var(--cian); padding: 2mm 0 2mm 4mm; background: var(--fondo); border-radius: 0 6px 6px 0; margin: 0 0 4mm; }
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.5pt; }
+  tr { break-inside: avoid; } thead, tr:first-child { break-after: avoid; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 5px 7px; font-weight: 700; }
+  td { padding: 5px 7px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  tr:nth-child(even) td { background: #f8f9fc; }
+  ol, ul { margin: 2mm 0 4mm; padding-left: 6mm; } li { margin: 1mm 0; break-inside: avoid; }
+  figure { margin: 4mm 0; page-break-inside: avoid; }
+  figure img { width: 100%; border-radius: 8px; display: block; }
+  figcaption { font-size: 9pt; color: var(--suave); margin-top: 1.5mm; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .cita { background: linear-gradient(135deg, #f3ecff, #eaf6ff); border: 1px solid #d8c8ff; border-radius: 10px; padding: 4mm 5mm; margin: 4mm 0; page-break-inside: avoid; }
+  .cita b { color: var(--morado); display: block; margin-bottom: 1.5mm; font-size: 10pt; text-transform: uppercase; letter-spacing: .4px; }
+  .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 3mm 0 4mm; }
+  .cifra { background: var(--navy); color: #fff; border-radius: 10px; padding: 4mm; }
+  .cifra b { font: 900 22pt/1 'Segoe UI', Arial; color: #c58bff; display: block; }
+  .cifra small { color: #b8c6ec; font-size: 9pt; }
+  .colores span { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; font-size: 9.5pt; }
+  .colores i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .tareas li { list-style: none; position: relative; padding-left: 6mm; } .tareas { padding-left: 0; }
+  .tareas li::before { content: ''; position: absolute; left: 0; top: 1.2mm; width: 3.2mm; height: 3.2mm; border: 1.5px solid var(--azul); border-radius: 3px; }
+  code { background: #eef1f8; padding: 1px 5px; border-radius: 4px; font-size: 9pt; }
+  a { color: var(--azul); text-decoration: none; }
+  .nota { font-size: 9pt; color: var(--suave); }
+  footer.firma { break-before: avoid; margin-top: 3mm; padding-top: 2mm; border-top: 1px solid var(--linea); font-size: 9pt; color: var(--suave); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <div class="marca"><div class="logo">M</div>MINUME XVII · Sistemas del staff</div>
+  <h1>Guía de los<br><span>sistemas del staff</span></h1>
+  <div class="sub">Cómo entrar, qué hace cada equipo, el mapa 3D de las sedes, el plano de asientos y los salones de eventos.</div>
+  <div class="linea"></div>
+  <img src="../blender/plantel/renders/plantel_general.jpg" alt="Maqueta 3D del Renaissance Jaragua y el Sheraton">
+  <div class="pie"><span><b>minume-xvii.vercel.app</b><br>14 al 16 de noviembre de 2026 · Santo Domingo</span><span style="text-align:right">Hecho por <b>Albert Silvestre</b><br>20 de octubre de 2026</span></div>
+</div>
+
+<section>
+  <h2><span class="n">01</span>Qué es y cómo se entra</h2>
+  <p class="lead">El staff de MINUME XVII tiene un sistema propio por equipo, todos en <a href="https://minume-xvii.vercel.app">minume-xvii.vercel.app</a>. Cada persona entra con su código personal y ve solo lo de su equipo; todos comparten la misma base de datos en tiempo real.</p>
+  <table>
+    <tr><th>Sistema</th><th>Quién lo usa</th><th>Prefijo del código</th></tr>
+    <tr><td><b>Asistencia</b></td><td>Asistentes de comisión y coordinación de Asistencia</td><td>AS, CO</td></tr>
+    <tr><td><b>Seguridad y Traslado</b></td><td>Seguridad y movilización entre hoteles</td><td>SE, TR</td></tr>
+    <tr><td><b>Bienestar</b></td><td>Bienestar físico y emocional</td><td>BI</td></tr>
+    <tr><td><b>Eventos y Protocolo</b></td><td>Ceremonias, eventos e invitados especiales</td><td>EP</td></tr>
+    <tr><td><b>Coordinación general</b></td><td>Coordinación (lo ve todo)</td><td>CG</td></tr>
+  </table>
+  <ol>
+    <li>Abrir el enlace y tocar el sistema del equipo (o escribir el código en el Inicio: la página reconoce el equipo por las dos letras).</li>
+    <li>Escribir el código personal, por ejemplo <code>CG-7KQ2MX</code>. El servidor lo verifica; un código inventado o anulado no entra.</li>
+    <li>Instalarlo como app: en iPhone, Safari → Compartir → «Agregar a pantalla de inicio»; en Android, Chrome → «Instalar app».</li>
+  </ol>
+  <p>Después de entrar una vez, el sistema abre aunque no haya internet. Lo que se anote sin señal queda en cola y se envía solo cuando vuelve la conexión. La sesión dura 30 días.</p>
+</section>
+
+<section>
+  <h2><span class="n">02</span>Las sedes</h2>
+  <p class="lead">MINUME XVII se hace en dos hoteles del Malecón y una carpa: el Renaissance Santo Domingo Jaragua, el Sheraton Santo Domingo y el Malecón Terrace (la carpa del Sheraton, al norte, junto a Pasteur 8). Se va de uno a otro caminando: no hay autobuses.</p>
+  <table>
+    <tr><th>Salón</th><th>Hotel</th><th>Medidas</th><th>Techo</th><th>Capacidad</th><th>Uso de ejemplo</th></tr>
+    <tr><td>Teatro La Fiesta</td><td>Jaragua</td><td>unos 1,035 m²</td><td>alto</td><td>1,152 en teatro</td><td>Apertura y clausura</td></tr>
+    <tr><td>Anacaona (3 secciones)</td><td>Jaragua</td><td>40 × 18 m</td><td>5 m</td><td>800 teatro, 600 banquete</td><td>CSNU, AMS y CIJ</td></tr>
+    <tr><td>Marién, Maguá, Higüey</td><td>Jaragua</td><td>8.8 × 8.9 m</td><td>3.2 m</td><td>50 teatro</td><td>PNUD, COP31, ONUDC</td></tr>
+    <tr><td>Maguana</td><td>Jaragua</td><td>13 × 8.9 m</td><td>2.9 m</td><td>90 teatro</td><td>CDT</td></tr>
+    <tr><td>Las Olas</td><td>Jaragua</td><td>7.3 × 13 m</td><td>2.4 m</td><td>50 teatro</td><td>FS-CDH</td></tr>
+    <tr><td>Gran Salón (Samaná + Bonanza + Constanza)</td><td>Sheraton</td><td>31 × 16 m</td><td>4.2 m</td><td>650 teatro, 335 banquete</td><td>ONUDI, UNCTAD, OMA</td></tr>
+    <tr><td>Yarey</td><td>Sheraton</td><td>15.6 × 22.3 m</td><td>3.3 m</td><td>300 teatro</td><td>OMT</td></tr>
+    <tr><td>Da Vinci</td><td>Sheraton</td><td>14 × 11 m</td><td>3.1 m</td><td>70 teatro</td><td>CIME</td></tr>
+    <tr><td>Este I a VI</td><td>Sheraton</td><td>7.5 × 5.5 m (Este I: 11 m)</td><td>2.6 m</td><td>30 a 40</td><td>CRPD</td></tr>
+    <tr><td>Board Room</td><td>Sheraton</td><td>sala de juntas</td><td>—</td><td>mesa fija</td><td>UNESCO-JD</td></tr>
+    <tr><td>Malecón Terrace (carpa)</td><td>Sheraton</td><td>36 × 23 m</td><td>carpa</td><td>900 teatro, 500 banquete</td><td>Almuerzos y noche cultural</td></tr>
+  </table>
+  <p class="nota">Medidas y capacidades de los cuadros de capacidades de cada hotel. Qué comisión va en cada salón es de ejemplo: coordinación lo cambia en «Datos del evento» y todos los equipos lo ven al instante.</p>
+</section>
+
+<section>
+  <h2><span class="n">03</span>Mapa 3D y «Cómo llegar»</h2>
+  <p class="lead">De la puerta este del Jaragua a la entrada oeste del Sheraton son 259 m, unos 4 minutos a pie; del Sheraton a la carpa del Malecón Terrace, 148 m, unos 2 minutos. El mapa de cada sistema es una maqueta 3D propia de las dos sedes y la ruta morada va siempre por las aceras.</p>
+  <div class="cifras">
+    <div class="cifra"><b>259 m</b><small>Puerta este del Jaragua → entrada oeste del Sheraton · 4 min</small></div>
+    <div class="cifra"><b>342 m</b><small>Lobby del Jaragua → entrada oeste del Sheraton · 5 min</small></div>
+    <div class="cifra"><b>148 m</b><small>Entrada oeste del Sheraton → Malecón Terrace · 2 min</small></div>
+  </div>
+  <figure><img src="../blender/plantel/renders/ruta_jaragua_sheraton.jpg" alt=""><figcaption>La ruta morada del Jaragua al Sheraton: al norte por la acera, por la calle de servicio al borde de las canchas de tenis y bajando por el acceso del Sheraton.</figcaption></figure>
+  <ul>
+    <li>Elegir «Desde» y «Hasta» (o tocar un lugar) y ver la ruta morada con flechas que avanzan, los metros, los minutos y los pasos escritos.</li>
+    <li>«Mi salón» lleva directo al salón de la comisión de quien entró.</li>
+    <li>«Guíame con el GPS» sigue a la persona mientras camina y recalcula la ruta. A más de 700 m de las sedes abre Google Maps para llegar al hotel.</li>
+    <li>«Salones por dentro» quita los techos del Sheraton y muestra cada salón con su nombre.</li>
+    <li>Seguridad, Traslado y Coordinación ven al «Equipo en vivo» sobre la misma maqueta; Coordinación pone puntos (acreditación, primeros auxilios, salidas) tocando el mapa.</li>
+  </ul>
+  <div class="cita"><b>Para explicárselo a Heidi · movilización</b>«Los grupos salen por la puerta este del Jaragua, junto a la piscina. Caminan hacia el norte por la acera hasta la calle de servicio, siguen derecho por el borde norte de las canchas de tenis y cruzan a la calle de acceso del Sheraton. Bajan hacia el mar pegados a la fachada oeste y entran por la entrada oeste. Son 259 metros, unos 4 minutos. Para el almuerzo, desde esa misma entrada se sube por el acceso unos 148 metros hasta la carpa del Malecón Terrace, que queda a la derecha. En el sistema, Movilización tiene cada salida con su hora, el conteo del grupo antes de salir y la ruta en el mapa.»</div>
+  <p class="nota">La red de caminos sigue las calles y aceras de OpenStreetMap; las rutas por dentro de cada hotel son aproximadas hasta confirmarlas en la visita.</p>
+</section>
+
+<section>
+  <h2><span class="n">04</span>Lo que hace cada sistema</h2>
+  <p class="lead">Cada equipo abre en su propio tablero con lo que le toca ahora; comunicados, programa, objetos perdidos, mapa y bitácora están en todos.</p>
+  <table>
+    <tr><th style="width:24%">Sistema</th><th>Lo principal</th></tr>
+    <tr><td><b>Asistencia</b></td><td>Su comisión y salón, los 5 momentos del Manual del Asistente (Antes, Abre, Sesión, Mueve, Cierra) con sus checklists, incidencias de nivel 1 a 3, pedidos al salón con un toque (agua, micrófono, sillas), estado de la comisión y conteo de delegados con quórum.</td></tr>
+    <tr><td><b>Seguridad y Traslado</b></td><td>Cobertura de puntos y turnos (quién debe estar dónde y a qué hora, «ya estoy en mi puesto», refuerzos), rondas, código del evento (verde, amarillo, rojo), alarma de SOS a pantalla completa, equipo en vivo y movilizaciones a pie con conteo del grupo.</td></tr>
+    <tr><td><b>Bienestar</b></td><td>Casos que escalan Asistencia y Seguridad, atenciones físicas y emocionales, protocolos rápidos y punto de bienestar en el mapa.</td></tr>
+    <tr><td><b>Eventos y Protocolo</b></td><td>Cada evento con un solo botón para el siguiente paso (montaje, listo, empezó, terminó) y «Tengo un problema»; invitados especiales (llegó, ya está en su lugar); plano de asientos.</td></tr>
+    <tr><td><b>Coordinación general</b></td><td>Todo lo anterior, los avisos de todos los equipos, «Datos del evento» y los códigos de acceso.</td></tr>
+  </table>
+  <p>Comunes a todos: comunicados con «Leído», botón SOS (avisa a Seguridad y, si hay una persona herida, a Bienestar), programa del día, objetos perdidos, ubicación en vivo voluntaria y por tiempo, y reportes en PDF y Excel con la plantilla de MINUME.</p>
+
+  <h2 style="margin-top:8mm"><span class="n">05</span>Eventos: plano de asientos y salones en 3D</h2>
+  <p class="lead">Cada evento con lugar tiene su plano de asientos con la capacidad real del salón, y se ve como plano o en 3D.</p>
+  <table>
+    <tr><th>Lugar</th><th>Asientos</th><th>Distribución</th></tr>
+    <tr><td>Teatro La Fiesta</td><td>1,152 + presídium de 7</td><td>24 filas (A a X) de 12 + 24 + 12</td></tr>
+    <tr><td>Anacaona</td><td>800 + presídium de 5</td><td>20 filas (A a T) de 20 + 20</td></tr>
+    <tr><td>Malecón Terrace</td><td>500</td><td>49 mesas de 10 y mesa principal de 10</td></tr>
+  </table>
+  <ol>
+    <li>Elegir el evento arriba (apertura, almuerzo, clausura…).</li>
+    <li>Tocar un asiento: se escribe el nombre de la persona (sugiere los invitados del evento) y una nota, y se marca «Asignar» o «Ya se sentó». También se puede dejar libre, reservar o marcar como no disponible.</li>
+    <li>Para marcar muchos de una vez: «Pintar libre», «Pintar reservado» o «Pintar no disponible» y pasar el dedo por encima.</li>
+    <li>El buscador encuentra a una persona o un asiento (por ejemplo, A12). La ficha de cada invitado muestra su asiento.</li>
+    <li>«Ver en 3D» muestra el salón con cada asiento en su color; se toca igual que en el plano.</li>
+  </ol>
+  <p class="colores"><span><i style="background:#2fd38c"></i>Libre</span><span><i style="background:#45c8ff"></i>Asignado</span><span><i style="background:#2f7bff"></i>Ya se sentó</span><span><i style="background:#ffd23f"></i>Reservado</span><span><i style="background:#5b6685"></i>No disponible</span></p>
+</section>
+
+<section>
+  <figure><img src="../blender/salones/renders/teatro_la_fiesta_1.jpg" alt=""><figcaption>Teatro La Fiesta montado para la apertura: 1,152 butacas, presídium, pantallas y telón.</figcaption></figure>
+  <figure><img src="../blender/salones/renders/malecon_terrace_banquete_1.jpg" alt=""><figcaption>Malecón Terrace montado para el almuerzo de 500.</figcaption></figure>
+  <div class="duo">
+    <figure><img src="../blender/salones/renders/anacaona_comites_2.jpg" alt=""><figcaption>Anacaona en tres secciones, cada una como comité en U.</figcaption></figure>
+    <figure><img src="../blender/salones/renders/gran_salon_comites_1.jpg" alt=""><figcaption>Gran Salón del Sheraton: Bonanza como comité.</figcaption></figure>
+  </div>
+  <figure><img src="../blender/plantel/renders/sheraton_salones.jpg" alt=""><figcaption>El Sheraton sin techo: Yarey en teatro, Samaná, Bonanza y Constanza como comités, Da Vinci y los salones Este.</figcaption></figure>
+  <p class="nota">Los salones se hicieron en Blender con sus medidas y capacidades reales y el estilo de las fotos de cada salón; la forma exacta, los colores y los muebles son aproximados.</p>
+</section>
+
+<section>
+  <h2><span class="n">06</span>Coordinación: datos, cronogramas y códigos</h2>
+  <p class="lead">Todo lo que hoy es de ejemplo se cambia desde «Datos del evento» (Coordinación general) y desde los botones «Editar» de cada sección; al guardar, todos los equipos lo ven al instante.</p>
+  <ul>
+    <li><b>Se edita:</b> programa, eventos, invitados, comisiones y salones con su asistente, staff, puntos que se cubren, turnos, rutas de ronda, movilizaciones y responsables.</li>
+    <li><b>Cronogramas con personas:</b> en Cobertura → «Plan del día», cada turno muestra a sus personas con una × para quitarlas y «+ Agregar persona» para elegir de la lista del staff (o escribir una nueva).</li>
+    <li><b>Lista del staff:</b> en Staff → «Pegar una lista de personas» se pega el listado tal cual (del Excel o de WhatsApp, una persona por línea; «Nombre, Equipo» si se sabe el equipo). Se crean con su código de turno y no se repite a nadie.</li>
+    <li><b>Códigos de acceso:</b> en «Datos del evento», Coordinación general crea el código de cada persona (equipo, nombre y, si aplica, comisión o área de Bienestar). El código completo se ve una sola vez para entregárselo; si alguien lo pierde, se anula y se crea otro.</li>
+  </ul>
+  <ul class="tareas">
+    <li>Pasar el listado real del staff y pegarlo en Staff</li>
+    <li>Crear los códigos de cada persona y entregarlos</li>
+    <li>Cambiar las comisiones de ejemplo por la asignación real de salones</li>
+    <li>Cargar el programa, los eventos y los invitados reales</li>
+  </ul>
+
+  <h2 style="margin-top:8mm"><span class="n">07</span>Seguridad de la información</h2>
+  <p class="lead">Solo entra quien tiene un código válido, y la base de datos solo responde a una sesión abierta con ese código.</p>
+  <ul>
+    <li>Los códigos se guardan cifrados en el servidor (Supabase); el sistema bloquea por 15 minutos a quien prueba muchos códigos seguidos.</li>
+    <li>Cada sesión dura 30 días y se corta sola si coordinación anula el código.</li>
+    <li>La tabla de datos no se puede leer directamente: todo pasa por funciones del servidor que revisan la sesión y el equipo. Las atenciones de Bienestar solo las ven Bienestar y Coordinación general.</li>
+    <li>La página se publica con cabeceras de seguridad: solo carga código de sus propios dominios, siempre por HTTPS, no se puede meter dentro de otra página, y la cámara y la ubicación solo se piden en la misma página.</li>
+    <li>La ubicación en vivo es voluntaria, por un tiempo que elige la persona, y solo la ven Seguridad, Traslado y Coordinación.</li>
+  </ul>
+  <p class="nota">Mientras se usen los códigos de prueba de la demo, no se deben guardar datos reales de salud.</p>
+
+  <h2 style="margin-top:8mm"><span class="n">08</span>Dónde está todo y qué falta</h2>
+  <table>
+    <tr><th>Qué</th><th>Dónde</th></tr>
+    <tr><td>Página publicada</td><td><a href="https://minume-xvii.vercel.app">minume-xvii.vercel.app</a></td></tr>
+    <tr><td>Código (privado)</td><td><a href="https://github.com/SrAlbert22/minume-xvii">github.com/SrAlbert22/minume-xvii</a></td></tr>
+    <tr><td>Maqueta 3D del plantel (Blender)</td><td><code>blender/plantel/construir_plantel.py</code></td></tr>
+    <tr><td>Sheraton detallado (Blender)</td><td><code>blender/sheraton/construir_sheraton.py</code></td></tr>
+    <tr><td>Salones de eventos (Blender)</td><td><code>blender/salones/construir_salones.py</code></td></tr>
+    <tr><td>Caminos y lugares del mapa</td><td><code>herramientas/datos_mapa.py</code></td></tr>
+    <tr><td>Armar y publicar</td><td><code>herramientas/armar.py</code></td></tr>
+  </table>
+  <ul class="tareas">
+    <li>Confirmar en la visita dónde queda cada salón dentro de los hoteles y las puertas reales; se ajusta en la maqueta y en los caminos</li>
+    <li>Logos de MINUME para la página y los reportes</li>
+    <li>Cargar los datos reales (listado del staff, códigos, salones, programa, invitados)</li>
+  </ul>
+  <footer class="firma"><span>Hecho por Albert Silvestre</span><span>Mapa con datos de © colaboradores de OpenStreetMap</span></footer>
+</section>
+</body>
+</html>
