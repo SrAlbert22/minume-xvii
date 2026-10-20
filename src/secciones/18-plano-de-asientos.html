@@ -1,0 +1,24 @@
+  <!-- Plano de asientos (Eventos y Protocolo) -->
+  <section id="asientos" data-roles="eventos coordinacion">
+    <div class="titulo-sec"><span class="n">00</span><h2>Plano de asientos</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">El lugar de cada evento con todos sus asientos. Verde es libre. Toca un asiento para asignarle a alguien o marcar que ya se sentó. Para marcar muchos de una vez, elige «Pintar» y pasa el dedo.</p>
+    <div class="pestanas" id="asEventos"></div>
+    <div class="tarjeta as-resumen" id="asResumen"></div>
+    <div class="as-herr">
+      <div class="pestanas as-modos" id="asModos">
+        <button data-m="ver" class="on">Tocar y asignar</button>
+        <button data-m="libre"><i style="background:#2fd38c"></i>Pintar libre</button>
+        <button data-m="reservado"><i style="background:#ffd23f"></i>Pintar reservado</button>
+        <button data-m="bloqueado"><i style="background:#5b6685"></i>Pintar no disponible</button>
+      </div>
+      <div class="as-zoom" id="asZoom"><button class="mini" data-z="-" type="button" aria-label="Alejar">−</button><button class="mini" data-z="+" type="button" aria-label="Acercar">+</button></div>
+      <label for="asBuscar" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Buscar persona o asiento</label>
+      <input id="asBuscar" placeholder="Buscar persona o asiento (ej.: A12)">
+    </div>
+    <div class="as-hallados" id="asHallados"></div>
+    <div class="as-rejilla">
+      <div class="as-plano" id="asPlano"></div>
+      <div class="tarjeta as-ficha" id="asFicha"></div>
+    </div>
+    <div class="ed-botones" style="margin-top:12px"><div class="exp-btns" data-exportar="asientos"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></div>
+  </section>

@@ -74,6 +74,16 @@ const REPORTES = {
       filas: l.map(e => { const s = estEv(e); return [DIAS_PROG.find(([d]) => d === e.dia)[1], `${e.i} a ${e.f}`, e.n, e.lugar, e.resp, e.m, EST_EV[s.est][0], s.problema ? `${s.problema.tipo}${s.problema.nota ? ': ' + s.problema.nota : ''}` : '']; }), estadoCol: 6, estado: tonoEstado,
     });
   },
+  asientos() {
+    const e = EV_LISTA.find(x => x.id === asEvento) || evConPlano()[0], plano = planoDe(e), todo = leerAs(), sem = semillaAsientos(e);
+    const l = plano.asientos.map(a => ({ a, s: estadoAs(e, a.id, todo, sem) })), cuenta = k => l.filter(x => x.s.est === k).length;
+    return baseReporte(`Plano de asientos · ${e.n}`, `asientos-${e.n.toLowerCase().replace(/\s+/g, '-')}`, {
+      subtitulo: `${DIAS_PROG.find(([d]) => d === e.dia)[1]} · ${e.i} a ${e.f} · ${plano.nombre} · capacidad ${plano.capacidad}`,
+      resumen: Object.entries(EST_AS).map(([k, [t]]) => [cuenta(k), t.toLowerCase()]),
+      columnas: [{ t: 'Asiento', w: 10, pdf: 18 }, { t: 'Zona', w: 18 }, { t: 'Estado', w: 14, pdf: 22 }, { t: 'Persona', w: 28 }, { t: 'Nota', w: 30 }, { t: 'Lo marcó', w: 16 }, { t: 'Hora', w: 9, pdf: 15 }],
+      filas: l.filter(x => x.s.est !== 'libre').map(({ a, s }) => [a.id, a.zona, EST_AS[s.est][0], s.n || '', s.nota || '', s.por || '', s.t ? horaDR(s.t) : '']), estadoCol: 2, estado: v => /Ya se sentó|Asignado/.test(v) ? 'verde' : /Reservado/.test(v) ? 'amarillo' : '',
+    });
+  },
   invitados() {
     const ev = EV_LISTA.find(e => e.id === invEvento) || evConInvitados()[0], st = leerInv(), l = INV_LISTA.filter(g => g.ev === ev.id).sort((a, b) => aMinutos(a.ll) - aMinutos(b.ll));
     const EST = { llego: 'Llegó', sentado: 'En su lugar', no: 'No vendrá' }, vienen = l.filter(g => (st[g.id] || {}).est !== 'no');

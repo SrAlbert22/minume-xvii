@@ -1,5 +1,5 @@
 // ---------- Pintar todo lo nuevo y mantenerlo al día ----------
-function pintarNuevas() { pintarRed(); pintarBotonAlertas(); pintarBanner(); pintarComunicados(); pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarObjetos(); pintarAtenciones(); pintarEventos(); pintarInvitados(); pintarDatos(); }
+function pintarNuevas() { pintarRed(); pintarBotonAlertas(); pintarBanner(); pintarComunicados(); pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarObjetos(); pintarAtenciones(); pintarEventos(); pintarInvitados(); pintarAsientos(); pintarDatos(); }
 addEventListener('storage', e => { if (e.key && e.key.startsWith('minume.compartido.') && e.key !== CLAVE_AVISOS) { pintarNuevas(); pintarCobertura(); if (estado.usuario) pintarTablero(); } });
 setInterval(() => { if (!estado.usuario) return; demoLeer(); pintarBanner(); }, 4000);
 setInterval(() => { if (!estado.usuario) return; pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarAtenciones(); pintarEventos(); }, 30000);

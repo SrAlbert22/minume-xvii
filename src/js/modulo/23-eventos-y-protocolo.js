@@ -113,7 +113,7 @@ function pintarInvitados() {
       : e === 'llego' ? `<button class="boton ev-btn" data-inv="sentado" data-id="${g.id}">Ya está en su lugar</button><small class="cob-sub" style="margin:0">Llegó a las ${horaDR(s.t)}</small>`
       : `<button class="boton ev-btn" data-inv="llego" data-id="${g.id}">Llegó</button><button class="mini" data-inv="no" data-id="${g.id}">No vendrá</button>`;
     return `<div class="tarjeta inv-card ${e || ''}"><div class="inv-av">${iniciales2(g.n)}</div><div class="inv-info"><b>${g.n}</b><small>${g.cargo}</small>
-      <div class="inv-datos"><span>Saludar como<b>${g.trato}</b></span><span>Su lugar<b>${g.lugar}</b></span><span>Llega<b>${g.ll} · ${g.puerta}</b></span><span>La recibe<b>${g.recibe}</b></span></div>
+      <div class="inv-datos"><span>Saludar como<b>${g.trato}</b></span><span>Su lugar<b>${typeof asientoDe === 'function' && asientoDe(g.ev, g.n) ? `Asiento ${asientoDe(g.ev, g.n)} · ` : ''}${g.lugar}</b></span><span>Llega<b>${g.ll} · ${g.puerta}</b></span><span>La recibe<b>${g.recibe}</b></span></div>
       ${g.nota ? `<p class="inv-nota">${g.nota}</p>` : ''}</div><div class="inv-acc">${boton}</div></div>`;
   }).join('') || '<p class="cob-sub">Nadie coincide con esa búsqueda.</p>';
 }
