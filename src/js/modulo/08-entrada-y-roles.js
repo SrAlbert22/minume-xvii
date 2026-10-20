@@ -21,13 +21,25 @@ if (SISTEMA !== 'todo') {
   $('.aviso-demo').textContent = `DEMO · ${SIS.nombre} · MINUME XVII · Sistema independiente: comparte solo la base de datos con los otros equipos · Datos de ejemplo`;
 }
 estado.usuario = leer('usuario', null);
-function entrar(cod) {
-  const c = (cod || '').trim().toUpperCase(), u = CODIGOS[c];
+// El código se verifica en el servidor (Supabase). Solo los códigos de prueba de la demo sin base de datos se revisan aquí.
+async function entrar(cod) {
+  const c = (cod || '').trim().toUpperCase(), pre = c.slice(0, 2);
+  if (SIS.prefijos && !SIS.prefijos.includes(pre)) { $('#codError').textContent = `Este es el sistema de ${SIS.nombre}: tu código es de otro equipo. Entra desde el Inicio de MINUME.`; return; }
+  let u = null;
+  if (window.MINUME_ENTRAR && pre !== 'AC') {
+    const b = $('#bEntrar'), txt = b.textContent; b.disabled = true; b.textContent = 'Verificando…';
+    const r = await window.MINUME_ENTRAR(c);
+    b.textContent = txt; b.disabled = false;
+    if (r.sinRed) { $('#codError').textContent = 'Sin internet. Para entrar la primera vez en este teléfono hace falta conexión.'; return; }
+    if (r.error) { $('#codError').textContent = r.error; return; }
+    u = { nombre: r.nombre, rol: r.rol, comision: r.comision || undefined, area: r.area || undefined, acr: r.acr || undefined, ref: r.ref };
+  } else u = CODIGOS[c] || null;
   if (!u) { $('#codError').textContent = 'Ese código no existe o ya caducó. Pídele uno a coordinación.'; return; }
-  if (!SIS.roles.includes(u.rol)) { $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0].split(' ').slice(1).join(' ')}: entra en su propia página.`; return; }
-  if (SIS.prefijos && !SIS.prefijos.includes(c.slice(0, 2))) { $('#codError').textContent = `Este es el sistema de ${SIS.nombre}: tu código es de otro equipo. Entra desde el Inicio de MINUME.`; return; }
+  if (!SIS.roles.includes(u.rol)) { if (window.MINUME_SALIR) window.MINUME_SALIR(); $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0].split(' ').slice(1).join(' ')}: entra en su propia página.`; return; }
   estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0);
 }
+// Si la sesión vence o coordinación anula el código, se vuelve a pedir
+addEventListener('minume-sesion-vencida', () => { if (!estado.usuario) return; estado.usuario = null; guardar('usuario', null); aplicarRol(); toast('Tu sesión venció o tu código fue anulado. Vuelve a entrar con tu código.'); });
 function aplicarRol() {
   const u = estado.usuario;
   $('#entrada').classList.toggle('oculta', !!u);
@@ -96,14 +108,14 @@ const INICIO_MINUME = window.MINUME_INICIO || '';
 if (INICIO_MINUME) { $('#entVolver').href = INICIO_MINUME; $('#entVolver').hidden = false; }
 function revisarCodigo() {
   const i = $('#codigo'); let v = i.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  v = v.slice(0, 2).replace(/[^A-Z]/g, '') + (v.length > 2 ? '-' + v.slice(2).replace(/\D/g, '').slice(0, 4) : '');
+  v = v.slice(0, 2).replace(/[^A-Z]/g, '') + (v.length > 2 ? '-' + v.slice(2).slice(0, 8) : '');
   if (i.value !== v) i.value = v;
   $('#codError').textContent = '';
-  const pre = v.slice(0, 2), completo = /^[A-Z]{2}-\d{4}$/.test(v), eq = EQUIPO_PREF[pre];
+  const pre = v.slice(0, 2), completo = /^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(v), eq = EQUIPO_PREF[pre];
   const deAqui = !SIS.prefijos || SIS.prefijos.includes(pre);
-  let h = 'Son dos letras de tu equipo y cuatro números. Ejemplo: ' + (SIS.prefijos ? SIS.prefijos[0] : 'AS') + '-4821.';
+  let h = 'Son dos letras de tu equipo, un guion y el resto de tu código. Ejemplo: ' + (SIS.prefijos ? SIS.prefijos[0] : 'AS') + '-7KQ2MX.';
   if (pre.length === 2 && !eq) h = '<i style="background:var(--rojo)"></i>Esas dos letras no son de ningún equipo.';
-  else if (eq && deAqui) h = `<i style="background:var(--verde)"></i>${eq}${completo ? '' : ' · faltan números'}`;
+  else if (eq && deAqui) h = `<i style="background:var(--verde)"></i>${eq}${completo ? '' : ' · falta el resto del código'}`;
   else if (eq) h = `<i style="background:var(--amarillo)"></i>Ese código es de ${eq}, no de este sistema.${INICIO_MINUME ? ` <a href="${INICIO_MINUME}">Ir al Inicio</a>` : ''}`;
   $('#entDetecta').innerHTML = h;
   $('#bEntrar').disabled = !(completo && eq && deAqui);
@@ -117,4 +129,4 @@ addEventListener('online', redEntrada); addEventListener('offline', redEntrada);
 addEventListener('scroll', () => $('#subir').classList.toggle('on', scrollY > 600), { passive: true });
 $('#subir').onclick = () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 $$('#entrada .prueba button').forEach(b => b.onclick = () => { $('#codigo').value = b.dataset.c; revisarCodigo(); entrar(b.dataset.c); });
-$('#bSalir').onclick = () => { dejarCompartir(); try { Object.keys(localStorage).filter(k => k.startsWith(PREF)).forEach(k => localStorage.removeItem(k)); } catch {} location.reload(); };
+$('#bSalir').onclick = () => { dejarCompartir(); if (window.MINUME_SALIR) window.MINUME_SALIR(); try { Object.keys(localStorage).filter(k => k.startsWith(PREF)).forEach(k => localStorage.removeItem(k)); } catch {} location.reload(); };

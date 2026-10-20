@@ -33,7 +33,7 @@ function pintarCompartir() {
 }
 setInterval(pintarCompartir, 20000);
 // "Me moví a…": dentro del hotel el GPS falla por el techo; avisar el salón da la posición exacta
-const LUGARES = MAPA.lugares.filter(l => l.tipo !== 'referencia').map(l => ({ id: l.id, n: l.n, sede: l.sede, ll: l.ll }));
+const LUGARES = MAPA.lugares.filter(l => l.tipo !== 'referencia' && l.id !== 'gran-salon').map(l => ({ id: l.id, n: l.n, sede: l.sede, xy: l.xy }));
 estado.lugar = leer('lugar', null);
 const lugarActual = () => estado.lugar && Date.now() - estado.lugar.t < 2 * 3600e3 ? LUGARES.find(l => l.id === estado.lugar.id) : null;
 const opcionesLugar = () => '<option value="">Elige dónde estás…</option>' + LUGARES.map(l => `<option value="${l.id}"${lugarActual() && estado.lugar.id === l.id ? ' selected' : ''}>${l.n}</option>`).join('');
@@ -67,9 +67,9 @@ const EQUIPO = [
 const COLOR_ROL = { asistencia: '#45c8ff', acreditacion: '#a974ff', seguridad: '#ff6b78', traslado: '#ff9a3c', coordinacion: '#ffd23f', eventos: '#f472b6' };
 const iniciales = n => n.split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
 function distM(a, b) { const R = 6371000, r = Math.PI / 180, dLa = (b[0] - a[0]) * r, dLo = (b[1] - a[1]) * r; const h = Math.sin(dLa / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
-// Punto a una fracción u (0 a 1) del recorrido, medida en metros reales
+// Punto a una fracción u (0 a 1) del recorrido, medida en metros
 function enRuta(pts, u) {
-  const tramos = pts.slice(1).map((p, i) => distM(pts[i], p)), total = tramos.reduce((a, b) => a + b, 0);
+  const tramos = pts.slice(1).map((p, i) => distXY(pts[i], p)), total = tramos.reduce((a, b) => a + b, 0);
   let falta = u * total;
   for (let i = 0; i < tramos.length; i++) {
     if (falta <= tramos[i]) { const f = tramos[i] ? falta / tramos[i] : 0; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f]; }
@@ -77,43 +77,27 @@ function enRuta(pts, u) {
   }
   return pts[pts.length - 1];
 }
+// posición en metros sobre la maqueta (pos y xy son lo mismo)
 function posicion(p, t) {
-  if (p.ruta) { const k = (t / p.periodo + (p.fase || 0)) % 2, u = k < 1 ? k : 2 - k, quieto = u < .03 || u > .97; return { pos: enRuta(p.ruta, u), mov: !quieto, vel: quieto ? 0 : 4 }; }
-  const c = LUGAR[p.en].ll; return { pos: [c[0] + Math.sin(t / 9 + c[1]) * .000012, c[1] + Math.cos(t / 11) * .000012], mov: false, vel: 0 };
+  if (p.ruta) { const k = (t / p.periodo + (p.fase || 0)) % 2, u = k < 1 ? k : 2 - k, quieto = u < .03 || u > .97, xy = enRuta(p.ruta, u); return { pos: xy, xy, mov: !quieto, vel: quieto ? 0 : 4 }; }
+  const c = LUGAR[p.en].xy, xy = [c[0] + Math.sin(t / 9 + c[1]) * 1.2, c[1] + Math.cos(t / 11) * 1.2]; return { pos: xy, xy, mov: false, vel: 0 };
 }
-const sedeMasCerca = ll => Object.entries(SEDES_GPS).map(([k, g]) => [k, distM(ll, g)]).sort((a, b) => a[1] - b[1])[0];
-let mapaVivo = null, marcas = {}, filtro = 'todos', hace = {}, vivoListo = false;
-const VISTA_TODO = { center: ll2(CENTRO_SEDES), zoom: 17, pitch: 50, bearing: -28 };
-const VISTA_CERCA = { center: ll2(CENTRO_SEDES), zoom: 17.8, pitch: 60, bearing: -28 };
+const sedeMasCerca = xy => Object.entries(SEDES_XY).map(([k, g]) => [k, distXY(xy, g)]).sort((a, b) => a[1] - b[1])[0];
+let visorVivo = null, esperaVivo = null, filtro = 'todos', hace = {};
+const VISTA_TODO = { centro: [-20, 15], dist: 330, alto: 0.7, rumbo: -0.5 }, VISTA_CERCA = { centro: [25, 30], dist: 190, alto: 0.6, rumbo: -0.4 };
 function iniciarMapaVivo() {
-  if (!estado.usuario || !['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol) || !window.maplibregl) return;
-  if (mapaVivo) { mapaVivo.resize(); return; }
-  mapaVivo = new maplibregl.Map({
-    container: 'mapaVivo', ...VISTA_TODO, maxPitch: 75, minZoom: 13, attributionControl: { compact: true },
-    style: { version: 8, sources: {
-      sat: { type: 'raster', tiles: [SAT], tileSize: 256, maxzoom: 19, attribution: 'Imágenes © Esri, Maxar · Edificios © OpenStreetMap' },
-      etiquetas: { type: 'raster', tiles: [ETIQUETAS], tileSize: 256, maxzoom: 19 },
-    }, layers: [
-      { id: 'sat', type: 'raster', source: 'sat' },
-      { id: 'etiquetas', type: 'raster', source: 'etiquetas', paint: { 'raster-opacity': .85 } },
-    ] },
-  });
-  mapaVivo.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
-  mapaVivo.on('load', () => {
-    mapaVivo.addSource('edificios', { type: 'geojson', data: MAPA.edificios });
-    mapaVivo.addLayer({ id: 'edificios', type: 'fill-extrusion', source: 'edificios', paint: { 'fill-extrusion-color': COLOR_SEDE, 'fill-extrusion-height': ['get', 'h'], 'fill-extrusion-base': ['get', 'b'], 'fill-extrusion-opacity': .75 } });
-    mapaVivo.addSource('caminos', { type: 'geojson', data: { type: 'FeatureCollection', features: MAPA.tramos.map(([a, b]) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: [ll2(MAPA.nodos[a]), ll2(MAPA.nodos[b])] } })) } });
-    mapaVivo.addLayer({ id: 'caminos', type: 'line', source: 'caminos', layout: { 'line-cap': 'round' }, paint: { 'line-color': '#b14dff', 'line-width': 4, 'line-opacity': .7, 'line-dasharray': [1.5, 1.2] } });
-    mapaVivo.addSource('precision', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-    mapaVivo.addLayer({ id: 'precision', type: 'fill', source: 'precision', paint: { 'fill-color': '#2fd38c', 'fill-opacity': .22 } });
-    vivoListo = true;
-  });
-  for (const [k, ll] of Object.entries(SEDES_GPS)) { const el = document.createElement('div'); el.innerHTML = `<span class="marca-sede" style="transform:none">${k === 'malecon' ? '⛺' : '🏨'} ${SEDES[k].corto}</span>`; new maplibregl.Marker({ element: el, anchor: 'bottom', offset: [0, -24] }).setLngLat(ll2(ll)).addTo(mapaVivo); }
-  $('#mvHotel').onclick = () => mapaVivo.flyTo({ ...VISTA_CERCA, pitch: $('#mv3d').classList.contains('on') ? 60 : 0, duration: 2000 });
-  $('#mvTodo').onclick = () => mapaVivo.flyTo({ ...VISTA_TODO, pitch: $('#mv3d').classList.contains('on') ? 50 : 0, duration: 2000 });
-  $('#mv3d').onclick = () => { const on = $('#mv3d').classList.toggle('on'); mapaVivo.easeTo({ pitch: on ? 60 : 0, bearing: on ? -28 : 0, duration: 900 }); if (vivoListo) mapaVivo.setLayoutProperty('edificios', 'visibility', on ? 'visible' : 'none'); };
-  EQUIPO.forEach(p => hace[p.id] = 3 + Math.floor(Math.random() * 30));
-  setInterval(actualizarVivo, 1000); actualizarVivo();
+  if (!estado.usuario || !['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol)) return;
+  if (esperaVivo) return esperaVivo;
+  esperaVivo = cargarLibs().then(() => { visorVivo = crearVisor($('#mapaVivo'), { capaHTML: $('#vivoMarcas') }); return visorVivo.iniciar(VISTA_TODO); }).then(() => {
+    for (const [k, xy] of Object.entries(SEDES_XY)) { const el = document.createElement('div'); el.innerHTML = `<span class="marca-sede">${k === 'malecon' ? '⛺' : '🏨'} ${SEDES[k].corto}</span>`; visorVivo.marca('sede:' + k, xy, el, k === 'malecon' ? 12 : 48); }
+    visorVivo.ruta(MAPA.rutas['jaragua-sheraton'].nodos.map(n => MAPA.xy[n]));
+    EQUIPO.forEach(p => hace[p.id] = 3 + Math.floor(Math.random() * 30));
+    setInterval(actualizarVivo, 1000); actualizarVivo();
+  }).catch(() => { esperaVivo = null; $('#mapaVivo').insertAdjacentHTML('beforeend', '<div class="capa-msg"><div><b>No se pudo cargar la maqueta 3D</b>Hace falta internet la primera vez. La lista del equipo funciona igual.</div></div>'); });
+  $('#mvHotel').onclick = () => visorVivo && visorVivo.volar(VISTA_CERCA, 1800);
+  $('#mvTodo').onclick = () => visorVivo && visorVivo.volar(VISTA_TODO, 1800);
+  $('#mv3d').onclick = () => { if (!visorVivo) return; const on = $('#mv3d').classList.toggle('on'); visorVivo.cenital = !on; visorVivo.volar(VISTA_TODO, 900); };
+  return esperaVivo;
 }
 function marcaHTML(p, yo) { const c = COLOR_ROL[p.rol]; return `<div class="marca-vivo${yo ? ' yo' : ''}" style="background:${c}">${yo ? 'TÚ' : iniciales(p.n)}</div>`; }
 let ultimaLista = 0;
@@ -123,21 +107,27 @@ function equipoAhora(t) {
   if (yo) {
     const sedeYo = estado.comision ? ASIGNA[estado.comision][0] : 'jaragua', l = lugarActual();
     let pos, acc = miPos && miPos.real ? miPos.acc : 15;
-    if (l) { pos = l.ll; acc = 3; }
-    else pos = miPos && miPos.real ? miPos : SEDES_GPS[sedeYo];
-    todos.unshift({ p: { id: 'yo', n: yo.nombre + ' (tú)', rol: yo.rol, det: 'Compartiendo desde este teléfono' }, pos, acc, lugar: l ? l.n : null, mov: false, vel: 0, yo: true });
+    if (l) { pos = l.xy; acc = 3; }
+    else pos = miPos && miPos.real ? aXY(miPos) : SEDES_XY[sedeYo];
+    todos.unshift({ p: { id: 'yo', n: yo.nombre + ' (tú)', rol: yo.rol, det: 'Compartiendo desde este teléfono' }, pos, xy: pos, acc, lugar: l ? l.n : null, mov: false, vel: 0, yo: true });
   }
   return todos;
 }
 function actualizarVivo() {
   const t = performance.now() / 1000, filas = [];
   const todos = equipoAhora(t);
-  if (!compartiendo()) { if (vivoListo) mapaVivo.getSource('precision').setData({ type: 'FeatureCollection', features: [] }); if (marcas.yo) { marcas.yo.remove(); delete marcas.yo; } }
+  if (visorVivo && visorVivo.listo) {
+    if (!compartiendo()) { visorVivo.aro('precision', null); visorVivo.quitar('yo'); }
+    for (const x of todos) {
+      const visible = filtro === 'todos' || (filtro === 'mov' && x.mov) || filtro === x.p.rol;
+      if (!visorVivo.marcas.has(x.p.id)) { const el = document.createElement('div'); el.innerHTML = marcaHTML(x.p, x.yo); el.title = `${x.p.n} · ${x.p.det}`; visorVivo.marca(x.p.id, x.pos, el, 2); }
+      else visorVivo.marca(x.p.id, x.pos);
+      visorVivo.marcas.get(x.p.id).el.style.opacity = visible ? 1 : .15;
+      if (x.yo) visorVivo.aro('precision', x.pos, x.acc || 15, '#2fd38c');   // círculo de precisión, como en Google Maps
+    }
+  }
   for (const x of todos) {
     const visible = filtro === 'todos' || (filtro === 'mov' && x.mov) || filtro === x.p.rol;
-    if (!marcas[x.p.id]) { const el = document.createElement('div'); el.innerHTML = marcaHTML(x.p, x.yo); el.style.cursor = 'pointer'; marcas[x.p.id] = new maplibregl.Marker({ element: el }).setLngLat(ll2(x.pos)).setPopup(new maplibregl.Popup({ offset: 22, closeButton: false }).setHTML(`<b>${esc(x.p.n)}</b><br>${esc(x.p.det)}`)).addTo(mapaVivo); }
-    marcas[x.p.id].setLngLat(ll2(x.pos)); marcas[x.p.id].getElement().style.opacity = visible ? 1 : .15;
-    if (x.yo && vivoListo) mapaVivo.getSource('precision').setData(circulo(x.pos, x.acc || 15)); // círculo de precisión, como en Google Maps
     if (!visible) continue;
     if (x.yo) hace.yo = 0; else hace[x.p.id] = (hace[x.p.id] + 1) % 45;
     const sede = sedeMasCerca(x.pos), nom = SEDES[sede[0]].corto;
@@ -154,6 +144,10 @@ function actualizarVivo() {
   }
 }
 $('#filtros').onclick = e => { const b = e.target.closest('button'); if (!b) return; filtro = b.dataset.f; $$('#filtros button').forEach(x => x.classList.toggle('on', x === b)); ultimaLista = 0; actualizarVivo(); };
-function centrar(e) { const el = e.target.closest('[data-id]'), m = el && marcas[el.dataset.id]; if (!m) return; mapaVivo.flyTo({ center: m.getLngLat(), zoom: 18, pitch: $('#mv3d').classList.contains('on') ? 60 : 0, duration: 1600 }); if (!m.getPopup().isOpen()) m.togglePopup(); }
+function centrar(e) {
+  const el = e.target.closest('[data-id]'); if (!el || !visorVivo || !visorVivo.listo) return;
+  const x = equipoAhora(performance.now() / 1000).find(y => y.p.id === el.dataset.id); if (!x) return;
+  visorVivo.volar({ centro: x.pos, dist: 70, alto: 0.65, rumbo: -0.4 }, 1400); toast(`${x.p.n} · ${x.p.det}`);
+}
 $('#vivoLista').onclick = centrar; $('#vivoAlertas').onclick = centrar;
 $('#bVer3d').onclick = () => { elegirSede('todas'); $('#mapa').scrollIntoView(); setTimeout(() => { if (!capas.vivo) activarCapa('vivo'); }, 400); };

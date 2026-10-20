@@ -1,33 +1,38 @@
-// ---------- Mapa de las sedes: Renaissance Jaragua, Sheraton y Malecón Terrace ----------
-// Foto satelital real (Esri, gratis y sin llave), edificios en 3D con los contornos de OpenStreetMap
-// y rutas a pie calculadas sobre los caminos trazados (como el GPS de un videojuego).
+// ---------- Mapa 3D de las sedes: Renaissance Jaragua, Sheraton y Malecón Terrace ----------
+// La maqueta (plantel.glb) sale de blender/plantel/construir_plantel.py. Todo se mide en metros
+// sobre el mismo plano que la maqueta (x al este, y al norte); el GPS se convierte a ese plano.
 const LUGAR = Object.fromEntries(MAPA.lugares.map(l => [l.id, l]));
-const SEDES_GPS = { jaragua: LUGAR['j-lobby'].ll, sheraton: LUGAR['s-lobby'].ll, malecon: LUGAR['malecon-terrace'].ll };
-const CENTRO_SEDES = [(SEDES_GPS.jaragua[0] + SEDES_GPS.sheraton[0]) / 2, (SEDES_GPS.jaragua[1] + SEDES_GPS.sheraton[1]) / 2];
-const ll2 = ([la, lo]) => [lo, la];
+const [LAT0, LON0] = MAPA.origen, M_LAT = 110540, M_LON = 111320 * Math.cos(LAT0 * Math.PI / 180);
+const aXY = ([la, lo]) => [(lo - LON0) * M_LON, (la - LAT0) * M_LAT];
+const aLL = ([x, y]) => [LAT0 + y / M_LAT, LON0 + x / M_LON];
+const distXY = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+const SEDES_XY = { jaragua: LUGAR['j-lobby'].xy, sheraton: LUGAR['s-lobby'].xy, malecon: LUGAR['malecon-terrace'].xy };
+const SEDES_GPS = Object.fromEntries(Object.entries(SEDES_XY).map(([k, p]) => [k, aLL(p)]));
 const sinTildes = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const ROMANOS = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6 };
 
 // Salón de una comisión (texto libre, como lo escribe coordinación) → lugar del mapa
 function lugarDeSalon(salon, sede) {
   const s = sinTildes(salon || '');
   if (!s) return LUGAR[sede === 'sheraton' ? 's-lobby' : sede === 'malecon' ? 'malecon-terrace' : 'j-lobby'];
+  const este = /^este\s+(i{1,3}|iv|vi?|v)\b/.exec(s); if (este) return LUGAR['este-' + ROMANOS[este[1]]];
   if (/anacaona|seccion [123]/.test(s)) return LUGAR.anacaona;
-  if (/^este|este i/.test(s)) return LUGAR.este;
   if (/malecon/.test(s)) return LUGAR['malecon-terrace'];
+  if (/gran salon/.test(s)) return LUGAR['gran-salon'];
   if (/ejecutiv|executive|atabey/.test(s)) return LUGAR.atabey;
   return MAPA.lugares.find(l => l.tipo === 'salon' && sinTildes(l.n).startsWith(s.split(' ')[0])) || LUGAR[sede === 'sheraton' ? 's-lobby' : 'j-lobby'];
 }
 
-// ---------- Rutas a pie (camino más corto sobre los tramos trazados) ----------
+// ---------- Rutas a pie (camino más corto sobre los tramos) ----------
 const VECINOS = {};
 for (const [a, b, nota] of MAPA.tramos) {
-  const d = distM(MAPA.nodos[a], MAPA.nodos[b]);
+  const d = distXY(MAPA.xy[a], MAPA.xy[b]);
   (VECINOS[a] = VECINOS[a] || []).push([b, d, nota]);
   (VECINOS[b] = VECINOS[b] || []).push([a, d, nota]);
 }
-function nodoCercano(ll) {
+function nodoCercano(p) {
   let mejor = null, dm = Infinity;
-  for (const [k, p] of Object.entries(MAPA.nodos)) { const d = distM(ll, p); if (d < dm) { dm = d; mejor = k; } }
+  for (const [k, q] of Object.entries(MAPA.xy)) { const d = distXY(p, q); if (d < dm) { dm = d; mejor = k; } }
   return [mejor, dm];
 }
 function caminoEntre(a, b) {
@@ -46,103 +51,222 @@ function caminoEntre(a, b) {
   const nodos = [b]; while (nodos[0] !== a) nodos.unshift(previo[nodos[0]]);
   return { nodos, notas: nodos.slice(1).map(n => notas[n]) };
 }
-// origen: id de lugar o [lat, lon] (la posición del GPS); destino: id de lugar
+// origen: id de un lugar o {xy} (la posición del GPS); destino: id de un lugar
 function calcularRuta(origen, destino) {
   const dest = LUGAR[destino]; if (!dest) return null;
-  const llO = Array.isArray(origen) ? origen : LUGAR[origen].ll;
-  const [nO, dO] = Array.isArray(origen) ? nodoCercano(origen) : [LUGAR[origen].nodo, 0];
+  const desdeGps = typeof origen !== 'string', pO = desdeGps ? origen.xy : LUGAR[origen].xy;
+  const [nO, dO] = desdeGps ? nodoCercano(pO) : [LUGAR[origen].nodo, 0];
   const c = caminoEntre(nO, dest.nodo); if (!c) return null;
-  const puntos = [llO, ...c.nodos.map(n => MAPA.nodos[n]), dest.ll].filter((p, i, l) => i === 0 || distM(p, l[i - 1]) > 1.5);
-  let metros = 0; for (let i = 1; i < puntos.length; i++) metros += distM(puntos[i - 1], puntos[i]);
+  const puntos = [pO, ...c.nodos.map(n => MAPA.xy[n]), dest.xy].filter((p, i, l) => i === 0 || distXY(p, l[i - 1]) > 1.5);
+  let metros = 0; for (let i = 1; i < puntos.length; i++) metros += distXY(puntos[i - 1], puntos[i]);
   const pasos = [];
-  if (Array.isArray(origen) && dO > 12) pasos.push(`Camina unos ${Math.round(dO)} m hasta el camino marcado en morado`);
+  if (desdeGps && dO > 12) pasos.push(`Camina unos ${Math.round(dO)} m hasta el camino marcado en morado`);
   for (const n of c.notas) if (n && pasos[pasos.length - 1] !== n) pasos.push(n);
   pasos.push(`Llegaste: ${dest.n}`);
   return { puntos, metros: Math.round(metros), minutos: Math.max(1, Math.round(metros / 70)), pasos, destino: dest };
 }
 
-// ---------- El mapa ----------
-const SAT = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-const ETIQUETAS = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
-const COLOR_SEDE = ['match', ['get', 'sede'], 'jaragua', '#e6c28a', 'sheraton', '#86a9e8', 'malecon', '#ffffff', '#c3c9d6'];
+// ---------- Visor 3D (lo usan este mapa y el de «Equipo en vivo») ----------
+// three.js se carga solo cuando hace falta: si no hay internet la primera vez, el resto del sistema sigue funcionando
+let THREE, OrbitControls, GLTFLoader, DRACOLoader, mergeGeometries, cargaLibs = null;
+const cargarLibs = () => cargaLibs || (cargaLibs = Promise.all([
+  import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/loaders/GLTFLoader.js'),
+  import('three/addons/loaders/DRACOLoader.js'), import('three/addons/utils/BufferGeometryUtils.js'),
+]).then(([t, o, g, d, b]) => { THREE = t; OrbitControls = o.OrbitControls; GLTFLoader = g.GLTFLoader; DRACOLoader = d.DRACOLoader; mergeGeometries = b.mergeGeometries; })
+  .catch(e => { cargaLibs = null; throw e; }));
+const V3 = (x, y, z = 0) => new THREE.Vector3(x, z, -y);
 const VISTAS = {
-  todas: { center: ll2(CENTRO_SEDES), zoom: 17.15, pitch: 55, bearing: -28 },
-  jaragua: { center: ll2(LUGAR['j-lobby'].ll), zoom: 18, pitch: 58, bearing: -20 },
-  sheraton: { center: ll2(LUGAR['s-salones'] ? LUGAR['s-salones'].ll : SEDES_GPS.sheraton), zoom: 18.1, pitch: 58, bearing: -35 },
-  malecon: { center: ll2(SEDES_GPS.malecon), zoom: 18.6, pitch: 60, bearing: -40 },
+  todas: { centro: [-35, 5], dist: 400, alto: 0.62, rumbo: -0.55 },
+  jaragua: { centro: [-115, -55], dist: 210, alto: 0.6, rumbo: -0.75 },
+  sheraton: { centro: [92, 25], dist: 175, alto: 0.55, rumbo: -0.35 },
+  malecon: { centro: [48, 105], dist: 110, alto: 0.65, rumbo: -0.2 },
 };
-SEDES.jaragua && (VISTAS.sheraton.center = ll2([(SEDES_GPS.sheraton[0] + LUGAR['s-oeste'].ll[0]) / 2, (SEDES_GPS.sheraton[1] + LUGAR['s-oeste'].ll[1]) / 2]));
-let mapa = null, mapaListo = false, rutaActual = null, destinoMarca = null, origenMarca = null;
-const capas = { seg: true, vivo: false, admin: false, tresd: true };
-
-function flechaImagen() {
-  const t = 48, c = document.createElement('canvas'); c.width = c.height = t;
-  const g = c.getContext('2d'); g.strokeStyle = '#ffffff'; g.lineWidth = 7; g.lineCap = 'round'; g.lineJoin = 'round';
-  g.beginPath(); g.moveTo(16, 10); g.lineTo(32, 24); g.lineTo(16, 38); g.stroke();
-  return { width: t, height: t, data: g.getImageData(0, 0, t, t).data };
-}
-function iniciarMapa() {
-  if (mapa || !window.maplibregl) return;
-  mapa = new maplibregl.Map({
-    container: 'mapaSedes', ...VISTAS[estado.sede] || VISTAS.todas, maxPitch: 75, minZoom: 14, attributionControl: { compact: true },
-    style: { version: 8, sources: {
-      sat: { type: 'raster', tiles: [SAT], tileSize: 256, maxzoom: 19, attribution: 'Imágenes © Esri, Maxar · Edificios © OpenStreetMap' },
-      etiquetas: { type: 'raster', tiles: [ETIQUETAS], tileSize: 256, maxzoom: 19 },
-    }, layers: [
-      { id: 'sat', type: 'raster', source: 'sat' },
-      { id: 'etiquetas', type: 'raster', source: 'etiquetas', paint: { 'raster-opacity': .85 } },
-    ] },
+let cargaPlantel = null;
+function cargarPlantel() {
+  if (!cargaPlantel) cargaPlantel = new Promise((ok, mal) => {
+    const draco = new DRACOLoader(); draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+    const gl = new GLTFLoader(); gl.setDRACOLoader(draco);
+    gl.load(window.PLANTEL_GLB || 'plantel.glb', g => ok(optimizar(g.scene)), undefined, mal);
   });
-  mapa.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
-  mapa.on('error', () => { if (!navigator.onLine) $('#mapaAviso').hidden = false; });
-  mapa.on('load', () => {
-    mapa.addImage('flecha', flechaImagen());
-    mapa.addSource('edificios', { type: 'geojson', data: MAPA.edificios });
-    mapa.addLayer({ id: 'edificios', type: 'fill-extrusion', source: 'edificios', paint: { 'fill-extrusion-color': COLOR_SEDE, 'fill-extrusion-height': ['get', 'h'], 'fill-extrusion-base': ['get', 'b'], 'fill-extrusion-opacity': .82 } });
-    mapa.addSource('ruta', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, lineMetrics: true });
-    mapa.addLayer({ id: 'ruta-brillo', type: 'line', source: 'ruta', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#b14dff', 'line-width': 22, 'line-blur': 10, 'line-opacity': .55 } });
-    mapa.addLayer({ id: 'ruta', type: 'line', source: 'ruta', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#9b2cff', 'line-width': 9 } });
-    mapa.addLayer({ id: 'ruta-paso', type: 'line', source: 'ruta', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#f3dcff', 'line-width': 3, 'line-dasharray': [0, 4, 3] } });
-    mapa.addLayer({ id: 'ruta-flechas', type: 'symbol', source: 'ruta', layout: { 'symbol-placement': 'line', 'symbol-spacing': 70, 'icon-image': 'flecha', 'icon-size': .42, 'icon-allow-overlap': true, 'icon-rotation-alignment': 'map' } });
-    mapa.addSource('precision', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-    mapa.addLayer({ id: 'precision', type: 'fill', source: 'precision', paint: { 'fill-color': '#3b8bff', 'fill-opacity': .18 } });
-    mapaListo = true;
-    // de lejos solo se ven los íconos; los nombres de salones y puntos aparecen al acercarse
-    const distancia = () => $('#caja').classList.toggle('lejos', mapa.getZoom() < 18.2);
-    mapa.on('zoom', distancia); distancia();
-    pintarLugares(); dibujarPines();
-    if (rutaActual) dibujarRuta(rutaActual);
-    animarPaso();
-  });
+  return cargaPlantel;
 }
-// Las rayitas de la ruta avanzan, para que se entienda hacia dónde ir
-const PASOS_RAYA = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, .5], [3, 4, 0], [0, .5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, .5]];
-let pasoRaya = 0, ultimoPaso = 0;
-function animarPaso(t = 0) {
-  if (mapaListo && rutaActual && t - ultimoPaso > 70 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    ultimoPaso = t; pasoRaya = (pasoRaya + 1) % PASOS_RAYA.length;
-    mapa.setPaintProperty('ruta-paso', 'line-dasharray', PASOS_RAYA[pasoRaya]);
+// Une todo lo que comparte material en una sola pieza: así el teléfono dibuja la maqueta de un tirón
+function optimizar(escena) {
+  escena.updateMatrixWorld(true);
+  const grupos = new Map(), salida = new THREE.Group();
+  escena.traverse(o => {
+    if (!o.isMesh) return;
+    const techo = /TECHO/i.test(o.name) || /TECHO/i.test(o.parent && o.parent.name || '');
+    const k = (techo ? 'T|' : 'N|') + o.material.uuid;
+    const g = o.geometry.clone().applyMatrix4(o.matrixWorld);
+    for (const a of Object.keys(g.attributes)) if (a !== 'position' && a !== 'normal') g.deleteAttribute(a);
+    if (!g.attributes.normal) g.computeVertexNormals();
+    if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+    if (!grupos.has(k)) grupos.set(k, { mat: o.material, techo, geos: [] });
+    grupos.get(k).geos.push(g);
+  });
+  for (const { mat, techo, geos } of grupos.values()) {
+    const m = new THREE.Mesh(mergeGeometries(geos, false), mat);
+    m.castShadow = m.receiveShadow = true; m.userData.techo = techo; salida.add(m);
   }
-  requestAnimationFrame(animarPaso);
+  return salida;
 }
-new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { iniciarMapa(); if (mapa) mapa.resize(); } }, { rootMargin: '200px' }).observe($('#mapa'));
+function textura(dibujar, w = 64, h = 64) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; dibujar(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function cintaGeo(pts, ancho, alto) {
+  // franja a lo largo de la ruta; la coordenada u avanza en metros para que las flechas no se estiren
+  const pos = [], uv = [], idx = []; let u = 0;
+  pts.forEach((p, i) => {
+    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+    let dx = b[0] - a[0], dy = b[1] - a[1]; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    if (i) u += distXY(pts[i - 1], p);
+    const nx = -dy * ancho / 2, ny = dx * ancho / 2;
+    pos.push(p[0] + nx, alto, -(p[1] + ny), p[0] - nx, alto, -(p[1] - ny)); uv.push(u / 6, 1, u / 6, 0);
+    if (i) { const k = i * 2; idx.push(k - 2, k - 1, k, k - 1, k + 1, k); }
+  });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+  return g;
+}
+const TEX_FLECHAS = () => textura((g, w, h) => {
+  g.fillStyle = '#9b2cff'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#f3dcff'; g.lineWidth = 9; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath(); g.moveTo(w * 0.3, h * 0.2); g.lineTo(w * 0.62, h * 0.5); g.lineTo(w * 0.3, h * 0.8); g.stroke();
+});
+const TEX_BRILLO = () => textura((g, w, h) => {
+  const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(177,77,255,0)'); gr.addColorStop(0.5, 'rgba(177,77,255,0.9)'); gr.addColorStop(1, 'rgba(177,77,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+}, 4, 64);
 
-// ---------- Lugares en el mapa ----------
+function crearVisor(caja, { capaHTML }) {
+  const v = { listo: false, marcas: new Map(), alTocar: null, techos: true, cenital: false };
+  const lienzo = document.createElement('canvas'); lienzo.className = 'visor3d'; caja.prepend(lienzo);
+  const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: devicePixelRatio < 2, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled = !matchMedia('(max-width: 640px)').matches; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const escena = new THREE.Scene(); escena.background = new THREE.Color('#0a1430'); escena.fog = new THREE.Fog('#0a1430', 700, 1500);
+  const camara = new THREE.PerspectiveCamera(38, 1, 1, 3000);
+  escena.add(new THREE.HemisphereLight('#dfe9ff', '#3a4a34', 1.15));
+  const sol = new THREE.DirectionalLight('#fff4e0', 2.2); sol.position.copy(V3(-160, -220, 300)); sol.target.position.copy(V3(-30, 0, 0));
+  sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); Object.assign(sol.shadow.camera, { left: -280, right: 280, top: 280, bottom: -280, near: 10, far: 900 }); sol.shadow.bias = -0.0006;
+  escena.add(sol, sol.target);
+  const control = new OrbitControls(camara, lienzo);
+  control.enableDamping = true; control.dampingFactor = 0.08; control.maxPolarAngle = Math.PI * 0.46; control.minDistance = 25; control.maxDistance = 900; control.screenSpacePanning = false;
+  control.addEventListener('change', () => pedir());
+  const ruta = new THREE.Group(), extras = new THREE.Group(); escena.add(ruta, extras);
+  const texFlechas = TEX_FLECHAS(), texBrillo = TEX_BRILLO();
+  let pedido = false, ultimo = 0, tocando = false;
+  function pedir() { if (!pedido) { pedido = true; requestAnimationFrame(cuadro); } }
+  function tam() { const w = caja.clientWidth, h = caja.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camara.aspect = w / h; camara.updateProjectionMatrix(); pedir(); }
+  new ResizeObserver(tam).observe(caja);
+  const vv = new THREE.Vector3();
+  function moverMarcas() {
+    const w = caja.clientWidth, h = caja.clientHeight;
+    capaHTML.classList.toggle('lejos', camara.position.distanceTo(control.target) > 260);
+    for (const m of v.marcas.values()) {
+      vv.copy(m.p).project(camara);
+      const ok = vv.z < 1 && Math.abs(vv.x) < 1.15 && Math.abs(vv.y) < 1.15;
+      m.el.style.display = ok ? '' : 'none';
+      if (ok) m.el.style.transform = `translate(${((vv.x + 1) / 2 * w).toFixed(1)}px, ${((1 - vv.y) / 2 * h).toFixed(1)}px) translate(-50%, ${m.centro ? '-50%' : '-100%'})`;
+    }
+  }
+  function cuadro(t) {
+    pedido = false;
+    const dt = Math.min(0.05, (t - (ultimo || t)) / 1000); ultimo = t;
+    if (v.vuelo) {
+      const k = Math.min(1, (t - v.vuelo.t0) / v.vuelo.dur), e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+      camara.position.lerpVectors(v.vuelo.p0, v.vuelo.p1, e); control.target.lerpVectors(v.vuelo.c0, v.vuelo.c1, e);
+      if (k >= 1) v.vuelo = null;
+    }
+    texFlechas.offset.x -= dt * 0.9;
+    control.update(); renderer.render(escena, camara); moverMarcas();
+    if (v.vuelo || ruta.children.length || tocando) pedir();
+  }
+  v.pedir = pedir;
+  v.volar = (vista, dur = 1400) => {
+    const c = V3(vista.centro[0], vista.centro[1]), d = vista.dist * (v.cenital ? 1.05 : 1);
+    const alto = v.cenital ? 0.999 : vista.alto, r = d * Math.sqrt(1 - alto * alto);
+    const p = c.clone().add(new THREE.Vector3(Math.sin(vista.rumbo) * r, d * alto, Math.cos(vista.rumbo) * r));
+    v.vuelo = { t0: performance.now(), dur, p0: camara.position.clone(), p1: p, c0: control.target.clone(), c1: c }; pedir();
+  };
+  v.ruta = puntos => {
+    ruta.clear();
+    if (!puntos) return pedir();
+    const brillo = new THREE.Mesh(cintaGeo(puntos, 7, 0.32), new THREE.MeshBasicMaterial({ map: texBrillo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    const linea = new THREE.Mesh(cintaGeo(puntos, 2.6, 0.38), new THREE.MeshBasicMaterial({ map: texFlechas }));
+    linea.renderOrder = 2; brillo.renderOrder = 1; ruta.add(brillo, linea); pedir();
+  };
+  v.marca = (id, xy, el, alto = 1.5) => {
+    let m = v.marcas.get(id);
+    if (!m) { el.classList.add('marca3d'); capaHTML.appendChild(el); m = { el, p: new THREE.Vector3(), alto, centro: /yo-mapa|origen-mapa|marca-vivo/.test(el.className + el.innerHTML) }; v.marcas.set(id, m); }
+    m.p.copy(V3(xy[0], xy[1], m.alto)); pedir(); return m.el;
+  };
+  v.quitar = id => { const m = v.marcas.get(id); if (m) { m.el.remove(); v.marcas.delete(id); } };
+  v.quitarSi = filtro => { for (const id of [...v.marcas.keys()]) if (filtro(id)) v.quitar(id); };
+  v.verTechos = si => { v.techos = si; if (v.modelo) v.modelo.children.forEach(m => { if (m.userData.techo) m.visible = si; }); pedir(); };
+  v.aro = (id, xy, radio, color) => {
+    let a = extras.getObjectByName(id);
+    if (!xy) { if (a) extras.remove(a); return pedir(); }
+    if (!a) { a = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.22, depthWrite: false })); a.name = id; a.rotation.x = -Math.PI / 2; extras.add(a); }
+    a.position.copy(V3(xy[0], xy[1], 0.45)); a.scale.setScalar(radio); pedir();
+  };
+  // Tocar el suelo (para poner puntos): se calcula dónde cae sobre el plano del piso
+  const rayo = new THREE.Raycaster(), piso = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), punto = new THREE.Vector3();
+  let abajo = null;
+  lienzo.addEventListener('pointerdown', e => { abajo = [e.clientX, e.clientY]; tocando = true; pedir(); });
+  addEventListener('pointerup', e => {
+    if (!tocando) return; tocando = false; pedir();
+    if (e.target !== lienzo || !abajo || Math.hypot(e.clientX - abajo[0], e.clientY - abajo[1]) > 6 || !v.alTocar) return;
+    const r = lienzo.getBoundingClientRect();
+    rayo.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camara);
+    if (rayo.ray.intersectPlane(piso, punto)) v.alTocar([punto.x, -punto.z]);
+  });
+  v.iniciar = vista => cargarPlantel().then(modelo => {
+    v.modelo = modelo.clone(); escena.add(v.modelo); v.verTechos(v.techos); v.listo = true;
+    const c = V3(vista.centro[0], vista.centro[1]); control.target.copy(c); camara.position.copy(c).add(new THREE.Vector3(0, 300, 250));
+    tam(); v.volar(vista, 1800); return v;
+  });
+  return v;
+}
+
+// ---------- El mapa de las sedes ----------
+let mapa = null, esperaMapa = null, rutaActual = null;
+const capas = { seg: true, vivo: false, admin: false, tresd: true, salones: false };
+function iniciarMapa() {
+  if (!esperaMapa) esperaMapa = cargarLibs().then(() => {
+    mapa = crearVisor($('#caja'), { capaHTML: $('#capaMarcas') });
+    return mapa.iniciar(VISTAS[estado.sede] || VISTAS.todas);
+  }).then(() => {
+    $('#mapaCarga').hidden = true; $('#mapaAviso').hidden = true; pintarLugares(); dibujarPines();
+    if (rutaActual) dibujarRuta(rutaActual, false);
+    mapa.alTocar = alTocarMapa;
+    return mapa;
+  }).catch(e => { $('#mapaCarga').hidden = true; $('#mapaAviso').hidden = false; esperaMapa = null; mapa = null; throw e; });
+  return esperaMapa;
+}
+new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) iniciarMapa().catch(() => {}); }, { rootMargin: '300px' }).observe($('#mapa'));
+
+// ---------- Lugares ----------
 const ICONO_TIPO = { lobby: 'L', salon: 'S', entrada: 'E', terraza: 'T', casino: 'C', referencia: '·', encuentro: 'P' };
-let marcasLugares = [];
 function pintarLugares() {
-  if (!mapaListo) return;
-  marcasLugares.forEach(m => m.remove()); marcasLugares = [];
+  if (!mapa || !mapa.listo) return;
+  mapa.quitarSi(id => id.startsWith('l:'));
   const mio = miSalon() ? lugarDeSalon(miSalon(), ASIGNA[estado.comision][0]) : null;
   for (const l of MAPA.lugares) {
-    if (l.tipo === 'encuentro' && !capas.seg) continue;
+    if ((l.tipo === 'encuentro' && !capas.seg) || l.id === 'gran-salon') continue;
     const el = document.createElement('button'); el.type = 'button';
     el.className = `lugar-mapa s-${l.sede} t-${l.tipo}${mio && mio.id === l.id ? ' mio' : ''}`;
     const coms = Object.entries(ASIGNA).filter(([, a]) => lugarDeSalon(a[1], a[0]).id === l.id).map(([c]) => c);
     el.innerHTML = `<i>${ICONO_TIPO[l.tipo] || '·'}</i><span>${esc(l.n)}${coms.length ? ` <small>${coms.join(', ')}</small>` : ''}</span>`;
-    el.onclick = () => { $('#rDestino').value = l.id; $('#ficha').innerHTML = `<b>${esc(l.n)}</b>${SEDES[l.sede] ? SEDES[l.sede].nombre : ''}${coms.length ? ' · ' + coms.join(', ') : ''}<br><button class="mini" data-ir="${l.id}">Cómo llegar aquí</button>`; };
-    marcasLugares.push(new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(ll2(l.ll)).addTo(mapa));
+    el.onclick = () => { $('#rDestino').value = l.id; fichaLugar(l, coms); };
+    const alto = l.tipo === 'salon' && l.sede === 'sheraton' ? (capas.salones ? 2 : 10) : l.tipo === 'lobby' ? 9 : 4;
+    mapa.marca('l:' + l.id, l.xy, el, alto);
   }
+}
+function fichaLugar(l, coms = []) {
+  $('#ficha').innerHTML = `<b>${esc(l.n)}</b>${SEDES[l.sede] ? SEDES[l.sede].nombre : ''}${coms.length ? ' · ' + coms.join(', ') : ''}<br><button class="mini" data-ir="${l.id}">Cómo llegar aquí</button>`;
 }
 $('#ficha').onclick = e => { const b = e.target.closest('[data-ir]'); if (b) { $('#rDestino').value = b.dataset.ir; irA(); } };
 
@@ -152,18 +276,18 @@ const gruposLugares = () => ['jaragua', 'sheraton', 'malecon'].map(s => `<optgro
 $('#rOrigen').innerHTML = '<option value="gps">Mi ubicación (GPS)</option>' + gruposLugares();
 $('#rDestino').innerHTML = gruposLugares();
 $('#rOrigen').value = 'j-lobby'; $('#rDestino').value = 's-oeste';
-function dibujarRuta(r) {
+function dibujarRuta(r, encuadrar = true) {
   rutaActual = r;
-  if (!mapaListo) return;
-  mapa.getSource('ruta').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: r.puntos.map(ll2) } });
-  if (destinoMarca) destinoMarca.remove();
-  const el = document.createElement('div'); el.className = 'destino-mapa'; el.innerHTML = '<i></i>';
-  destinoMarca = new maplibregl.Marker({ element: el }).setLngLat(ll2(r.destino.ll)).addTo(mapa);
-  if (origenMarca) origenMarca.remove();
-  const eo = document.createElement('div'); eo.className = 'origen-mapa';
-  origenMarca = new maplibregl.Marker({ element: eo }).setLngLat(ll2(r.puntos[0])).addTo(mapa);
-  const b = new maplibregl.LngLatBounds(); r.puntos.forEach(p => b.extend(ll2(p)));
-  mapa.fitBounds(b, { padding: { top: 70, bottom: 70, left: 50, right: 50 }, pitch: capas.tresd ? 55 : 0, bearing: mapa.getBearing(), duration: 1400, maxZoom: 18.6 });
+  if (!mapa || !mapa.listo) return;
+  mapa.ruta(r.puntos);
+  mapa.quitarSi(id => id.startsWith('ruta:'));
+  const d = document.createElement('div'); d.className = 'destino-mapa'; d.innerHTML = '<i></i>'; mapa.marca('ruta:destino', r.destino.xy, d, 3);
+  const o = document.createElement('div'); o.className = 'origen-mapa'; mapa.marca('ruta:origen', r.puntos[0], o, 1);
+  if (encuadrar) {
+    const xs = r.puntos.map(p => p[0]), ys = r.puntos.map(p => p[1]);
+    const c = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2], ext = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+    mapa.volar({ centro: c, dist: Math.max(80, ext * 1.6 + 40), alto: 0.7, rumbo: -0.45 });
+  }
 }
 function pintarRutaTexto(r, nota = '') {
   $('#rCard').hidden = false;
@@ -172,12 +296,12 @@ function pintarRutaTexto(r, nota = '') {
   $('#rNota').innerHTML = nota;
 }
 function irA(origen) {
-  iniciarMapa();
   const o = origen || $('#rOrigen').value, d = $('#rDestino').value;
   if (o === 'gps') return irDesdeGPS(d);
   if (o === d) return toast('El origen y el destino son el mismo lugar');
   const r = calcularRuta(o, d); if (!r) return toast('No encontré un camino entre esos dos lugares');
   pintarRutaTexto(r); dibujarRuta(r);
+  iniciarMapa().then(() => dibujarRuta(r)).catch(() => {});
 }
 $('#rIr').onclick = () => irA();
 $('#rCambiar').onclick = () => { const o = $('#rOrigen').value; if (o === 'gps') return; [$('#rOrigen').value, $('#rDestino').value] = [$('#rDestino').value, o]; irA(); };
@@ -190,14 +314,9 @@ $('#rMiSalon').onclick = () => {
 };
 
 // ---------- GPS del teléfono ----------
-// Afuera el GPS da ±5 a 15 m; bajo techo empeora. Se ignoran las lecturas peores de 60 m, se promedian
-// las últimas (pesan más las precisas) y la ruta se recalcula desde el punto del camino más cercano.
-let gpsId = null, gpsLecturas = [], posGPS = null, yoMarca = null, siguiendo = false, avisoLejos = false;
-function circulo(c, r, n = 48) {
-  const kla = 110540, klo = 111320 * Math.cos(c[0] * Math.PI / 180), pts = [];
-  for (let i = 0; i <= n; i++) { const a = i / n * 2 * Math.PI; pts.push([c[1] + r * Math.sin(a) / klo, c[0] + r * Math.cos(a) / kla]); }
-  return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [pts] } };
-}
+// Afuera el GPS da ±5 a 15 m; bajo techo empeora. Se ignoran las lecturas peores de 60 m y se promedian
+// las últimas (pesan más las precisas). La ruta se recalcula desde el punto del camino más cercano.
+let gpsId = null, gpsLecturas = [], posGPS = null, siguiendo = false, avisoLejos = false;
 function encenderGPS() {
   if (gpsId !== null) return true;
   if (!navigator.geolocation || !isSecureContext) { toast('Este navegador no deja usar el GPS aquí. Elige el lugar donde estás.'); return false; }
@@ -208,47 +327,54 @@ function encenderGPS() {
     if (acc > 60) return;
     gpsLecturas.push([la, lo, acc]); if (gpsLecturas.length > 4) gpsLecturas.shift();
     let w = 0, a = 0, b = 0; for (const [x, y, c] of gpsLecturas) { const k = 1 / (c * c); w += k; a += x * k; b += y * k; }
-    posGPS = [a / w, b / w]; posGPS.acc = Math.round(Math.min(...gpsLecturas.map(l => l[2]))); posGPS.rumbo = heading;
+    const ll = [a / w, b / w];
+    posGPS = { ll, xy: aXY(ll), acc: Math.round(Math.min(...gpsLecturas.map(l => l[2]))), rumbo: heading };
     moverYo();
   }, err => { $('#gpsEstado').textContent = err.code === 1 ? 'Sin permiso de ubicación' : 'No se pudo leer el GPS'; apagarGPS(); }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
   return true;
 }
 function apagarGPS() { if (gpsId !== null) navigator.geolocation.clearWatch(gpsId); gpsId = null; siguiendo = false; $('#rSeguir').classList.remove('on'); }
+const lejosDeSedes = () => posGPS ? Math.min(...Object.values(SEDES_XY).map(s => distXY(posGPS.xy, s))) : Infinity;
 function moverYo() {
-  if (!posGPS || !mapaListo) return;
-  if (!yoMarca) { const el = document.createElement('div'); el.className = 'yo-mapa'; el.innerHTML = '<i></i>'; yoMarca = new maplibregl.Marker({ element: el, rotationAlignment: 'map' }).setLngLat(ll2(posGPS)).addTo(mapa); }
-  yoMarca.setLngLat(ll2(posGPS)); if (posGPS.rumbo != null && !isNaN(posGPS.rumbo)) yoMarca.setRotation(posGPS.rumbo);
-  mapa.getSource('precision').setData(circulo(posGPS, posGPS.acc || 10));
+  if (!posGPS) return;
+  if (mapa && mapa.listo && lejosDeSedes() < 700) {
+    if (!mapa.marcas.has('gps:yo')) { const d = document.createElement('div'); d.className = 'yo-mapa'; d.innerHTML = '<i></i>'; mapa.marca('gps:yo', posGPS.xy, d, 1); } else mapa.marca('gps:yo', posGPS.xy);
+    if (posGPS.rumbo != null && !isNaN(posGPS.rumbo)) mapa.marcas.get('gps:yo').el.querySelector('i').style.rotate = posGPS.rumbo + 'deg';
+    mapa.aro('precision', posGPS.xy, posGPS.acc || 10, '#3b8bff');
+  }
   if (siguiendo) {
-    const d = $('#rDestino').value, dest = LUGAR[d];
-    if (dest && distM(posGPS, dest.ll) < 15) { toast(`Llegaste a ${dest.n}`); siguiendo = false; $('#rSeguir').classList.remove('on'); }
-    else irDesdeGPS(d, true);
+    const dest = LUGAR[$('#rDestino').value];
+    if (dest && distXY(posGPS.xy, dest.xy) < 15) { toast(`Llegaste a ${dest.n}`); siguiendo = false; $('#rSeguir').classList.remove('on'); }
+    else if (dest) irDesdeGPS(dest.id, true);
   }
 }
 function irDesdeGPS(destino, silencioso) {
   if (!encenderGPS()) return;
   if (!posGPS) { if (!silencioso) toast('Esperando la señal del GPS… sal a un lugar abierto si tarda'); setTimeout(() => posGPS && irDesdeGPS(destino, true), 2500); return; }
-  const lejos = Math.min(...Object.values(SEDES_GPS).map(s => distM(posGPS, s)));
-  const dest = LUGAR[destino];
+  const dest = LUGAR[destino], lejos = lejosDeSedes();
   if (lejos > 700) {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${dest.ll[0]},${dest.ll[1]}&travelmode=walking`;
     $('#rCard').hidden = false;
     $('#rResumen').innerHTML = `<b>${(lejos / 1000).toFixed(1)} km</b><span>estás lejos de las sedes</span><span class="r-dest">${esc(dest.n)}</span>`;
     $('#rPasos').innerHTML = '<li>Para llegar hasta el hotel usa Google Maps; cuando estés a menos de 700 m, esta ruta te guía por dentro.</li>';
     $('#rNota').innerHTML = `<a class="boton sec" href="${url}" target="_blank" rel="noopener">Abrir en Google Maps</a>`;
-    if (!avisoLejos) { avisoLejos = true; mapa && mapa.flyTo({ center: ll2(posGPS), zoom: 14 }); }
+    if (!avisoLejos) { avisoLejos = true; toast('Estás fuera de la maqueta: te dejé el enlace a Google Maps'); }
     return;
   }
-  const r = calcularRuta(posGPS, destino); if (!r) return;
+  const r = calcularRuta({ xy: posGPS.xy }, destino); if (!r) return;
   pintarRutaTexto(r, `Tu posición: GPS ±${posGPS.acc} m${posGPS.acc > 25 ? ' · bajo techo el GPS se mueve; guíate por los pasos' : ''}`);
-  if (silencioso && rutaActual) { rutaActual = r; mapa.getSource('ruta').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: r.puntos.map(ll2) } }); if (origenMarca) origenMarca.setLngLat(ll2(r.puntos[0])); }
-  else dibujarRuta(r);
+  dibujarRuta(r, !silencioso);
 }
 $('#rSeguir').onclick = () => {
   siguiendo = !siguiendo; $('#rSeguir').classList.toggle('on', siguiendo);
   if (siguiendo) { $('#rOrigen').value = 'gps'; irDesdeGPS($('#rDestino').value); toast('Te guío con el GPS: la ruta se actualiza mientras caminas'); }
 };
-$('#rCentrar').onclick = () => { if (!encenderGPS()) return; if (posGPS && mapa) mapa.flyTo({ center: ll2(posGPS), zoom: 18.4, duration: 1200 }); else toast('Esperando la señal del GPS…'); };
+$('#rCentrar').onclick = () => {
+  if (!encenderGPS()) return;
+  if (!posGPS) return toast('Esperando la señal del GPS…');
+  if (lejosDeSedes() > 700) return toast('Estás lejos de las sedes: usa «Guíame con el GPS» para abrir Google Maps');
+  if (mapa) mapa.volar({ centro: posGPS.xy, dist: 90, alto: 0.7, rumbo: -0.4 });
+};
 
 // ---------- Sedes y capas ----------
 $('#sedes').innerHTML = [['todas', 'Las dos sedes', 'Jaragua y Sheraton'], ...['jaragua', 'sheraton', 'malecon'].map(k => [k, SEDES[k].nombre, SEDES[k].zona])].map(([k, n, z]) => `<button data-s="${k}"><b>${n}</b><small>${z}</small></button>`).join('');
@@ -256,28 +382,28 @@ $('#sedes').onclick = e => { const b = e.target.closest('button'); if (b) elegir
 function elegirSede(s, volar) {
   estado.sede = VISTAS[s] ? s : 'todas';
   $$('#sedes button').forEach(b => b.classList.toggle('on', b.dataset.s === estado.sede));
-  if (mapa) mapa.flyTo({ ...VISTAS[estado.sede], pitch: capas.tresd ? VISTAS[estado.sede].pitch : 0, duration: 1600 });
+  if (mapa && mapa.listo) mapa.volar(VISTAS[estado.sede], 1600);
   if (volar && miSalon()) mostrarLugar(lugarDeSalon(miSalon(), ASIGNA[estado.comision][0]).id);
   pintarLugares();
 }
 function mostrarLugar(id, texto) {
-  const l = LUGAR[id] || (Array.isArray(id) ? { n: texto || 'Punto', ll: id, sede: '' } : null); if (!l) return;
-  iniciarMapa();
-  const ir = () => mapa.flyTo({ center: ll2(l.ll), zoom: 18.8, pitch: capas.tresd ? 60 : 0, duration: 1500 });
-  if (mapaListo) ir(); else mapa.once('load', ir);
+  const l = LUGAR[id] || (Array.isArray(id) ? { n: texto || 'Punto', xy: aXY(id), sede: '' } : null); if (!l) return;
+  iniciarMapa().then(() => mapa.volar({ centro: l.xy, dist: 85, alto: 0.68, rumbo: -0.4 })).catch(() => {});
+  if (l.sede === 'sheraton' && l.tipo === 'salon' && !capas.salones) activarCapa('salones');
   $('#ficha').innerHTML = `<b>${esc(texto || l.n)}</b>${SEDES[l.sede] ? SEDES[l.sede].nombre : ''}${LUGAR[id] ? `<br><button class="mini" data-ir="${id}">Cómo llegar aquí</button>` : ''}`;
 }
 const mostrarSalon = (salon, sede) => mostrarLugar(lugarDeSalon(salon, sede).id, salon);
 const miSalon = () => estado.comision && ASIGNA[estado.comision] ? ASIGNA[estado.comision][1] : null;
-const BOTON_CAPA = { seg: '#cSeg', vivo: '#cVivo', admin: '#cAdmin', tresd: '#c3d' };
+const BOTON_CAPA = { seg: '#cSeg', vivo: '#cVivo', admin: '#cAdmin', tresd: '#c3d', salones: '#cSalones' };
 function activarCapa(c) {
   capas[c] = !capas[c]; $(BOTON_CAPA[c]).classList.toggle('on', capas[c]);
-  if (c === 'tresd' && mapa) { mapa.easeTo({ pitch: capas.tresd ? 55 : 0, duration: 800 }); if (mapaListo) mapa.setLayoutProperty('edificios', 'visibility', capas.tresd ? 'visible' : 'none'); }
+  if (c === 'tresd' && mapa && mapa.listo) { mapa.cenital = !capas.tresd; mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }
+  if (c === 'salones' && mapa) mapa.verTechos(!capas.salones);
   if (c === 'vivo') pintarVivoMapa();
   if (c === 'admin') toast(capas.admin ? 'Toca el mapa para poner un punto · toca un punto para cambiarlo' : 'Listo, ya no estás editando el mapa');
   pintarLugares(); dibujarPines();
 }
-$('#cSeg').onclick = () => activarCapa('seg'); $('#cVivo').onclick = () => activarCapa('vivo'); $('#cAdmin').onclick = () => activarCapa('admin'); $('#c3d').onclick = () => activarCapa('tresd');
+$('#cSeg').onclick = () => activarCapa('seg'); $('#cVivo').onclick = () => activarCapa('vivo'); $('#cAdmin').onclick = () => activarCapa('admin'); $('#c3d').onclick = () => activarCapa('tresd'); $('#cSalones').onclick = () => activarCapa('salones');
 
 // ---------- Puntos que agrega coordinación (acreditación, baños, salidas…) ----------
 const CATS = {
@@ -286,18 +412,18 @@ const CATS = {
   encuentro: ['Punto de encuentro', '🟢', '#2fd38c', 'seg'], info: ['Información', 'ℹ️', '#45c8ff'], banos: ['Baños', '🚻', '#45c8ff'],
   comida: ['Comida', '🍽️', '#ffd23f'], agua: ['Agua', '💧', '#45c8ff'], prensa: ['Prensa', '📰', '#9aa8cc'], otro: ['Otro', '📍', '#9aa8cc'],
 };
-const cerca = (id, dla, dlo) => [LUGAR[id].ll[0] + dla, LUGAR[id].ll[1] + dlo];
+const cerca = (id, dx, dy) => aLL([LUGAR[id].xy[0] + dx, LUGAR[id].xy[1] + dy]);
 const PUNTOS_INICIALES = [
-  ['Acreditación del staff', 'acreditacion', cerca('j-lobby', .00004, -.00008)], ['Información', 'info', cerca('s-lobby', -.00003, .00005)],
-  ['Primeros auxilios · Jaragua', 'salud', cerca('j-lobby', -.00005, .00009)], ['Primeros auxilios · Sheraton', 'salud', cerca('s-oeste', .00003, .00008)],
-  ['Seguridad del hotel · Jaragua', 'seguridad', cerca('j-lobby', .00008, .00004)], ['Seguridad del hotel · Sheraton', 'seguridad', cerca('s-lobby', .00004, -.00006)],
+  ['Acreditación del staff', 'acreditacion', cerca('j-lobby', -8, 4)], ['Información', 'info', cerca('s-lobby', 6, -4)],
+  ['Primeros auxilios · Jaragua', 'salud', cerca('j-lobby', 9, -6)], ['Primeros auxilios · Sheraton', 'salud', cerca('s-oeste', -4, 6)],
+  ['Seguridad del hotel · Jaragua', 'seguridad', cerca('j-lobby', 4, 9)], ['Seguridad del hotel · Sheraton', 'seguridad', cerca('s-lobby', -6, 4)],
   ['Punto de encuentro · Jaragua', 'encuentro', LUGAR['encuentro-jaragua'].ll], ['Punto de encuentro · Sheraton', 'encuentro', LUGAR['encuentro-sheraton'].ll],
-  ['Salida hacia el Sheraton', 'movilidad', LUGAR['j-este'].ll], ['Comida · Malecón Terrace', 'comida', cerca('malecon-terrace', -.00004, .00006)],
+  ['Salida hacia el Sheraton', 'movilidad', LUGAR['j-este'].ll], ['Comida · Malecón Terrace', 'comida', cerca('malecon-terrace', 6, -6)],
 ].map(([n, cat, ll], i) => ({ id: 'p' + i, n, cat, ll }));
-estado.puntos = leer('puntos-sedes', null) || PUNTOS_INICIALES.map(p => ({ ...p }));
+estado.puntos = leer('puntos-plantel', null) || PUNTOS_INICIALES.map(p => ({ ...p }));
 const catOculta = new Set();
 const verCat = c => !catOculta.has(c) && (!CATS[c][3] || capas[CATS[c][3]]);
-let marcasPuntos = [], editando = null, moviendo = null, nuevo = null, catElegida = 'acreditacion';
+let editando = null, moviendo = null, nuevo = null, catElegida = 'acreditacion';
 function pintarLeyenda() {
   const usadas = [...new Set(estado.puntos.map(q => q.cat))];
   $('#leyenda').innerHTML = usadas.map(k => `<button data-k="${k}" class="${verCat(k) ? '' : 'off'}"><span style="background:${CATS[k][2]}">${CATS[k][1]}</span>${CATS[k][0]}</button>`).join('');
@@ -309,13 +435,13 @@ $('#leyenda').onclick = e => {
 };
 function dibujarPines() {
   pintarLeyenda();
-  if (!mapaListo) return;
-  marcasPuntos.forEach(m => m.remove()); marcasPuntos = [];
+  if (!mapa || !mapa.listo) return;
+  mapa.quitarSi(id => id.startsWith('p:'));
   for (const q of estado.puntos.filter(x => verCat(x.cat) && x.ll)) {
     const el = document.createElement('button'); el.type = 'button'; el.className = 'punto-mapa' + (editando === q.id ? ' editando' : '');
     el.innerHTML = `<i style="background:${CATS[q.cat][2]}">${CATS[q.cat][1]}</i><span>${esc(q.n)}</span>`;
     el.onclick = ev => { ev.stopPropagation(); tocarPunto(q.id); };
-    marcasPuntos.push(new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(ll2(q.ll)).addTo(mapa));
+    mapa.marca('p:' + q.id, aXY(q.ll), el, 2.5);
   }
 }
 $('#pIconos').innerHTML = Object.entries(CATS).map(([k, [n, ic, c]]) => `<button data-k="${k}"><span style="background:${c}">${ic}</span>${n}</button>`).join('');
@@ -336,26 +462,26 @@ $('#pGuardar').onclick = () => {
   const n = $('#pNombre').value.trim() || CATS[catElegida][0];
   if (editando) { const q = estado.puntos.find(x => x.id === editando); q.n = n; q.cat = catElegida; toast('Punto actualizado'); }
   else if (nuevo) { estado.puntos.push({ id: 'u' + Date.now(), n, cat: catElegida, ll: nuevo }); toast(`"${n}" agregado al mapa`); }
-  guardar('puntos-sedes', estado.puntos); cerrarEditor();
+  guardar('puntos-plantel', estado.puntos); cerrarEditor();
 };
-$('#pBorrar').onclick = () => { estado.puntos = estado.puntos.filter(x => x.id !== editando); guardar('puntos-sedes', estado.puntos); toast('Punto borrado'); cerrarEditor(); };
+$('#pBorrar').onclick = () => { estado.puntos = estado.puntos.filter(x => x.id !== editando); guardar('puntos-plantel', estado.puntos); toast('Punto borrado'); cerrarEditor(); };
 $('#pMover').onclick = () => { moviendo = editando; $('#modal').classList.remove('on'); toast('Toca en el mapa el nuevo lugar del punto'); };
 $('#pCancelar').onclick = () => { moviendo = null; cerrarEditor(); };
-function alTocarMapa(e) {
+function alTocarMapa(xy) {
   if (!capas.admin) return;
-  const ll = [+e.lngLat.lat.toFixed(7), +e.lngLat.lng.toFixed(7)];
-  if (moviendo) { const q = estado.puntos.find(x => x.id === moviendo); if (q) q.ll = ll; moviendo = null; editando = null; guardar('puntos-sedes', estado.puntos); dibujarPines(); toast('Punto movido'); return; }
+  const ll = aLL(xy).map(n => +n.toFixed(7));
+  if (moviendo) { const q = estado.puntos.find(x => x.id === moviendo); if (q) q.ll = ll; moviendo = null; editando = null; guardar('puntos-plantel', estado.puntos); dibujarPines(); toast('Punto movido'); return; }
   nuevo = ll; abrirEditor(null);
 }
-const esperarMapa = setInterval(() => { if (mapa) { mapa.on('click', alTocarMapa); clearInterval(esperarMapa); } }, 500);
 
-// ---------- Equipo en vivo sobre el mapa (Seguridad, Traslado y Coordinación) ----------
-let marcasVivo = {};
+// ---------- Equipo en vivo sobre este mapa (Seguridad, Traslado y Coordinación) ----------
 function pintarVivoMapa() {
-  if (!capas.vivo || !mapaListo || typeof equipoAhora !== 'function') { Object.values(marcasVivo).forEach(m => m.remove()); marcasVivo = {}; return; }
+  if (!mapa || !mapa.listo) return;
+  if (!capas.vivo || typeof equipoAhora !== 'function') { mapa.quitarSi(id => id.startsWith('v:')); return; }
   for (const x of equipoAhora(performance.now() / 1000)) {
-    if (!marcasVivo[x.p.id]) { const el = document.createElement('div'); el.innerHTML = marcaHTML(x.p, x.yo); marcasVivo[x.p.id] = new maplibregl.Marker({ element: el }).setLngLat(ll2(x.pos)).setPopup(new maplibregl.Popup({ offset: 20, closeButton: false }).setHTML(`<b>${esc(x.p.n)}</b><br>${esc(x.p.det)}`)).addTo(mapa); }
-    marcasVivo[x.p.id].setLngLat(ll2(x.pos));
+    const id = 'v:' + x.p.id;
+    if (!mapa.marcas.has(id)) { const el = document.createElement('div'); el.innerHTML = marcaHTML(x.p, x.yo); el.title = `${x.p.n} · ${x.p.det}`; mapa.marca(id, x.xy, el, 2); }
+    else mapa.marca(id, x.xy);
   }
 }
 setInterval(() => { if (capas.vivo) pintarVivoMapa(); }, 1000);

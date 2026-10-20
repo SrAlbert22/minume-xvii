@@ -5,7 +5,9 @@
   .sedes button.on { border-color: #9b2cff; background: rgba(155, 44, 255, .14); }
   .mapa-sedes-rejilla { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; align-items: start; }
   .lienzo-caja { position: relative; height: min(70vh, 620px); border-radius: var(--radio); overflow: hidden; border: 1px solid var(--borde); background: #0a1228; }
-  #mapaSedes { position: absolute; inset: 0; }
+  .visor3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .capa-marcas { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+  .marca3d { position: absolute; left: 0; top: 0; pointer-events: auto; will-change: transform; }
   .capa-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--suave); padding: 30px; background: rgba(5, 10, 26, .75); z-index: 4; }
   .capa-msg b { color: var(--texto); font: 800 26px 'Barlow Condensed'; display: block; }
   .controles { position: absolute; top: 12px; left: 12px; display: flex; gap: 7px; flex-wrap: wrap; max-width: calc(100% - 70px); z-index: 3; }

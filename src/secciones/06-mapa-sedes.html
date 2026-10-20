@@ -1,19 +1,21 @@
   <!-- 02 · Mapa de las sedes -->
   <section id="mapa">
     <div class="titulo-sec"><span class="n">02</span><h2>Mapa de las sedes</h2></div>
-    <p class="lead">Foto satelital real del Renaissance Jaragua, el Sheraton y el Malecón Terrace. Elige a dónde vas y la ruta morada te lleva caminando, paso a paso.</p>
+    <p class="lead">Maqueta 3D del Renaissance Jaragua, el Sheraton y el Malecón Terrace. Gira con el dedo, acerca y aleja. Elige a dónde vas y la ruta morada te lleva caminando, paso a paso.</p>
     <div class="sedes" id="sedes"></div>
     <div class="mapa-sedes-rejilla">
       <div class="lienzo-caja" id="caja">
-        <div id="mapaSedes"></div>
-        <div class="capa-msg" id="mapaAviso" hidden><div><b>Sin internet</b>Las partes del mapa que ya viste siguen guardadas. Los pasos de la ruta funcionan igual.</div></div>
+        <div class="capa-marcas" id="capaMarcas"></div>
+        <div class="capa-msg" id="mapaCarga"><div><b>Cargando la maqueta…</b>Unos segundos la primera vez; después abre sin internet.</div></div>
+        <div class="capa-msg" id="mapaAviso" hidden><div><b>No se pudo cargar la maqueta 3D</b>Hace falta internet la primera vez. Los pasos de «Cómo llegar» funcionan igual.</div></div>
         <div class="controles">
           <button id="c3d" class="on">🧊 3D</button>
+          <button id="cSalones">🏛️ Salones por dentro</button>
           <button id="cSeg" class="seg on">🛡️ Seguridad</button>
           <button id="cVivo" class="vivo" data-roles="seguridad traslado coordinacion">📡 Equipo en vivo</button>
           <button id="cAdmin" class="admin" data-roles="coordinacion">✏️ Editar mapa</button>
         </div>
-        <div class="ficha" id="ficha"><b>¿A dónde vas?</b>Toca un lugar del mapa o elige desde dónde y hasta dónde.</div>
+        <div class="ficha" id="ficha"><b>¿A dónde vas?</b>Toca un lugar de la maqueta o elige desde dónde y hasta dónde.</div>
         <div class="modal" id="modal"><div class="tarjeta" style="width:min(420px,calc(100% - 24px));background:#0c1736;max-height:calc(100% - 24px);overflow:auto">
           <b class="cond" style="font-size:24px" id="pTitulo">Nuevo punto</b>
           <label for="pNombre">¿Qué hay aquí?</label><input id="pNombre" placeholder="Ej.: Mesa de acreditación">

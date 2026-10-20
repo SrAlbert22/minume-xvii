@@ -218,7 +218,7 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
       <p>Escríbelo y la página te lleva al sistema de tu equipo, con tu nombre y lo que te toca.</p>
       <div class="campo">
         <label for="codigo" class="eti" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Código personal</label>
-        <input id="codigo" placeholder="AS-0000" maxlength="9" autocapitalize="characters" spellcheck="false" inputmode="text">
+        <input id="codigo" placeholder="AS-7KQ2MX" maxlength="11" autocapitalize="characters" spellcheck="false" inputmode="text">
         <button class="boton" id="bEntrar" type="submit" disabled>Entrar <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
       <div class="detecta" id="detecta" aria-live="polite"></div>
@@ -294,7 +294,7 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
     <h3 id="vTit">Entra con tu código</h3>
     <p id="vTxt">Para abrir esta parte necesitas entrar con tu código personal.</p>
     <label for="vCodigo" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Código personal</label>
-    <div class="campo"><input id="vCodigo" placeholder="AS-0000" maxlength="9" autocapitalize="characters" spellcheck="false"></div>
+    <div class="campo"><input id="vCodigo" placeholder="AS-7KQ2MX" maxlength="11" autocapitalize="characters" spellcheck="false"></div>
     <div class="detecta" id="vDetecta" aria-live="polite"></div>
     <div class="acciones"><button class="boton sec" type="button" id="vCerrar">Cancelar</button><button class="boton" type="submit">Entrar</button></div>
   </form>
@@ -518,7 +518,7 @@ function detectar(cod) {
   if (c.startsWith('AC')) return { error: 'Acreditación todavía no tiene sistema propio. Pídele tu acceso a coordinación.' };
   if (!c) return null;
   if (!p) return c.length >= 2 ? { error: 'Ese código no corresponde a ningún equipo. Revisa las dos primeras letras.' } : null;
-  return { sis: p[0], rol: p[1], completo: /^[A-Z]{2}-\d{4}$/.test(c), codigo: c };
+  return { sis: p[0], rol: p[1], completo: /^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(c), codigo: c };
 }
 function pintarDetecta(el, r) {
   if (!r) { el.innerHTML = ''; return; }
@@ -532,7 +532,7 @@ function abrir(sis, codigo, seccion) {
 }
 $('#codigo').addEventListener('input', e => {
   e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  if (/^[A-Z]{2}\d/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
+  if (/^[A-Z]{2}[A-Z0-9]/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
   const r = detectar(e.target.value); pintarDetecta($('#detecta'), r);
   $('#bEntrar').disabled = !(r && r.completo);
 });
@@ -560,7 +560,7 @@ $('#velo').addEventListener('click', e => { if (e.target.id === 'velo') cerrarVe
 addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#velo').hidden) cerrarVentana(); });
 $('#vCodigo').addEventListener('input', e => {
   e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  if (/^[A-Z]{2}\d/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
+  if (/^[A-Z]{2}[A-Z0-9]/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
   const r = detectar(e.target.value);
   if (r && r.sis && pendiente && r.sis !== pendiente.sis) { $('#vDetecta').innerHTML = `<span class="error">Ese código es de ${EQUIPOS[r.sis].nombre}, no de ${EQUIPOS[pendiente.sis].nombre}.</span>`; return; }
   pintarDetecta($('#vDetecta'), r);

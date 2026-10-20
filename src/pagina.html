@@ -7,8 +7,7 @@
 <meta name="robots" content="noindex">
 <title>MINUME XVII · Staff</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -53,8 +52,8 @@
     <span class="chip">Acceso del equipo</span>
     <h3>Entra con tu código</h3>
     <label for="codigo">Tu código personal</label>
-    <div class="ent-campo"><input id="codigo" class="codigo" placeholder="AS-0000" maxlength="7" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false"><span class="ent-ok" id="entOk" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-    <div class="ent-detecta" id="entDetecta" aria-live="polite">Son dos letras de tu equipo y cuatro números. Ejemplo: AS-4821.</div>
+    <div class="ent-campo"><input id="codigo" class="codigo" placeholder="AS-7KQ2MX" maxlength="11" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false"><span class="ent-ok" id="entOk" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+    <div class="ent-detecta" id="entDetecta" aria-live="polite">Son dos letras de tu equipo, un guion y el resto de tu código.</div>
     <div class="error" id="codError" role="alert"></div>
     <button class="boton" id="bEntrar" disabled>Entrar</button>
     <div class="ent-red" id="entRed" hidden>Sin internet. Si ya entraste antes en este teléfono, tus datos siguen aquí.</div>
@@ -62,7 +61,7 @@
     <div class="prueba"><b>Códigos de prueba (solo en esta demo):</b><br>
     <button data-c="AS-4821">AS-4821 · Asistencia</button><button data-c="SE-1093">SE-1093 · Seguridad</button><button data-c="TR-5570">TR-5570 · Traslado</button><button data-c="AC-3307">AC-3307 · Acreditación</button><button data-c="CO-0001">CO-0001 · Coordinación</button><button data-c="BI-2207">BI-2207 · Bienestar físico</button><button data-c="BI-3318">BI-3318 · Bienestar emocional</button><button data-c="EP-2603">EP-2603 · Eventos y Protocolo</button><button data-c="CG-0001">CG-0001 · Coordinación general</button>
     </div>
-    <p class="ent-nota">En la versión real, coordinación genera los códigos; se guardan cifrados, caducan al terminar el evento y se anulan si alguien pierde el suyo.</p>
+    <p class="ent-nota">Coordinación general crea los códigos. El servidor los guarda cifrados, bloquea a quien prueba muchos seguidos y los anula si alguien pierde el suyo.</p>
   </div>
 </div></div>
 <button class="subir" id="subir" type="button" aria-label="Ir al inicio de la página" title="Ir al inicio de la página"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
@@ -146,7 +145,7 @@
 @@html secciones/29-que-mejora.html
 </main>
 
-<footer>Hecho por Albert Silvestre · Mapa: imágenes © Esri, Maxar y contornos © OpenStreetMap · Asignación de salones y horarios de ejemplo</footer>
+<footer>Hecho por Albert Silvestre · Maqueta 3D propia con datos de © OpenStreetMap · Asignación de salones y horarios de ejemplo</footer>
 
 <div class="sos-velo" id="sosVelo"><div class="tarjeta">
   <b class="cond" style="font-size:30px;color:#ff8a95">🚨 Avisar a Seguridad</b>
@@ -207,6 +206,7 @@
 @@js js/modulo/23-eventos-y-protocolo.js
 @@js js/modulo/23-plano-de-asientos.js
 @@js js/modulo/24-editor-de-datos.js
+@@js js/modulo/24-codigos-de-acceso.js
 @@js js/modulo/25-reportes.js
 @@js js/modulo/26-arranque.js
 </script>

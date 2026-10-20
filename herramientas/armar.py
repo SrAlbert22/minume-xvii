@@ -6,7 +6,7 @@
 # Salidas:
 #   dist/    lo que se publica en Vercel: el Inicio y un sistema por equipo, instalables como app
 #   enviar/  cada sistema en un solo archivo .html, para mandarlo por WhatsApp o correo
-import json, pathlib, re, shutil, sys, time
+import base64, json, pathlib, re, shutil, sys, time
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -19,6 +19,7 @@ from ensamblar import ensamblar
 # lo que protege los datos son las reglas de la base (ver supabase/).
 SUPABASE = {'url': 'https://fakkqpwgidjvodippxup.supabase.co', 'key': 'sb_publishable_3C3Jueq_dsv75UwmOm0UnA_b-tlgAXc'}
 CONFIG_JS = 'window.MINUME_SUPABASE = ' + json.dumps(SUPABASE) + ';'
+VERCEL = {'projectId': 'prj_dPyGbtm0VXXcpsgpDQXKcljhDQCd', 'orgId': 'team_8yZKZPf2aSv323isiAlHJwte', 'projectName': 'minume-xvii'}
 
 #            carpeta        archivo para enviar        nombre                    corto           color      letra
 SISTEMAS = {
@@ -33,17 +34,21 @@ ICONOS = {'inicio': ('#45c8ff', 'M')} | {c: (v[3], v[4]) for c, v in SISTEMAS.it
 # Cabeceras de seguridad para Vercel (la política de contenido solo deja cargar lo que la página usa)
 CSP = '; '.join([
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net",
-    "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com",
+    "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https://server.arcgisonline.com https://*.tile.openstreetmap.org https://tiles.openfreemap.org",
-    "connect-src 'self' https://fakkqpwgidjvodippxup.supabase.co wss://fakkqpwgidjvodippxup.supabase.co https://cdn.jsdelivr.net https://unpkg.com https://server.arcgisonline.com https://tiles.openfreemap.org",
+    "img-src 'self' data: blob:",
+    "connect-src 'self' data: blob: https://fakkqpwgidjvodippxup.supabase.co wss://fakkqpwgidjvodippxup.supabase.co https://cdn.jsdelivr.net",
     "worker-src 'self' blob:",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
     "object-src 'none'",
 ])
+TRES = 'https://cdn.jsdelivr.net/npm/three@0.160.0/'
+LIBS_3D = [TRES + 'build/three.module.js'] + [TRES + 'examples/jsm/' + r for r in (
+    'controls/OrbitControls.js', 'loaders/GLTFLoader.js', 'loaders/DRACOLoader.js', 'utils/BufferGeometryUtils.js',
+    'libs/draco/gltf/draco_decoder.js', 'libs/draco/gltf/draco_decoder.wasm', 'libs/draco/gltf/draco_wasm_wrapper.js')]
 CABECERAS = [
     {'key': 'Content-Security-Policy', 'value': CSP},
     {'key': 'Strict-Transport-Security', 'value': 'max-age=63072000; includeSubDomains; preload'},
@@ -92,11 +97,16 @@ def escribir(ruta, texto):
 
 def main():
     base = ensamblar()
+    glb = SRC / 'plantel.glb'
+    glb64 = base64.b64encode(glb.read_bytes()).decode()
     for d in (DIST, ENVIAR):
         if d.exists():
             shutil.rmtree(d)
         d.mkdir()
     (DIST / 'iconos').mkdir()
+    # enlace al proyecto de Vercel (minume-xvii.vercel.app) para publicar con: npx vercel deploy --prod desde dist/
+    escribir(DIST / '.vercel' / 'project.json', json.dumps(VERCEL))
+    shutil.copy(glb, DIST / 'plantel.glb')
     for c, (col, le) in ICONOS.items():
         for t in (180, 192, 512):
             icono(DIST / 'iconos' / f'{c}-{t}.png', t, col, le)
@@ -106,10 +116,10 @@ def main():
     assert base.count(marca) == 1
     for clave, (archivo, nombre, corto, _, _) in SISTEMAS.items():
         elige = f'{marca}\n<script>window.MINUME_SISTEMA = "{clave}"; {CONFIG_JS}</script>'
-        publicado = base.replace(marca, elige.replace('</script>', ' window.MINUME_INICIO = "../index.html";</script>') + '\n' + etiquetas_app(f'../iconos/{clave}', '../sw.js'), 1)
+        publicado = base.replace(marca, elige.replace('</script>', ' window.PLANTEL_GLB = "../plantel.glb"; window.MINUME_INICIO = "../index.html";</script>') + '\n' + etiquetas_app(f'../iconos/{clave}', '../sw.js'), 1)
         escribir(DIST / clave / 'index.html', publicado)
         escribir(DIST / clave / 'manifest.webmanifest', manifest(f'MINUME XVII · {nombre}', corto, f'../iconos/{clave}', './'))
-        suelto = base.replace(marca, elige.replace('</script>', ' window.MINUME_INICIO = "Inicio-MINUME.html";</script>'), 1)
+        suelto = base.replace(marca, elige.replace('</script>', f' window.PLANTEL_GLB = "data:model/gltf-binary;base64,{glb64}"; window.MINUME_INICIO = "Inicio-MINUME.html";</script>'), 1)
         escribir(ENVIAR / f'MINUME-{archivo}.html', suelto)
 
     # El Inicio usa los mismos bloques de sincronización y reportes que los sistemas
@@ -124,8 +134,8 @@ def main():
     escribir(DIST / 'manifest.webmanifest', manifest('MINUME XVII · Staff', 'MINUME', 'iconos/inicio', './index.html'))
 
     # Service worker: guarda lo necesario para abrir sin internet
-    libs = sorted(set(re.findall(r"https://cdn\.jsdelivr\.net/npm/[^']+\.js", motor)))
-    precarga = ['./', './index.html', './manifest.webmanifest'] + [f'./iconos/{c}-{t}.png' for c in ICONOS for t in (180, 192, 512)]
+    libs = sorted(set(re.findall(r"https://cdn\.jsdelivr\.net/npm/[^']+\.js", motor))) + LIBS_3D
+    precarga = ['./', './index.html', './manifest.webmanifest', './plantel.glb'] + [f'./iconos/{c}-{t}.png' for c in ICONOS for t in (180, 192, 512)]
     for c in SISTEMAS:
         precarga += [f'./{c}/', f'./{c}/index.html', f'./{c}/manifest.webmanifest']
     sw = (SRC / 'sw.js').read_text(encoding='utf-8')

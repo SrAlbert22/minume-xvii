@@ -7,7 +7,7 @@
 const VERSION = 'minume-__VERSION__';
 const PRECARGA = __PRECARGA__;
 const LIBS = __LIBS__;
-const CDN = /^https:\/\/(unpkg\.com|cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
+const CDN = /^https:\/\/(cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
 const MAPA = /^https:\/\/(server\.arcgisonline\.com|tiles\.openfreemap\.org)\//;
 const MAX_MAPA = 600;
 

@@ -205,6 +205,7 @@ function pintarBotonesEditar() { $$('[data-editar]').forEach(b => { b.hidden = !
 // ---------- «Datos del evento»: todo lo editable en un solo lugar (coordinación) ----------
 function pintarDatos() {
   pintarBotonesEditar();
+  if (typeof pintarCodigos === 'function') pintarCodigos();
   const sec = $('#datos'); if (!sec || !estado.usuario) return;
   $('#datosGrid').innerHTML = ORDEN_DATOS.filter(puedeEditar).map(k => {
     const d = DATOS[k], n = d.leer().length, q = leerComp(CFG(k) + '.quien', null), cambiado = !!leerComp(CFG(k), null);

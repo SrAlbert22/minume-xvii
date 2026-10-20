@@ -25,6 +25,8 @@ SEDES = next(c for c in (os.path.dirname(CARPETA), os.path.join(os.path.expandus
 ARGS = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 HACER_RENDER, HACER_VIDEO = 'render' in ARGS, 'video' in ARGS
 random.seed(17)
+# Dentro de la maqueta del plantel (blender/plantel) este script solo arma el hotel
+PLANTEL = globals().get('PLANTEL', False)
 
 # ---------------- Ajustes ----------------
 PISOS = 11              # pisos de habitaciones (las fichas dicen 10 u 11)
@@ -213,45 +215,46 @@ M = {
 }
 
 # ---------------- Suelo: foto satelital real ----------------
-la_n, lo_o = tile_a_latlon(TILE_X, TILE_Y)
-la_s, lo_e = tile_a_latlon(TILE_X + FOTO_W / 256, TILE_Y + FOTO_H / 256)
-a, b = geo(la_n, lo_o), geo(la_s, lo_e)
-bpy.ops.mesh.primitive_plane_add(size=1, location=((a.x + b.x) / 2, (a.y + b.y) / 2, -0.05))
-suelo = enlazar(bpy.context.active_object, C_SUELO); suelo.name = 'Suelo satelital'
-suelo.scale = (abs(b.x - a.x), abs(a.y - b.y), 1)
-ms = bpy.data.materials.new('Satélite'); ms.use_nodes = True
-img = ms.node_tree.nodes.new('ShaderNodeTexImage'); img.image = bpy.data.images.load(os.path.join(SEDES, 'satelite_zona.jpg'))
-pb = ms.node_tree.nodes['Principled BSDF']; pb.inputs['Roughness'].default_value = 1
-ms.node_tree.links.new(img.outputs['Color'], pb.inputs['Base Color']); suelo.data.materials.append(ms)
-bpy.ops.mesh.primitive_plane_add(size=5000, location=(0, 0, -0.3))
-enlazar(bpy.context.active_object, C_SUELO).data.materials.append(material('Fondo', (0.05, 0.08, 0.12), 1))
+if not PLANTEL:
+    la_n, lo_o = tile_a_latlon(TILE_X, TILE_Y)
+    la_s, lo_e = tile_a_latlon(TILE_X + FOTO_W / 256, TILE_Y + FOTO_H / 256)
+    a, b = geo(la_n, lo_o), geo(la_s, lo_e)
+    bpy.ops.mesh.primitive_plane_add(size=1, location=((a.x + b.x) / 2, (a.y + b.y) / 2, -0.05))
+    suelo = enlazar(bpy.context.active_object, C_SUELO); suelo.name = 'Suelo satelital'
+    suelo.scale = (abs(b.x - a.x), abs(a.y - b.y), 1)
+    ms = bpy.data.materials.new('Satélite'); ms.use_nodes = True
+    img = ms.node_tree.nodes.new('ShaderNodeTexImage'); img.image = bpy.data.images.load(os.path.join(SEDES, 'satelite_zona.jpg'))
+    pb = ms.node_tree.nodes['Principled BSDF']; pb.inputs['Roughness'].default_value = 1
+    ms.node_tree.links.new(img.outputs['Color'], pb.inputs['Base Color']); suelo.data.materials.append(ms)
+    bpy.ops.mesh.primitive_plane_add(size=5000, location=(0, 0, -0.3))
+    enlazar(bpy.context.active_object, C_SUELO).data.materials.append(material('Fondo', (0.05, 0.08, 0.12), 1))
 
-# Edificios vecinos de OpenStreetMap (bajos de detalle, para dar contexto)
-SHERATON_OSM = {272974124, 1454933037}
-TORRE_JARAGUA = [(318, 352), (395, 333), (440, 465), (360, 490)]
-def foto(px, py):
-    return geo(*tile_a_latlon(TILE_X + px * 2 / 256, TILE_Y + py * 2 / 256))
-for e in json.load(open(os.path.join(SEDES, 'datos_osm_zona.json'), encoding='utf-8'))['elements']:
-    t, g = e.get('tags', {}), e.get('geometry')
-    if e['type'] != 'way' or 'building' not in t or not g or e['id'] in SHERATON_OSM:
-        continue
-    pts = [geo(p['lat'], p['lon']) for p in g]
-    if (pts[0] - pts[-1]).length < 0.1:
-        pts = pts[:-1]
-    if len(pts) < 3 or not all(min(a.x, b.x) + 5 < q.x < max(a.x, b.x) - 5 and min(a.y, b.y) + 5 < q.y < max(a.y, b.y) - 5 for q in pts):
-        continue
-    if e['id'] == 177332379:
-        prisma_mundo('Renaissance Jaragua', pts, 0, 14, M['jaragua'], C_SUELO)
-        continue
-    alto = 8.0
-    if 'building:levels' in t:
-        try: alto = float(t['building:levels']) * 3.2
-        except ValueError: pass
-    prisma_mundo(t.get('name', 'Vecino'), pts, 0, alto, M['zona'], C_SUELO)
-prisma_mundo('Torre del Jaragua', [foto(*p) for p in TORRE_JARAGUA], 14, 35, M['jaragua'], C_SUELO)
+    # Edificios vecinos de OpenStreetMap (bajos de detalle, para dar contexto)
+    SHERATON_OSM = {272974124, 1454933037}
+    TORRE_JARAGUA = [(318, 352), (395, 333), (440, 465), (360, 490)]
+    def foto(px, py):
+        return geo(*tile_a_latlon(TILE_X + px * 2 / 256, TILE_Y + py * 2 / 256))
+    for e in json.load(open(os.path.join(SEDES, 'datos_osm_zona.json'), encoding='utf-8'))['elements']:
+        t, g = e.get('tags', {}), e.get('geometry')
+        if e['type'] != 'way' or 'building' not in t or not g or e['id'] in SHERATON_OSM:
+            continue
+        pts = [geo(p['lat'], p['lon']) for p in g]
+        if (pts[0] - pts[-1]).length < 0.1:
+            pts = pts[:-1]
+        if len(pts) < 3 or not all(min(a.x, b.x) + 5 < q.x < max(a.x, b.x) - 5 and min(a.y, b.y) + 5 < q.y < max(a.y, b.y) - 5 for q in pts):
+            continue
+        if e['id'] == 177332379:
+            prisma_mundo('Renaissance Jaragua', pts, 0, 14, M['jaragua'], C_SUELO)
+            continue
+        alto = 8.0
+        if 'building:levels' in t:
+            try: alto = float(t['building:levels']) * 3.2
+            except ValueError: pass
+        prisma_mundo(t.get('name', 'Vecino'), pts, 0, alto, M['zona'], C_SUELO)
+    prisma_mundo('Torre del Jaragua', [foto(*p) for p in TORRE_JARAGUA], 14, 35, M['jaragua'], C_SUELO)
 
 # ---------------- Torre: 11 pisos con los balcones en diente de sierra ----------------
-LARGO_T, ANCHO_T, DIENTES, SALIENTE = 68.0, 22.0, 9, 3.6
+LARGO_T, ANCHO_T, DIENTES, SALIENTE = 68.0, 22.0, 9, 2.2
 Y0_T = -12.0
 def planta_torre(m=0.0):
     """Contorno de un piso. La fachada oeste es en diente de sierra (así se ve en el satélite)."""
@@ -470,8 +473,9 @@ for i in range(26):
     if -3 < x < 20 and -34 < y < -15:
         continue
     ob = poner(PALMA, 'Palma', x, y, 0.3, random.uniform(0, 360), C_EXTERIOR); ob.scale = (1, 1, random.uniform(0.8, 1.2))
-for y in range(-6, 60, 9):
-    poner(PALMA, 'Palma calle interna', -15, y, 0, random.uniform(0, 360), C_EXTERIOR)
+if not PLANTEL:
+    for y in range(-6, 60, 9):
+        poner(PALMA, 'Palma calle interna', -15, y, 0, random.uniform(0, 360), C_EXTERIOR)
 
 # ---------------- Malecón Terrace: carpa de 36 x 23 m con montaje de banquete ----------------
 TX0, TY0, TX1, TY1 = 3.8, 89.0, 26.8, 125.0
@@ -503,117 +507,119 @@ for fx in range(4):
 texto('MALECÓN TERRACE\n36 x 23 m · banquete', (TX0 + TX1) / 2, TY0 - 2.5, 0.4, 1.6, M['texto'], C_TEXTOS)
 
 # ---------------- Ruta a pie desde el Jaragua (trazada sobre el satélite) ----------------
-rutas = json.load(open(os.path.join(SEDES, 'rutas_y_puntos.json'), encoding='utf-8'))['rutas']
-def linea_ruta(nombre, pts):
-    cu = bpy.data.curves.new(nombre, 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.55; cu.bevel_resolution = 2
-    sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
-    for i, p in enumerate(pts):
-        sp.points[i].co = (p.x, p.y, 0.9, 1)
-    ob = bpy.data.objects.new(nombre, cu); ob.data.materials.append(M['ruta']); C_RUTA.objects.link(ob)
-    resto = 6.0
-    for a, b in zip(pts, pts[1:]):         # flechas cada 12 m
-        d = b - a; L = d.length; s = resto
-        while s < L:
-            q = a + d * (s / L)
-            bm = bmesh.new(); r = bmesh.ops.create_cone(bm, cap_ends=True, segments=3, radius1=1.4, radius2=0, depth=2.2)
-            mm = bpy.data.meshes.new('Flecha'); bm.to_mesh(mm); bm.free()
-            f = bpy.data.objects.new(f'{nombre} · flecha', mm); f.data.materials.append(M['ruta'])
-            f.location = (q.x, q.y, 1.4); f.rotation_euler = (0, math.pi / 2, math.atan2(d.y, d.x)); C_RUTA.objects.link(f)
-            s += 12.0
-        resto = s - L
-R_JS = [geo(la, lo) for la, lo in rutas['jaragua-sheraton']['puntos']] + [P(-6.5, -8)]
-R_SM = [P(-6.5, -8), P(-20, -6), P(-20, 64), P(-8, 104), P(TX0 + 0.5, 107)]
-linea_ruta('Ruta Jaragua → Sheraton (entrada oeste)', R_JS)
-linea_ruta('Ruta Sheraton → Malecón Terrace', R_SM)
-texto(f"{rutas['jaragua-sheraton']['metros']} m · {rutas['jaragua-sheraton']['minutos_caminando']:.0f} min a pie desde el Jaragua",
-      0, 0, 0, 3.0, M['texto'], C_TEXTOS, mundo=R_JS[len(R_JS) // 2] + Vector((0, 0, 3)))
+if not PLANTEL:
+    rutas = json.load(open(os.path.join(SEDES, 'rutas_y_puntos.json'), encoding='utf-8'))['rutas']
+    def linea_ruta(nombre, pts):
+        cu = bpy.data.curves.new(nombre, 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.55; cu.bevel_resolution = 2
+        sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
+        for i, p in enumerate(pts):
+            sp.points[i].co = (p.x, p.y, 0.9, 1)
+        ob = bpy.data.objects.new(nombre, cu); ob.data.materials.append(M['ruta']); C_RUTA.objects.link(ob)
+        resto = 6.0
+        for a, b in zip(pts, pts[1:]):         # flechas cada 12 m
+            d = b - a; L = d.length; s = resto
+            while s < L:
+                q = a + d * (s / L)
+                bm = bmesh.new(); r = bmesh.ops.create_cone(bm, cap_ends=True, segments=3, radius1=1.4, radius2=0, depth=2.2)
+                mm = bpy.data.meshes.new('Flecha'); bm.to_mesh(mm); bm.free()
+                f = bpy.data.objects.new(f'{nombre} · flecha', mm); f.data.materials.append(M['ruta'])
+                f.location = (q.x, q.y, 1.4); f.rotation_euler = (0, math.pi / 2, math.atan2(d.y, d.x)); C_RUTA.objects.link(f)
+                s += 12.0
+            resto = s - L
+    R_JS = [geo(la, lo) for la, lo in rutas['jaragua-sheraton']['puntos']] + [P(-6.5, -8)]
+    R_SM = [P(-6.5, -8), P(-20, -6), P(-20, 64), P(-8, 104), P(TX0 + 0.5, 107)]
+    linea_ruta('Ruta Jaragua → Sheraton (entrada oeste)', R_JS)
+    linea_ruta('Ruta Sheraton → Malecón Terrace', R_SM)
+    texto(f"{rutas['jaragua-sheraton']['metros']} m · {rutas['jaragua-sheraton']['minutos_caminando']:.0f} min a pie desde el Jaragua",
+          0, 0, 0, 3.0, M['texto'], C_TEXTOS, mundo=R_JS[len(R_JS) // 2] + Vector((0, 0, 3)))
 
 # ---------------- Cielo, sol y cámaras ----------------
-mundo = bpy.data.worlds.new('Cielo'); escena.world = mundo; mundo.use_nodes = True
-mundo.node_tree.nodes['Background'].inputs['Color'].default_value = (0.36, 0.55, 0.88, 1)
-mundo.node_tree.nodes['Background'].inputs['Strength'].default_value = 0.9
-sol = bpy.data.objects.new('Sol', bpy.data.lights.new('Sol', 'SUN'))
-sol.data.energy = 4.2; sol.data.angle = math.radians(3)
-sol.rotation_euler = (math.radians(40), math.radians(10), math.radians(-30)); escena.collection.objects.link(sol)
+if not PLANTEL:
+    mundo = bpy.data.worlds.new('Cielo'); escena.world = mundo; mundo.use_nodes = True
+    mundo.node_tree.nodes['Background'].inputs['Color'].default_value = (0.36, 0.55, 0.88, 1)
+    mundo.node_tree.nodes['Background'].inputs['Strength'].default_value = 0.9
+    sol = bpy.data.objects.new('Sol', bpy.data.lights.new('Sol', 'SUN'))
+    sol.data.energy = 4.2; sol.data.angle = math.radians(3)
+    sol.rotation_euler = (math.radians(40), math.radians(10), math.radians(-30)); escena.collection.objects.link(sol)
 
-def camara(nombre, desde, hacia, lente=30):
-    cam = bpy.data.objects.new(nombre, bpy.data.cameras.new(nombre))
-    cam.data.lens = lente; cam.data.clip_start = 0.1; cam.data.clip_end = 3000
-    cam.location = desde
-    cam.rotation_euler = (Vector(hacia) - Vector(desde)).to_track_quat('-Z', 'Y').to_euler()
-    escena.collection.objects.link(cam)
-    return cam
+    def camara(nombre, desde, hacia, lente=30):
+        cam = bpy.data.objects.new(nombre, bpy.data.cameras.new(nombre))
+        cam.data.lens = lente; cam.data.clip_start = 0.1; cam.data.clip_end = 3000
+        cam.location = desde
+        cam.rotation_euler = (Vector(hacia) - Vector(desde)).to_track_quat('-Z', 'Y').to_euler()
+        escena.collection.objects.link(cam)
+        return cam
 
-centro = P(25, 25)
-CAMARAS = {   # nombre: (cámara, ¿se quitan los techos?)
-    'vista_general': (camara('Cámara · vista general', P(-120, -110, 95), P(20, 30, 10), 30), False),
-    'desde_el_mar': (camara('Cámara · desde el mar', P(30, -170, 40), P(20, 20, 22), 32), False),
-    'salones_sin_techo': (camara('Cámara · salones sin techo', P(95, -25, 55), P(36, 22, 0), 28), True),
-    'samana_comite': (camara('Cámara · Samaná montado como comité', P(35, 19.3, 2.6), P(35, 26.5, 0.9), 16), False),
-    'yarey_teatro': (camara('Cámara · Yarey', P(34.8, -4.0, 2.4), P(34.8, 14, 1.8), 16), False),
-    'lobby': (camara('Cámara · lobby', P(42, 52, 2.0), P(23, 60, 1.4), 18), False),
-    'malecon_terrace': (camara('Cámara · Malecón Terrace', P(50, 140, 26), P(15, 105, 1), 30), True),
-    'ruta_desde_jaragua': (camara('Cámara · ruta desde el Jaragua', P(-150, 60, 110), P(-30, 0, 0), 30), False),
-}
+    centro = P(25, 25)
+    CAMARAS = {   # nombre: (cámara, ¿se quitan los techos?)
+        'vista_general': (camara('Cámara · vista general', P(-120, -110, 95), P(20, 30, 10), 30), False),
+        'desde_el_mar': (camara('Cámara · desde el mar', P(30, -170, 40), P(20, 20, 22), 32), False),
+        'salones_sin_techo': (camara('Cámara · salones sin techo', P(95, -25, 55), P(36, 22, 0), 28), True),
+        'samana_comite': (camara('Cámara · Samaná montado como comité', P(35, 19.3, 2.6), P(35, 26.5, 0.9), 16), False),
+        'yarey_teatro': (camara('Cámara · Yarey', P(34.8, -4.0, 2.4), P(34.8, 14, 1.8), 16), False),
+        'lobby': (camara('Cámara · lobby', P(42, 52, 2.0), P(23, 60, 1.4), 18), False),
+        'malecon_terrace': (camara('Cámara · Malecón Terrace', P(50, 140, 26), P(15, 105, 1), 30), True),
+        'ruta_desde_jaragua': (camara('Cámara · ruta desde el Jaragua', P(-150, 60, 110), P(-30, 0, 0), 30), False),
+    }
 
-escena.render.engine = 'BLENDER_EEVEE'
-escena.render.resolution_x, escena.render.resolution_y = 1920, 1080
-escena.render.image_settings.file_format = 'PNG'
-escena.view_settings.view_transform = 'Standard'
-escena.view_settings.exposure = -0.2
-escena.eevee.taa_render_samples = 48
+    escena.render.engine = 'BLENDER_EEVEE'
+    escena.render.resolution_x, escena.render.resolution_y = 1920, 1080
+    escena.render.image_settings.file_format = 'PNG'
+    escena.view_settings.view_transform = 'Standard'
+    escena.view_settings.exposure = -0.2
+    escena.eevee.taa_render_samples = 48
 
-# ---------------- Recorrido animado (escena aparte, sin techos para ver los salones) ----------------
-FPS, SEG = 24, 48
-PASOS = [   # (segundo, cámara, hacia dónde mira)
-    (0, P(-160, -40, 70), P(-60, -20, 5)),
-    (6, P(-95, -30, 45), P(-20, -5, 2)),             # bajando sobre la ruta desde el Jaragua
-    (12, P(-48, -26, 32), P(-6, -8, 2)),             # llegando a la entrada oeste
-    (18, P(-60, 45, 75), P(12, 25, 28)),             # sube junto a la torre
-    (21, P(10, -20, 80), P(35, 15, 0)),             # por encima de la torre
-    (24, P(70, -30, 40), P(35, 15, 0)),              # salones sin techo desde el sureste
-    (30, P(70, 30, 26), P(35, 35, 0)),               # Gran Salón (Samaná, Bonanza, Constanza)
-    (36, P(55, 80, 22), P(30, 55, 0)),               # lobby
-    (42, P(30, 145, 28), P(15, 106, 0)),             # Malecón Terrace
-    (48, P(-60, 170, 90), P(15, 60, 10)),            # vista final
-]
-rec = bpy.data.scenes.new('Recorrido (animación)')
-for c in (C_SUELO, C_TORRE, C_PODIO, C_SALONES, C_MUEBLES, C_EXTERIOR, C_CARPA, C_RUTA, C_TEXTOS):
-    rec.collection.children.link(c)
-rec.world = mundo; rec.collection.objects.link(sol)
-rec.render.engine = 'BLENDER_EEVEE'; rec.eevee.taa_render_samples = 16
-rec.render.resolution_x, rec.render.resolution_y = 1280, 720; rec.render.fps = FPS
-rec.frame_start, rec.frame_end = 1, FPS * SEG
-rec.view_settings.view_transform = 'Standard'; rec.view_settings.exposure = -0.2
-rec.render.image_settings.file_format = 'PNG'
-rec.render.filepath = os.path.join(CARPETA, 'recorrido_cuadros', 'cuadro_')
-cam = bpy.data.objects.new('Cámara · recorrido', bpy.data.cameras.new('Cámara · recorrido'))
-cam.data.lens = 26; cam.data.clip_end = 3000; rec.collection.objects.link(cam); rec.camera = cam
-mira = bpy.data.objects.new('Mira del recorrido', None); rec.collection.objects.link(mira)
-for s, desde, hacia in PASOS:
-    f = 1 + int(s * FPS)
-    cam.location = desde; cam.keyframe_insert('location', frame=f)
-    mira.location = hacia; mira.keyframe_insert('location', frame=f)
-for ob in (cam, mira):
-    for fc in ob.animation_data.action.fcurves if hasattr(ob.animation_data.action, 'fcurves') else []:
-        for k in fc.keyframe_points:
-            k.interpolation = 'BEZIER'
-t = cam.constraints.new('TRACK_TO'); t.target = mira; t.track_axis = 'TRACK_NEGATIVE_Z'; t.up_axis = 'UP_Y'
+    # ---------------- Recorrido animado (escena aparte, sin techos para ver los salones) ----------------
+    FPS, SEG = 24, 48
+    PASOS = [   # (segundo, cámara, hacia dónde mira)
+        (0, P(-160, -40, 70), P(-60, -20, 5)),
+        (6, P(-95, -30, 45), P(-20, -5, 2)),             # bajando sobre la ruta desde el Jaragua
+        (12, P(-48, -26, 32), P(-6, -8, 2)),             # llegando a la entrada oeste
+        (18, P(-60, 45, 75), P(12, 25, 28)),             # sube junto a la torre
+        (21, P(10, -20, 80), P(35, 15, 0)),             # por encima de la torre
+        (24, P(70, -30, 40), P(35, 15, 0)),              # salones sin techo desde el sureste
+        (30, P(70, 30, 26), P(35, 35, 0)),               # Gran Salón (Samaná, Bonanza, Constanza)
+        (36, P(55, 80, 22), P(30, 55, 0)),               # lobby
+        (42, P(30, 145, 28), P(15, 106, 0)),             # Malecón Terrace
+        (48, P(-60, 170, 90), P(15, 60, 10)),            # vista final
+    ]
+    rec = bpy.data.scenes.new('Recorrido (animación)')
+    for c in (C_SUELO, C_TORRE, C_PODIO, C_SALONES, C_MUEBLES, C_EXTERIOR, C_CARPA, C_RUTA, C_TEXTOS):
+        rec.collection.children.link(c)
+    rec.world = mundo; rec.collection.objects.link(sol)
+    rec.render.engine = 'BLENDER_EEVEE'; rec.eevee.taa_render_samples = 16
+    rec.render.resolution_x, rec.render.resolution_y = 1280, 720; rec.render.fps = FPS
+    rec.frame_start, rec.frame_end = 1, FPS * SEG
+    rec.view_settings.view_transform = 'Standard'; rec.view_settings.exposure = -0.2
+    rec.render.image_settings.file_format = 'PNG'
+    rec.render.filepath = os.path.join(CARPETA, 'recorrido_cuadros', 'cuadro_')
+    cam = bpy.data.objects.new('Cámara · recorrido', bpy.data.cameras.new('Cámara · recorrido'))
+    cam.data.lens = 26; cam.data.clip_end = 3000; rec.collection.objects.link(cam); rec.camera = cam
+    mira = bpy.data.objects.new('Mira del recorrido', None); rec.collection.objects.link(mira)
+    for s, desde, hacia in PASOS:
+        f = 1 + int(s * FPS)
+        cam.location = desde; cam.keyframe_insert('location', frame=f)
+        mira.location = hacia; mira.keyframe_insert('location', frame=f)
+    for ob in (cam, mira):
+        for fc in ob.animation_data.action.fcurves if hasattr(ob.animation_data.action, 'fcurves') else []:
+            for k in fc.keyframe_points:
+                k.interpolation = 'BEZIER'
+    t = cam.constraints.new('TRACK_TO'); t.target = mira; t.track_axis = 'TRACK_NEGATIVE_Z'; t.up_axis = 'UP_Y'
 
-escena.camera = CAMARAS['vista_general'][0]
-bpy.ops.wm.save_as_mainfile(filepath=os.path.join(CARPETA, 'Sheraton_Santo_Domingo.blend'))
+    escena.camera = CAMARAS['vista_general'][0]
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(CARPETA, 'Sheraton_Santo_Domingo.blend'))
 
-total = sum(PUESTOS.values())
-print('PUESTOS POR SALÓN:', PUESTOS, '· total', total, '· mesas en la carpa', mesas_carpa)
+    total = sum(PUESTOS.values())
+    print('PUESTOS POR SALÓN:', PUESTOS, '· total', total, '· mesas en la carpa', mesas_carpa)
 
-if HACER_RENDER:
-    os.makedirs(os.path.join(CARPETA, 'renders'), exist_ok=True)
-    for nombre, (cm, sin_techo) in CAMARAS.items():
-        C_TECHOS.hide_render = sin_techo
-        escena.camera = cm
-        escena.render.filepath = os.path.join(CARPETA, 'renders', f'{nombre}.png')
-        bpy.ops.render.render(write_still=True, scene=escena.name)
-    C_TECHOS.hide_render = False
-if HACER_VIDEO:
-    bpy.ops.render.render(animation=True, scene=rec.name)
-print('LISTO: Sheraton Santo Domingo')
+    if HACER_RENDER:
+        os.makedirs(os.path.join(CARPETA, 'renders'), exist_ok=True)
+        for nombre, (cm, sin_techo) in CAMARAS.items():
+            C_TECHOS.hide_render = sin_techo
+            escena.camera = cm
+            escena.render.filepath = os.path.join(CARPETA, 'renders', f'{nombre}.png')
+            bpy.ops.render.render(write_still=True, scene=escena.name)
+        C_TECHOS.hide_render = False
+    if HACER_VIDEO:
+        bpy.ops.render.render(animation=True, scene=rec.name)
+    print('LISTO: Sheraton Santo Domingo')
