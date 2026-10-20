@@ -7,3 +7,8 @@ blender/sheraton/recorrido_cuadros/
 .vercel/
 .DS_Store
 Thumbs.db
+blender/video/cuadros/
+blender/video/partes/
+blender/video/*.mp4
+blender/video/*.wav
+blender/video/log_*.txt

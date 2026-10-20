@@ -1,0 +1,8 @@
+file 'partes/0.mp4'
+file 'partes/1.mp4'
+file 'partes/2.mp4'
+file 'partes/2_teatro.mp4'
+file 'partes/3_anacaona.mp4'
+file 'partes/4_gran_salon.mp4'
+file 'partes/5_malecon.mp4'
+file 'partes/9.mp4'
