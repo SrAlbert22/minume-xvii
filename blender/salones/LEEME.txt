@@ -1,0 +1,26 @@
+SALONES DE EVENTOS DE MINUME XVII EN 3D · Albert Silvestre
+==========================================================
+
+  construir_salones.py        arma los cuatro salones por dentro y saca las imágenes (renders/)
+  Salones_MINUME_XVII.blend   una escena por salón, para abrir en Blender 5.2
+  pantalla_minume.png         lo que se ve en las pantallas
+  banner_minume.png           el letrero del atril
+
+  blender -b --factory-startup -P construir_salones.py -- render
+
+Montajes
+  Teatro La Fiesta (Renaissance Jaragua) · ceremonia de apertura
+    1,152 butacas en 24 filas (A a X) de 12 + 24 + 12, presídium de 7, atril, banderas de la ONU y de RD,
+    pantalla central y dos laterales, telón rojo, palcos y cabina de control al fondo, techo negro con focos.
+  Anacaona (Renaissance Jaragua) · 40 x 18 m, techo 5 m
+    Tres secciones de 18 x 13 m con muros móviles, cada una montada como comité en U (CSNU, AMS y CIJ).
+  Gran Salón (Sheraton) · 31 x 16 m, techo 4.2 m
+    Samaná (9.3 m), Bonanza (12.3 m) y Constanza (9.2 m) separados por muros móviles, como comités en U.
+  Malecón Terrace (carpa del Sheraton) · 36 x 23 m
+    Almuerzo de 500: 49 mesas redondas de 10 y mesa principal de 10, tarima y pantalla.
+
+Qué es real: medidas, alturas de techo y capacidades (cuadros de capacidades de cada hotel y la página
+de eventos de Marriott); el estilo sale de las fotos públicas de cada salón (techo negro con focos y
+telón rojo en el teatro; carpa blanca con lámparas de cristal y guirnaldas; paredes crema con pilastras
+de madera y alfombra con medallones en el Gran Salón; paredes con molduras y lámparas de cristal en Anacaona).
+Qué es estimado: la forma exacta de cada sala, los colores y los muebles.

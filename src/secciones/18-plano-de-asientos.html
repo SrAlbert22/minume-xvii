@@ -11,6 +11,7 @@
         <button data-m="reservado"><i style="background:#ffd23f"></i>Pintar reservado</button>
         <button data-m="bloqueado"><i style="background:#5b6685"></i>Pintar no disponible</button>
       </div>
+      <button class="boton sec" id="as3d" type="button">🧊 Ver en 3D</button>
       <div class="as-zoom" id="asZoom"><button class="mini" data-z="-" type="button" aria-label="Alejar">−</button><button class="mini" data-z="+" type="button" aria-label="Acercar">+</button></div>
       <label for="asBuscar" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Buscar persona o asiento</label>
       <input id="asBuscar" placeholder="Buscar persona o asiento (ej.: A12)">
@@ -18,6 +19,7 @@
     <div class="as-hallados" id="asHallados"></div>
     <div class="as-rejilla">
       <div class="as-plano" id="asPlano"></div>
+      <div class="as-3d" id="as3dCaja" hidden></div>
       <div class="tarjeta as-ficha" id="asFicha"></div>
     </div>
     <div class="ed-botones" style="margin-top:12px"><div class="exp-btns" data-exportar="asientos"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></div>

@@ -99,10 +99,10 @@ def main():
     base = ensamblar()
     glb = SRC / 'plantel.glb'
     glb64 = base64.b64encode(glb.read_bytes()).decode()
-    for d in (DIST, ENVIAR):
-        if d.exists():
-            shutil.rmtree(d)
-        d.mkdir()
+    for d in (DIST, ENVIAR):          # se vacían (no se borran) por si alguna terminal está parada dentro
+        d.mkdir(exist_ok=True)
+        for x in d.iterdir():
+            shutil.rmtree(x) if x.is_dir() else x.unlink()
     (DIST / 'iconos').mkdir()
     # enlace al proyecto de Vercel (minume-xvii.vercel.app) para publicar con: npx vercel deploy --prod desde dist/
     escribir(DIST / '.vercel' / 'project.json', json.dumps(VERCEL))

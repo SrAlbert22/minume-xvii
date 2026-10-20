@@ -27,6 +27,9 @@
   .as-mesa { fill: rgba(255, 255, 255, .08); stroke: rgba(255, 255, 255, .25); stroke-width: .06; }
   .as-mesa-t { fill: var(--suave); font: 700 .8px Inter, sans-serif; text-anchor: middle; }
   .as-fila { fill: var(--suave); font: 700 .55px Inter, sans-serif; text-anchor: middle; }
+  .as-3d { position: relative; height: min(72vh, 640px); border: 1px solid var(--borde); border-radius: var(--radio); overflow: hidden; background: #0a1228; }
+  .as-3d[hidden], .as-plano[hidden], .as-zoom[hidden] { display: none; }
+  #as3d.on { background: var(--azul); border-color: var(--azul); color: #fff; }
   .as-ficha { position: sticky; top: 130px; }
   .as-f-cab { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
   .as-f-cab small { display: block; font-size: 12.5px; margin-top: 2px; }

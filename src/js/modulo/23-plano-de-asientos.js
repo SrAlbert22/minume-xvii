@@ -114,6 +114,7 @@ function pintarAsientos() {
   const hallados = q ? plano.asientos.filter(coincide) : [];
   $('#asHallados').innerHTML = q ? (hallados.length ? hallados.slice(0, 12).map(a => `<button class="mini" data-ir="${a.id}">${a.id} · ${esc(est[a.id].n || EST_AS[est[a.id].est][0])}</button>`).join('') : '<span class="cob-sub">Nadie con ese nombre en este evento.</span>') : '';
   pintarFichaAs(e, plano, est);
+  if (typeof construir3D === 'function' && !$('#as3dCaja').hidden) construir3D();
 }
 function pintarFichaAs(e, plano, est) {
   const caja = $('#asFicha');
