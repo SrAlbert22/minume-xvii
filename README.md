@@ -38,6 +38,8 @@ herramientas/
   datos_mapa.py        genera los datos del mapa: edificios, caminos y lugares
   ensamblar.py         junta los pedazos de src/
 blender/               modelos 3D de las sedes (ver blender/LEEME.txt y blender/sheraton/LEEME.txt)
+supabase/esquema.sql   la base de datos: tablas, funciones y permisos (sin códigos ni datos)
+docs/                  guía del staff (guia.html → PDF)
 ```
 
 Para armar:
@@ -52,11 +54,13 @@ python herramientas/armar.py
 ## Seguridad
 
 - Cabeceras en `dist/vercel.json`: Content-Security-Policy (solo se cargan los dominios que la página usa), HSTS, `X-Frame-Options: DENY`, `nosniff` y `Permissions-Policy` (ubicación y cámara solo para la misma página).
-- La llave de Supabase que va en `armar.py` es la pública (anon). Lo que protege los datos son las reglas de la base: lectura con RLS y escritura solo con la función `minume_guardar`, que limita el tamaño.
-- Mientras no exista inicio de sesión real en el servidor, no se guardan datos de salud reales en Bienestar.
+- La llave de Supabase que va en `armar.py` es la pública (anon). Lo que protege los datos son las reglas de la base (`supabase/esquema.sql`): las tablas no se leen directo (RLS sin políticas) y todo pasa por funciones que piden la sesión.
+- Acceso con código personal: se verifica en el servidor (`minume_entrar`, con límite de intentos) y da un token de 30 días. Los códigos se guardan cifrados con bcrypt; Coordinación general los crea y anula desde «Datos del evento».
+- Las atenciones de Bienestar solo las leen Bienestar y Coordinación general. El chat solo deja leer y escribir en los canales de cada persona.
+- Antes del evento: anular los códigos de prueba y no guardar datos de salud reales mientras sigan activos.
 
 ## Datos de ejemplo
 
-Los nombres del staff, la asignación de comisiones a salones, los turnos y los horarios son de ejemplo. Coordinación los cambia desde «Datos del evento». La lista real del staff se puede pegar en Staff → «Pegar una lista de personas».
+Los nombres del staff, la asignación de comisiones a salones, los turnos, los hoteles, los autobuses y los horarios son de ejemplo. **Todo lo que es dato se cambia desde «Datos del evento»** (25 listas: programa, sedes, eventos, invitados, capacidad de los salones, montaje, comisiones, turnos, checklists, material, staff, puntos, rondas, hoteles, autobuses, listas de Bienestar y de objetos, plantillas de comunicados, mensajes rápidos del chat y responsables). Cada equipo edita lo suyo y Coordinación general, todo. Lo editado se guarda en `minume_compartido` con claves `minume.compartido.config.*`. La lista real del staff se puede pegar en Staff → «Pegar una lista de personas».
 
-Mapa: imágenes © Esri, Maxar · contornos © colaboradores de OpenStreetMap (ODbL).
+Mapa: maqueta 3D propia hecha en Blender · calles y contornos © colaboradores de OpenStreetMap (ODbL).
