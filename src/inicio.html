@@ -31,7 +31,8 @@ body{margin:0;min-height:100%;color:var(--texto);font:15px/1.5 var(--f-txt);
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--asis);outline-offset:2px}
-.envoltura{max-width:1180px;margin:0 auto;padding-block:0 40px}
+.envoltura{max-width:1720px;margin:0 auto;padding-block:0 40px}
+@media (min-width:1100px){body{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
 svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 /* Línea gráfica */
@@ -197,6 +198,8 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 .aviso.nuevo{animation:entra .4s ease-out}
 @media (max-width:640px){.pest,.cod,.sim{min-height:38px;padding-left:12px;padding-right:12px}.buscar input,.campo input,#vCodigo{font-size:16px}.caja{padding:16px;border-radius:18px}.atajo{min-height:52px}.entrar-eq{min-height:36px}.abierta{min-height:52px}.instalar{gap:10px}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* pantallas grandes: la página ocupa todo el ancho y los atajos van de tres en tres */
+@media (min-width:1500px){.atajos{grid-template-columns:repeat(3,minmax(0,1fr))}.atajo:last-child:nth-child(odd){grid-column:auto}}
 </style>
 </head>
 <body>
