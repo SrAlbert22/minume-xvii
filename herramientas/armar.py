@@ -98,7 +98,30 @@ def etiquetas_app(icono_base, sw):
     return (f'<link rel="manifest" href="manifest.webmanifest">\n<link rel="apple-touch-icon" href="{icono_base}-180.png">\n<link rel="icon" type="image/png" href="{icono_base}-192.png">\n'
             '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n'
             '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="theme-color" content="#050a1a">\n'
-            f"<script>if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => navigator.serviceWorker.register('{sw}').catch(() => {{}}));</script>")
+            '<script>' + ACTUALIZAR_JS.replace('__SW__', sw) + '</script>')
+
+
+# Registra el service worker y avisa cuando hay una versión nueva publicada: revisa cada 5 minutos y al volver a la pestaña.
+# Si la pestaña está escondida se recarga sola; si la persona la está usando, sale un aviso con el botón «Actualizar».
+ACTUALIZAR_JS = """if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => {
+  const sw = navigator.serviceWorker; let habia = !!sw.controller;
+  sw.register('__SW__').then(reg => {
+    const revisar = () => reg.update().catch(() => {});
+    setInterval(revisar, 5 * 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) revisar(); });
+  }).catch(() => {});
+  sw.addEventListener('controllerchange', () => {
+    if (!habia) { habia = true; return; }
+    if (document.hidden) return location.reload();
+    if (document.getElementById('versionNueva')) return;
+    const d = document.createElement('div'); d.id = 'versionNueva'; d.setAttribute('role', 'status');
+    d.style.cssText = 'position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:14px;padding:12px 12px 12px 18px;border-radius:16px;background:linear-gradient(135deg,#0043c5,#002193);border:1px solid #00b5ff;color:#fff;font:600 15px Barlow,system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.45);max-width:calc(100vw - 32px)';
+    d.innerHTML = '<span>Hay una versión nueva de MINUME</span>';
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Actualizar';
+    b.style.cssText = 'border:0;border-radius:12px;padding:10px 16px;background:#00b5ff;color:#06033f;font:800 15px Barlow,system-ui,sans-serif;cursor:pointer';
+    b.onclick = () => location.reload(); d.append(b); document.body.append(d);
+  });
+});"""
 
 
 def escribir(ruta, texto):
