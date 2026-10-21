@@ -11,7 +11,7 @@ const COM_PLANTILLAS = [
 const leerComs = () => leerComp('comunicados', []);
 const comParaMi = m => { if (SISTEMA === 'todo' || SISTEMA === 'coordinacion') return true; return m.para === 'todos' || m.para === SISTEMA; };
 // Quién debe leer cada comunicado. En la demo son los códigos de prueba; en la versión real, todo el staff del equipo.
-const rosterCom = para => Object.entries(CODIGOS).filter(([c]) => { const s = SIS_DE_CODIGO(c); return s && s !== 'coordinacion' && (para === 'todos' || s === para); }).map(([c, u]) => ({ c, n: u.nombre }));
+const rosterCom = para => window.MINUME_PERSONAL ? window.MINUME_PERSONAL.filter(p => p.sistema !== 'coordinacion' && (para === 'todos' || p.sistema === para)).map(p => ({ c: 'r:' + p.ref, n: p.nombre })) : Object.entries(CODIGOS).filter(([c]) => { const s = SIS_DE_CODIGO(c); return s && s !== 'coordinacion' && (para === 'todos' || s === para); }).map(([c, u]) => ({ c, n: u.nombre }));
 const sinLeer = () => { const yo = yoCod(); if (!yo) return []; return leerComs().filter(m => comParaMi(m) && m.deCod !== yo && !(m.leidos || {})[yo] && diaDR(m.t) === hoyDR()).sort((a, b) => b.t - a.t); };
 function marcarLeido(id) {
   const l = leerComs(), m = l.find(x => x.id === id), yo = yoCod(); if (!m || !yo) return;
@@ -63,6 +63,7 @@ $('#comEnviar').onclick = () => {
 };
 // Demo: el staff de prueba "lee" los comunicados solo, menos una persona, para que se vea quién falta
 function demoLeer() {
+  if (window.MINUME_PERSONAL) return;   // con el staff real no se inventa nada
   const l = leerComs(); let cambio = false;
   for (const m of l) {
     const r = rosterCom(m.para).filter(p => p.c !== yoCod() && p.c !== m.deCod); r.pop();

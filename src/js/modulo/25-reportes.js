@@ -4,6 +4,7 @@ const colorEquipo = () => SIS.color || (getComputedStyle(document.documentElemen
 const baseReporte = (titulo, archivo, extra) => ({ titulo, archivo: `${archivo}-${hoyDR()}`, equipo: SIS.nombre, color: colorEquipo(), letra: SIS.letra || 'M', autor: estado.usuario ? estado.usuario.nombre : '', nota: 'Datos de ejemplo · MINUME XVII', ...extra });
 const tonoEstado = v => { v = String(v); return /Resuelto|Cubierto|En orden|Completa|Entregado|Apareció|Llegó|En su lugar|Terminó|En sesión|Sí, hay|Todos lo/.test(v) ? 'verde' : /Pendiente|Falta|Montando|Por empezar|Atrasada|Novedad|La buscan|Guardado|En el punto|Por llegar|receso/i.test(v) ? 'amarillo' : /Escalado|Sin nadie|Detenida|No pasó|problema|9-1-1|No vendrá/i.test(v) ? 'rojo' : null; };
 const REPORTES = {
+  rendimiento() { const r = window.reporteRendimiento(); return baseReporte(r.titulo, 'rendimiento', { subtitulo: r.subtitulo, resumen: r.resumen, columnas: r.columnas, filas: r.filas }); },
   bitacora() {
     const b = estado.bitacora;
     return baseReporte(SISTEMA === 'asistencia' && estado.comision ? `Bitácora de comisión · ${estado.comision}` : 'Bitácora del equipo', 'bitacora', {

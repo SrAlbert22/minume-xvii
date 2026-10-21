@@ -20,7 +20,7 @@ const ico = (k, t = 26) => `<svg viewBox="0 0 24 24" width="${t}" height="${t}" 
 // sección: [ícono, nombre corto, para qué sirve, en una línea]
 const SECCION = {
   inicio: ['casa', 'Inicio', 'Tu tablero'], datos: ['ajustes', 'Datos del evento', 'Horarios, salones, staff y códigos'],
-  comunicados: ['megafono', 'Comunicados', 'Avisos para todo el staff'], chat: ['chat', 'Chat', 'Mensajes con tu equipo y el staff'], 'comisiones-vivo': ['lista', 'Comisiones', 'Cómo va cada comisión'],
+  comunicados: ['megafono', 'Comunicados', 'Avisos para todo el staff'], chat: ['chat', 'Chat', 'Mensajes con tu equipo y el staff'], rendimiento: ['grafico', 'Rendimiento', 'Quién trabaja y cómo va cada persona'], 'comisiones-vivo': ['lista', 'Comisiones', 'Cómo va cada comisión'],
   eventos: ['estrella', 'Eventos de hoy', 'Avanza cada evento con un botón'], invitados: ['persona', 'Invitados', 'Quién llegó y dónde se sienta'],
   asientos: ['asiento', 'Asientos', 'Plano de asientos de cada evento'], cobertura: ['escudo', 'Cobertura', 'Quién cubre cada punto y cuándo'],
   rondas: ['ruta', 'Rondas', 'Recorridos de seguridad'], atenciones: ['corazon', 'Atenciones', 'Registro de atenciones'],
@@ -62,6 +62,7 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'traslado' && window.BUSES_LISTO) pintarBuses();
+  if (id === 'rendimiento' && window.RENDIMIENTO_LISTO) cargarRendimiento();
   if (window.CHAT_LISTO) { if (id === 'chat') { ajustarChatAlto(); cargarChat(true); const l = chat.msgs[chat.canal]; if (l && l.length) marcarVistoChat(chat.canal, l[l.length - 1].id); } pintarInsigniasChat(); }
   // instalada como app la ventana ya dice «MINUME XVII · equipo»: el título solo dice la sección
   document.title = matchMedia('(display-mode: standalone)').matches ? (SECCION[id] ? SECCION[id][1] : 'Inicio') : `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;

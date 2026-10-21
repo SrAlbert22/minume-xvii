@@ -63,6 +63,7 @@
   }
   async function bajar(claves) {
     const d = await rpc('minume_datos', claves ? { p_token: token(), p_claves: claves } : { p_token: token() });
+    if (d.personal) window.MINUME_PERSONAL = d.personal;   // nombres y equipos del staff real (nunca sus códigos)
     for (const f of d.filas || []) if (!pendientes.has(f.clave) && !enviando.has(f.clave) && !cola.has(f.clave)) { antes.delete(f.clave); if (ponerLocal(f.clave, f.valor)) avisar(f.clave); }
     return d;
   }

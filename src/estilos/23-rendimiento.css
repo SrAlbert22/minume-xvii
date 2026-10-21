@@ -1,0 +1,42 @@
+  /* ---------- Rendimiento del staff (Coordinación general) ---------- */
+  .rd-filtros { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .rd-campo { display: inline-flex; align-items: center; gap: 8px; color: var(--suave); font-weight: 700; font-size: 13px; }
+  .rd-campo select, #rdBuscar { min-height: 42px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--borde); background: rgba(0, 0, 0, .25); color: #fff; font: 600 14px var(--f-txt); }
+  #rdBuscar { flex: 1 1 200px; min-width: 0; }
+  .rd-equipos { display: flex; flex-wrap: wrap; gap: 6px; }
+  .rd-equipos .mini.on { background: var(--m-celeste); color: #06033f; border-color: var(--m-celeste); }
+  .rd-filtros .exp-btns { margin-left: auto; }
+  .rd-cifras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .rd-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); gap: 12px; align-items: start; }
+  .rd-persona { border: 1px solid var(--borde); border-radius: 18px; background: linear-gradient(160deg, rgba(0, 67, 197, .26), rgba(10, 4, 100, .5)); overflow: hidden; }
+  .rd-persona.abierto { grid-column: 1 / -1; border-color: rgba(0, 181, 255, .5); }
+  .rd-cab { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px; border: 0; background: none; color: var(--texto); text-align: left; cursor: pointer; }
+  .rd-nombre { flex: 1; min-width: 0; } .rd-nombre b { display: block; font-size: 16.5px; } .rd-nombre small { color: var(--suave); font-size: 12.5px; }
+  .rd-estado { font-weight: 700; } .rd-estado.on { color: var(--verde); } .rd-estado.on::before { content: '● '; } .rd-estado.off { color: #ff8a95; }
+  .rd-puntos { --c: color-mix(in srgb, #ff8a95 calc(100% - var(--v) * 1%), var(--verde)); width: 62px; height: 62px; flex: none; border-radius: 50%; display: grid; place-content: center; text-align: center;
+    background: radial-gradient(closest-side, #0b1170 78%, transparent 80% 100%), conic-gradient(var(--c) calc(var(--v) * 1%), rgba(255, 255, 255, .1) 0); }
+  .rd-puntos b { font: 800 22px/1 var(--f-tit); } .rd-puntos small { font-size: 9.5px; color: var(--suave); }
+  .rd-datos { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0 14px 14px; color: var(--suave); font-size: 13px; }
+  .rd-datos .rd-mal { color: #ffb4bb; font-weight: 700; }
+  .rd-detalle { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; padding: 14px; border-top: 1px solid var(--borde); background: rgba(0, 0, 0, .14); }
+  .rd-detalle > .rd-listas { grid-column: 1 / -1; }
+  .rd-listas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .rd-listas span { display: grid; gap: 4px; font-size: 12px; color: var(--suave); }
+  .rd-listas b { color: #fff; font-size: 13px; }
+  .rd-listas i { height: 8px; border-radius: 99px; background: linear-gradient(90deg, var(--m-celeste) var(--p), rgba(255, 255, 255, .1) var(--p)); }
+  .rd-hizo ul { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow: auto; }
+  .rd-hizo li { display: flex; gap: 10px; font-size: 13.5px; } .rd-hizo li span { color: var(--m-celeste); font-weight: 700; min-width: 64px; }
+  .rd-hizo small { color: var(--suave); }
+  .rd-evaluar { display: grid; gap: 8px; align-content: start; }
+  .rd-estrellas { display: flex; gap: 4px; }
+  .rd-estrellas button { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .04); color: rgba(255, 255, 255, .25); font-size: 22px; cursor: pointer; }
+  .rd-estrellas button.on { color: #ffd23f; border-color: rgba(255, 210, 63, .5); background: rgba(255, 210, 63, .1); }
+  .rd-evaluar textarea { width: 100%; min-height: 64px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--borde); background: rgba(0, 0, 0, .25); color: #fff; font: 500 15px var(--f-txt); resize: vertical; }
+  .rd-ev-pie { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; } .rd-ev-pie small { color: var(--suave); }
+  .rd-como { margin-top: 16px; color: var(--suave); font-size: 14px; } .rd-como summary { cursor: pointer; font-weight: 700; color: var(--texto); } .rd-como li { margin: 4px 0; }
+  @media (max-width: 760px) {
+    .rd-cifras { grid-template-columns: 1fr 1fr; }
+    .rd-detalle { grid-template-columns: 1fr; }
+    .rd-listas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rd-filtros .exp-btns { margin-left: 0; }
+  }

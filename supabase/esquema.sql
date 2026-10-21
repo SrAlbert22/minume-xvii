@@ -117,11 +117,14 @@ begin
   return r;
 end $function$;
 
--- Las atenciones de Bienestar solo las leen Bienestar y Coordinación general
+-- Las atenciones de Bienestar solo las leen Bienestar y Coordinación general; las evaluaciones del staff, solo Coordinación general
 create or replace function public.minume_puede_leer(p_rol text, p_sistema text, p_clave text)
  returns boolean language sql immutable set search_path to 'public'
 as $function$
-  select p_clave <> 'minume.compartido.atenciones' or p_rol = 'bienestar' or p_sistema = 'coordinacion'
+  select case p_clave
+    when 'minume.compartido.atenciones' then p_rol = 'bienestar' or p_sistema = 'coordinacion'
+    when 'minume.compartido.evaluaciones' then p_sistema = 'coordinacion'
+    else true end
 $function$;
 
 -- Junta lo que guardan varios teléfonos a la vez: objetos se mezclan por clave y listas con «id» se mezclan por id
@@ -209,7 +212,8 @@ begin
   return jsonb_build_object(
     'filas', coalesce((select jsonb_agg(jsonb_build_object('clave', m.clave, 'valor', m.valor)) from public.minume_compartido m
                        where (p_claves is null or m.clave = any(p_claves)) and public.minume_puede_leer(c.rol, c.sistema, m.clave)), '[]'::jsonb),
-    'ocultas', case when public.minume_puede_leer(c.rol, c.sistema, 'minume.compartido.atenciones') then '[]'::jsonb else '["minume.compartido.atenciones"]'::jsonb end,
+    'ocultas', coalesce((select jsonb_agg(k) from unnest(array['minume.compartido.atenciones', 'minume.compartido.evaluaciones']) k
+                       where not public.minume_puede_leer(c.rol, c.sistema, k)), '[]'::jsonb),
     'personal', case when p_claves is null then coalesce((select jsonb_agg(jsonb_build_object('ref', k.ref, 'nombre', k.nombre, 'rol', k.rol, 'sistema', k.sistema) order by k.nombre)
                        from public.minume_codigos k where k.activo), '[]'::jsonb) end,
     'yo', jsonb_build_object('ref', c.ref, 'nombre', c.nombre, 'rol', c.rol, 'sistema', c.sistema, 'area', c.area, 'comision', c.comision, 'acr', c.acr));
@@ -349,6 +353,52 @@ begin
   perform realtime.send(jsonb_build_object('canal', k, 'id', p_id), 'chat', 'minume-compartido', false);
 end $$;
 
+-- Rendimiento del staff: tiempo activo por día (latido cada minuto) y resumen para Coordinación general
+create table if not exists public.minume_actividad (
+  codigo_id bigint not null references public.minume_codigos(id) on delete cascade,
+  dia date not null,
+  primera timestamptz not null default now(),
+  ultima timestamptz not null default now(),
+  minutos int not null default 0,
+  datos jsonb not null default '{}'::jsonb,
+  primary key (codigo_id, dia)
+);
+alter table public.minume_actividad enable row level security;
+revoke all on public.minume_actividad from anon, authenticated;
+
+create or replace function public.minume_latido(p_token text, p_datos jsonb default '{}'::jsonb)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); d date := (now() at time zone 'America/Santo_Domingo')::date; a public.minume_actividad;
+begin
+  if p_datos is not null and pg_column_size(p_datos) > 8000 then p_datos := '{}'::jsonb; end if;
+  select * into a from public.minume_actividad where codigo_id = c.id and dia = d;
+  if not found then
+    insert into public.minume_actividad (codigo_id, dia, datos) values (c.id, d, coalesce(p_datos, '{}'::jsonb));
+  elsif now() - a.ultima >= interval '40 seconds' then
+    update public.minume_actividad set
+      minutos = minutos + case when now() - a.ultima < interval '3 minutes' then greatest(1, round(extract(epoch from now() - a.ultima) / 60)::int) else 0 end,
+      ultima = now(), datos = a.datos || coalesce(p_datos, '{}'::jsonb)
+    where codigo_id = c.id and dia = d;
+  end if;
+end $$;
+
+create or replace function public.minume_rendimiento(p_token text, p_dia date default null)
+returns jsonb language plpgsql stable security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); d date := coalesce(p_dia, (now() at time zone 'America/Santo_Domingo')::date);
+  ini timestamptz := (d::timestamp at time zone 'America/Santo_Domingo'); fin timestamptz := ((d + 1)::timestamp at time zone 'America/Santo_Domingo');
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general ve el rendimiento del staff' using errcode = '42501'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object(
+      'ref', k.ref, 'nombre', k.nombre, 'rol', k.rol, 'sistema', k.sistema, 'comision', k.comision, 'area', k.area, 'usado', k.usado,
+      'primera', a.primera, 'ultima', a.ultima, 'minutos', coalesce(a.minutos, 0), 'datos', coalesce(a.datos, '{}'::jsonb),
+      'chat', (select count(*) from public.minume_chat m where m.codigo_id = k.id and m.creado >= ini and m.creado < fin),
+      'urgentesRecibidos', (select count(*) from public.minume_chat_recibido rc join public.minume_chat m on m.id = rc.mensaje_id where rc.codigo_id = k.id and m.creado >= ini and m.creado < fin),
+      'respuestaUrgente', (select round(avg(extract(epoch from rc.creado - m.creado))) from public.minume_chat_recibido rc join public.minume_chat m on m.id = rc.mensaje_id where rc.codigo_id = k.id and m.creado >= ini and m.creado < fin)
+    ) order by k.sistema, k.nombre)
+    from public.minume_codigos k left join public.minume_actividad a on a.codigo_id = k.id and a.dia = d
+    where k.activo), '[]'::jsonb);
+end $$;
+
 -- =================== Permisos ===================
 -- Las internas no se pueden llamar desde la página; las demás piden siempre el token de la sesión.
 revoke all on function public.minume_tipo(text), public.minume_ip(), public.minume_sesion(text), public.minume_puede_leer(text, text, text),
@@ -356,7 +406,7 @@ revoke all on function public.minume_tipo(text), public.minume_ip(), public.minu
 grant execute on function public.minume_entrar(text), public.minume_datos(text, text[]), public.minume_guardar(text, text, jsonb),
   public.minume_codigos_lista(text), public.minume_codigo_crear(text, text, text, text, text, text), public.minume_codigo_activo(text, bigint, boolean),
   public.minume_chat_enviar(text, text, text, boolean), public.minume_chat_leer(text, text), public.minume_chat_visto(text, text, bigint),
-  public.minume_chat_resumen(text), public.minume_chat_recibido(text, bigint) to anon, authenticated;
+  public.minume_chat_resumen(text), public.minume_chat_recibido(text, bigint), public.minume_latido(text, jsonb), public.minume_rendimiento(text, date) to anon, authenticated;
 
 -- =================== Primer código de Coordinación general ===================
 -- Cambia «CG-XXXXXX» por un código que solo tú conozcas (CG- y 6 letras o números) y tu nombre, y ejecuta:

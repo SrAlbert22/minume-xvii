@@ -1,0 +1,25 @@
+  <!-- Rendimiento del staff (solo Coordinación general) -->
+  <section id="rendimiento" data-roles="coordinacion">
+    <div class="titulo-sec"><span class="n">00</span><h2>Rendimiento del staff</h2></div>
+    <p class="lead">Quién está trabajando, cuánto tiempo ha estado activo, qué ha hecho y qué tan rápido responde. La puntuación es una guía para evaluar; la decisión final es de Coordinación.</p>
+    <div class="rd-filtros">
+      <label class="rd-campo">Día<select id="rdDia"></select></label>
+      <div class="rd-equipos" id="rdEquipos"></div>
+      <input id="rdBuscar" placeholder="Buscar a una persona…" aria-label="Buscar a una persona">
+      <label class="rd-campo">Ordenar<select id="rdOrden"><option value="puntos">Mayor puntuación</option><option value="menos">Menor puntuación</option><option value="activo">Más tiempo activo</option><option value="nombre">Nombre</option></select></label>
+      <button class="boton sec" type="button" id="rdActualizar">Actualizar</button>
+      <div class="exp-btns" data-exportar="rendimiento"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div>
+    </div>
+    <div class="rd-cifras" id="rdCifras"></div>
+    <div class="rd-lista" id="rdLista"><p class="cob-sub">Cargando…</p></div>
+    <details class="rd-como">
+      <summary>¿Cómo se calcula la puntuación?</summary>
+      <ul>
+        <li><b>40 % · Tiempo activo:</b> minutos con la página abierta y a la vista ese día (4 horas = completo).</li>
+        <li><b>35 % · Tareas:</b> para los asistentes, el avance de sus checklists; para los demás, lo que marcaron en el sistema (rondas, reportes, atenciones, eventos, invitados, autobuses, objetos, avisos atendidos y llegadas a su puesto; 8 en el día = completo).</li>
+        <li><b>15 % · Comunicados:</b> cuántos de los comunicados del día para su equipo marcó como leídos.</li>
+        <li><b>10 % · Urgentes:</b> qué tan rápido toca «Recibido» en los mensajes urgentes del chat (menos de 2 minutos = completo).</li>
+        <li>Llegar más de 10 minutos tarde a su puesto resta 5 puntos cada vez.</li>
+      </ul>
+    </details>
+  </section>

@@ -17,7 +17,8 @@ const hoyDR = () => partesDR(ahoraEvento()).dia;
 const horaDR = ms => new Date(ms).toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Santo_Domingo' });
 const haceMin = ms => { const m = Math.max(0, Math.round((ahoraMs() - ms) / 60000)); return m < 1 ? 'ahora mismo' : m < 60 ? `hace ${m} min` : `hace ${Math.floor(m / 60)} h ${m % 60} min`; };
 const aMinutos = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
-const yoCod = () => estado.usuario ? estado.usuario.codigo : null;
+// Identificador de la persona en los datos compartidos: el interno (ref), nunca su código de acceso
+const yoCod = () => estado.usuario ? (estado.usuario.ref ? 'r:' + estado.usuario.ref : estado.usuario.codigo) : null;
 const yoNombre = () => estado.usuario ? estado.usuario.nombre : (estado.nombre || 'Sin nombre');
 const esCoord = () => !!estado.usuario && estado.usuario.rol === 'coordinacion';
 const SIS_DE_CODIGO = c => ({ AS: 'asistencia', CO: 'asistencia', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', EP: 'eventos', CG: 'coordinacion' })[String(c).slice(0, 2)];
