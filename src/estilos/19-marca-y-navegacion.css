@@ -70,3 +70,18 @@
   /* menos ruido: sin etiquetas «NUEVO» */
   .rail a.nuevo::after { content: none; }
   .titulo-sec .chip.amarillo { display: none; }
+  /* la página nunca se corre de lado; la cabecera baja a una segunda línea si no cabe */
+  body { overflow-x: clip; }
+  .cab-fila { flex-wrap: wrap; row-gap: 8px; }
+  /* menú de secciones con flechas para desplazarse (y rueda del ratón o arrastrar) */
+  .rail-caja { position: relative; max-width: 1720px; margin: 0 auto; }
+  .rail-caja .rail { max-width: none; scroll-behavior: smooth; cursor: grab; }
+  .rail-caja .rail.arrastrando { cursor: grabbing; scroll-behavior: auto; user-select: none; }
+  .rail-caja.izq .rail { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 90px); mask-image: linear-gradient(90deg, transparent 0, #000 90px); }
+  .rail-caja.der .rail { -webkit-mask-image: linear-gradient(270deg, transparent 0, #000 90px); mask-image: linear-gradient(270deg, transparent 0, #000 90px); }
+  .rail-caja.izq.der .rail { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%); }
+  .rail-flecha { position: absolute; top: -2px; z-index: 2; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(0, 181, 255, .45); background: var(--m-rey); color: #fff; display: none; place-items: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, .4); }
+  .rail-flecha:hover { background: var(--m-azul); }
+  .rail-flecha.izq { left: 8px; } .rail-flecha.der { right: 8px; }
+  .rail-caja.izq .rail-flecha.izq, .rail-caja.der .rail-flecha.der { display: grid; }
+  @media (max-width: 760px) { body.app .rail-caja { display: none; } }

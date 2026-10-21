@@ -55,6 +55,7 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   seccionActual = id;
   $$('main > section').forEach(x => x.classList.toggle('activa', x.id === id));
   $$('#rail a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + id));
+  if (window.railALaVista) railALaVista();
   $$('.barra-abajo button').forEach(b => b.classList.toggle('on', b.dataset.ir === id));
   const url = urlSeccion(id), ahora = location.pathname + location.search + location.hash;
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
@@ -94,6 +95,27 @@ Element.prototype.scrollIntoView = function (...a) {
   if (document.body.classList.contains('app') && s && !s.classList.contains('activa')) abrirSeccion(s.id, { arriba: this === s });
   return scrollOriginal.apply(this, a);
 };
+// ---------- Menú de secciones de arriba: flechas, rueda del ratón y arrastrar para desplazarse ----------
+(() => {
+  const rail = $('#rail'); if (!rail) return;
+  const caja = document.createElement('div'); caja.className = 'rail-caja'; rail.before(caja); caja.append(rail);
+  const flecha = (lado, d) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'rail-flecha ' + lado; b.setAttribute('aria-label', lado === 'izq' ? 'Ver secciones anteriores' : 'Ver más secciones');
+    b.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+    b.onclick = () => rail.scrollBy({ left: (lado === 'izq' ? -1 : 1) * rail.clientWidth * .7 }); caja.append(b); };
+  flecha('izq', 'M15 5l-7 7 7 7'); flecha('der', 'M9 5l7 7-7 7');
+  const revisar = () => { caja.classList.toggle('izq', rail.scrollLeft > 4); caja.classList.toggle('der', rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 4); };
+  rail.addEventListener('scroll', revisar, { passive: true }); addEventListener('resize', revisar); new ResizeObserver(revisar).observe(rail); revisar();
+  // la rueda del ratón mueve el menú de lado
+  rail.addEventListener('wheel', e => { if (rail.scrollWidth <= rail.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; e.preventDefault(); rail.style.scrollBehavior = 'auto'; rail.scrollLeft += e.deltaY; rail.style.scrollBehavior = ''; }, { passive: false });
+  // arrastrar con el ratón (sin abrir la sección si fue un arrastre)
+  let x0 = null, s0 = 0, movio = false;
+  rail.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button) return; x0 = e.clientX; s0 = rail.scrollLeft; movio = false; });
+  addEventListener('pointermove', e => { if (x0 == null) return; const d = e.clientX - x0; if (Math.abs(d) > 5) { movio = true; rail.classList.add('arrastrando'); rail.scrollLeft = s0 - d; } });
+  addEventListener('pointerup', () => { x0 = null; setTimeout(() => rail.classList.remove('arrastrando'), 0); });
+  rail.addEventListener('click', e => { if (movio) { e.preventDefault(); e.stopPropagation(); movio = false; } }, true);
+  // la sección abierta siempre queda a la vista en el menú
+  window.railALaVista = () => { const a = rail.querySelector('a.on'); if (a && a.offsetParent) rail.scrollTo({ left: a.offsetLeft - rail.clientWidth / 2 + a.offsetWidth / 2 }); };
+})();
 // listo: desde aquí el inicio de sesión ya arma la navegación
 window.NAV_LISTA = true;
 modoApp();
