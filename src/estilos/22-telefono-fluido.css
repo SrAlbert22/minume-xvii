@@ -1,0 +1,53 @@
+  /* ---------- Teléfono: más fluido y más cómodo para el dedo ---------- */
+  html { -webkit-text-size-adjust: 100%; }
+  button, a, label, summary, [role="button"], input[type="checkbox"] { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  /* al tocar, el botón «se hunde» un poquito: se siente que respondió */
+  @media (hover: none) {
+    .boton, .mini, .acceso, .volver, .barra-abajo button, .chat-canal, .rail a, .controles button, .atajo { transition: transform .1s ease, background-color .15s; }
+    .boton:active, .mini:active, .acceso:active, .volver:active, .barra-abajo button:active, .chat-canal:active, .controles button:active { transform: scale(.96); }
+  }
+  /* las listas con su propio desplazamiento no arrastran la página entera */
+  .chat-lista, .chat-canales, .chat-rapidos, .rail, .editor-velo, #edLista { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .chat-rapidos, .chat-canales { scroll-snap-type: x proximity; } .chat-rapidos > *, .chat-canal { scroll-snap-align: start; }
+  @media (max-width: 760px) {
+    /* menos efectos pesados mientras se desplaza (el desenfoque y los adornos grandes ponen lento el teléfono) */
+    .cab, body.app .barra-abajo, .controles button, .ficha { -webkit-backdrop-filter: none; backdrop-filter: none; }
+    .cab { background: rgba(8, 4, 82, .97); }
+    body.app .barra-abajo { background: #0a0464; }
+    .deco .d1 { width: 300px; right: -130px; top: -90px; opacity: .14; }
+    .deco .d2, .deco .d3, .deco .d4 { display: none; }
+    body.app main > section.activa { animation-duration: .18s; }
+    /* letra de 16 px en todo lo que se escribe: así el iPhone no agranda la pantalla sola */
+    input, select, textarea { font-size: 16px !important; }
+    /* todo lo que se toca mide al menos 40 px */
+    .mini, .controles button, .cob-agregar, #rRapidas button, #mapa button[data-k] { min-height: 40px; }
+    .cob-x { width: 34px; height: 34px; font-size: 18px; }
+    .cob-agregar { padding: 8px 12px; }
+    /* menos espacio perdido arriba */
+    main { padding: 14px 14px 96px; }
+    .volver { min-height: 42px; padding: 8px 14px; font-size: 15px; margin-bottom: 10px; border-radius: 12px; }
+    .titulo-sec h2 { font-size: clamp(26px, 8vw, 34px); }
+    .lead { margin-bottom: 12px; }
+    .aviso-demo { font-size: 11px; padding: 5px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* en el inicio de cada equipo, «¿Qué quieres hacer?» va justo debajo del título (lo primero que se ve) */
+    body.app #inicio.activa { display: flex; flex-direction: column; }
+    body.app #inicio .hero { display: contents; }
+    body.app #inicio .hero > :first-child { order: 0; }
+    body.app #accesos { order: 1; margin-top: 4px; }
+    body.app #flujo { order: 2; margin-top: 16px; }
+    body.app #miPanel { order: 3; } body.app #tablero { order: 4; }
+    body.app #inicio .hero h1 { font-size: clamp(30px, 9vw, 40px); margin: 8px 0 2px; }
+    body.app #inicio .hero .sub, body.app #inicio .hero .lead { display: none; }
+    body.app #inicio .cuenta { margin-top: 10px; }
+    .acceso.principal { grid-template-columns: auto 1fr; min-height: 84px; }
+    .acceso.principal .acceso-ic { grid-row: 1 / 3; margin-bottom: 0; }
+    /* el chat aprovecha toda la pantalla: el canal elegido ya se ve arriba */
+    .chat-cab { display: none; }
+    .chat-panel { border-radius: 16px; }
+    .chat-lista { padding: 12px 10px; }
+    .chat-escribir { padding: 8px 10px 10px; gap: 6px; }
+    .chat-rapidos { padding: 8px 10px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }

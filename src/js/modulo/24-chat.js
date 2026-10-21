@@ -15,6 +15,10 @@ function misCanalesChat() {
   if (sis === 'coordinacion') return Object.keys(CANALES_CHAT);
   return ['general', sis, ...(u.rol === 'coordinacion' ? ['coordinacion'] : [])].filter((k, i, l) => CANALES_CHAT[k] && l.indexOf(k) === i);
 }
+// Cada persona tiene su color (siempre el mismo) y su círculo con iniciales, para saber de un vistazo quién escribió
+const COLORES_PERSONA = ['#00b5ff', '#ff7a8a', '#00fdef', '#ffbeff', '#ffd23f', '#7cf29a', '#ff9a3c', '#b69cff', '#5fd0ff', '#ff6fd8', '#c8f05a', '#ffb4a2'];
+const colorPersona = k => { let h = 0; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return COLORES_PERSONA[h % COLORES_PERSONA.length]; };
+const inicialesChat = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
 const chatAbierto = () => !document.hidden && !!$('#chat') && $('#chat').offsetParent !== null;
 const rpcChat = (fn, args) => window.MINUME_RPC ? window.MINUME_RPC(fn, args) : Promise.reject(new Error('Sin conexión con el servidor'));
 const horaCorta = t => new Date(t).toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Santo_Domingo' });
@@ -41,18 +45,23 @@ function pintarInsigniasChat() {
 function pintarMensajes(irAbajo) {
   const caja = $('#chatLista'), l = chat.msgs[chat.canal] || [], pend = chat.cola.filter(p => p.canal === chat.canal);
   const abajo = irAbajo || caja.scrollHeight - caja.scrollTop - caja.clientHeight < 80;
-  let dia = '';
+  let dia = '', antes = null;
   caja.innerHTML = (l.length || pend.length ? '' : `<div class="chat-vacio"><b>Todavía no hay mensajes aquí</b><span>Escribe el primero: llega al instante a ${esc(CANALES_CHAT[chat.canal][1].toLowerCase())}.</span></div>`) + l.map(m => {
     const d = new Date(m.creado).toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Santo_Domingo' });
     const sep = d !== dia ? `<div class="chat-dia">${dia = d}</div>` : '';
-    const color = (CANALES_CHAT[m.sistema] || CANALES_CHAT.general)[2];
+    // mensajes seguidos de la misma persona (menos de 5 min) van juntos: el nombre y el círculo salen una sola vez
+    const quien = m.nombre + '|' + m.sistema, seguido = !sep && antes && antes.quien === quien && Date.parse(m.creado) - antes.t < 300000;
+    antes = { quien, t: Date.parse(m.creado) };
+    const p = colorPersona(quien), equipo = CANALES_CHAT[m.sistema] || CANALES_CHAT.general;
     const rec = m.urgente ? (m.mio ? `<small class="chat-rec">${m.recibido && m.recibido.length ? `✓ Recibido por ${esc(m.recibido.join(', '))}` : 'Nadie lo ha marcado como recibido todavía'}</small>`
       : m.yaRecibi ? '<small class="chat-rec">✓ Marcaste recibido</small>' : `<button class="boton chat-recibir" type="button" data-recibir="${m.id}">Recibido</button>`) : '';
-    return `${sep}<div class="chat-msg${m.mio ? ' mio' : ''}${m.urgente ? ' urgente' : ''}" style="--c:${color}">
-      ${m.mio ? '' : `<b class="chat-quien">${esc(m.nombre)}<span>${esc(NOMBRE_SIS[m.sistema] || m.sistema)}</span></b>`}
-      ${m.urgente ? '<span class="chat-urge">🚨 URGENTE</span>' : ''}<p>${esc(m.texto)}</p>
-      <small class="chat-hora">${horaCorta(m.creado)}${m.mio ? ` · ${m.vistos ? `visto por ${m.vistos}` : 'enviado'}` : ''}</small>${rec}</div>`;
-  }).join('') + pend.map(p => `<div class="chat-msg mio pendiente${p.urgente ? ' urgente' : ''}"><p>${esc(p.texto)}</p><small class="chat-hora">${navigator.onLine === false ? 'Sin internet: se envía cuando vuelva' : 'Enviando…'}</small></div>`).join('');
+    return `${sep}<div class="chat-fila${m.mio ? ' mio' : ''}${seguido ? ' seguido' : ''}" style="--p:${p}">
+      ${m.mio ? '' : `<span class="chat-avatar" title="${esc(m.nombre)}">${seguido ? '' : esc(inicialesChat(m.nombre))}</span>`}
+      <div class="chat-msg${m.mio ? ' mio' : ''}${m.urgente ? ' urgente' : ''}">
+        ${seguido ? '' : m.mio ? '<b class="chat-quien">Tú</b>' : `<b class="chat-quien">${esc(m.nombre)}<span class="chat-equipo" style="--e:${equipo[2]}">${esc(NOMBRE_SIS[m.sistema] || m.sistema)}</span></b>`}
+        ${m.urgente ? '<span class="chat-urge">🚨 URGENTE</span>' : ''}<p>${esc(m.texto)}</p>
+        <small class="chat-hora">${horaCorta(m.creado)}${m.mio ? ` · ${m.vistos ? `visto por ${m.vistos}` : 'enviado'}` : ''}</small>${rec}</div></div>`;
+  }).join('') + pend.map(p => `<div class="chat-fila mio"><div class="chat-msg mio pendiente${p.urgente ? ' urgente' : ''}"><p>${esc(p.texto)}</p><small class="chat-hora">${navigator.onLine === false ? 'Sin internet: se envía cuando vuelva' : 'Enviando…'}</small></div></div>`).join('');
   if (abajo) caja.scrollTop = caja.scrollHeight;
 }
 async function cargarChat(irAbajo) {

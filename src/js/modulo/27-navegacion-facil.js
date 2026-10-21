@@ -87,7 +87,7 @@ function modoApp() {
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-ir]'); if (b && document.body.classList.contains('app') && b.closest('.accesos, .barra-abajo, .volver, main')) {
-    if (b.matches('.acceso, .barra-abajo button, .volver')) { e.preventDefault(); abrirSeccion(b.dataset.ir); }
+    if (b.matches('.acceso, .barra-abajo button, .volver')) { e.preventDefault(); if (b.matches('.barra-abajo button')) vibrar(8); abrirSeccion(b.dataset.ir); }
   }
 });
 addEventListener('popstate', () => abrirSeccion(seccionDeUrl() || 'inicio', { historia: false }));

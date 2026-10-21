@@ -200,6 +200,10 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 /* pantallas grandes: la página ocupa todo el ancho y los atajos van de tres en tres */
 @media (min-width:1500px){.atajos{grid-template-columns:repeat(3,minmax(0,1fr))}.atajo:last-child:nth-child(odd){grid-column:auto}}
+/* teléfono: más fluido (sin desenfoque pesado al desplazarse, toque inmediato y sin zoom al escribir) */
+button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (max-width:760px){.barra{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(var(--fondo) 80%,transparent)}input,select{font-size:16px}.deco .d2,.deco .d3{display:none}}
+@media (hover:none){.atajo:active,.boton:active,.abierta:active{transform:scale(.97)}}
 </style>
 </head>
 <body>
