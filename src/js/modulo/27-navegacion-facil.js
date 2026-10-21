@@ -10,6 +10,7 @@ const ICO = {
   calendario: 'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4', qr: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2', mapa: 'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',
   pin: 'M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', alerta: 'M12 3l10 18H2zM12 10v5M12 18h.01',
   caminar: 'M13 4a1.5 1.5 0 1 0 0 .01M10 21l2-6 3 3v3M8 12l2-4 4 1 2 4M10 8l-2 8', aviso: 'M12 8v5M12 16h.01M4 20h16L12 4z',
+  bus: 'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 11h14M5 17h14v2H5zM8 19v2M16 19v2M8 14h.01M16 14h.01',
   libro: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 5v16', check: 'M4 12l5 5L20 6', reloj: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
   grupo: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 11a3 3 0 1 0 0-6M3 20a6 6 0 0 1 12 0M15 14a6 6 0 0 1 6 6', tarjeta: 'M3 6h18v12H3zM3 10h18M7 15h4',
   grafico: 'M4 20V10M10 20V4M16 20v-8M22 20H2', cruz: 'M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z', ajustes: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M8 10v4M16 16v4',
@@ -25,7 +26,7 @@ const SECCION = {
   objetos: ['bolso', 'Objetos perdidos', 'Lo encontrado y lo que se busca'], programa: ['calendario', 'Programa', 'Qué pasa hoy y a qué hora'],
   delegados: ['qr', 'Delegados', 'Acreditación de delegados'], mapa: ['mapa', 'Mapa y rutas', 'Cómo llegar a cada salón'],
   ubicacion: ['pin', 'Equipo en vivo', 'Dónde está el equipo'], seguridad: ['alerta', 'Seguridad', 'Código del evento y protocolo'],
-  traslado: ['caminar', 'Movilización', 'Salidas a pie entre las sedes'], incidencias: ['aviso', 'Reportar algo', 'Una incidencia, en un minuto'],
+  traslado: ['bus', 'Autobuses', 'Participantes a su hotel y salidas a pie'], incidencias: ['aviso', 'Reportar algo', 'Una incidencia, en un minuto'],
   bitacora: ['libro', 'Bitácora', 'Lo importante del día'], listas: ['check', 'Mis listas', 'Lo que te toca ahora'],
   sesion: ['reloj', 'Durante la sesión', 'Sesión y transiciones'], 'mi-comision': ['grupo', 'Mi comisión', 'La ficha de tu comisión'],
   empieza: ['persona', 'Mi rol', 'Qué hace un asistente'], bolsillo: ['tarjeta', 'Guía de bolsillo', 'Contactos y respuestas rápidas'],
@@ -58,6 +59,7 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   const url = urlSeccion(id), ahora = location.pathname + location.search + location.hash;
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
+  if (id === 'traslado' && window.BUSES_LISTO) pintarBuses();
   document.title = `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
 }
 function modoApp() {

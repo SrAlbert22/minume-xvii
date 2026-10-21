@@ -149,6 +149,7 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 .vacio{border:1px dashed var(--borde2);border-radius:14px;padding:18px;color:var(--suave);font-size:14px;text-align:center}
 .viaje{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--borde)}
 .viaje:last-child{border-bottom:0}
+.sub-viajes{margin:14px 0 2px;font:800 15px var(--f-tit);text-transform:uppercase;letter-spacing:.04em;color:var(--suave)}
 .viaje .h{font:800 22px/1 var(--f-tit);font-variant-numeric:tabular-nums}
 .viaje b{display:block;font-size:13.5px}
 .viaje small{color:var(--suave);font-size:12px}
@@ -254,8 +255,10 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
     <div class="caja">
       <div class="cab-caja">
         <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M5 16V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10M5 11h14M5 16h14v2H5zM8 18v2M16 18v2"/></svg>
-        <h3>Próximas movilizaciones a pie</h3>
+        <h3>Autobuses de participantes</h3>
       </div>
+      <div id="buses"></div>
+      <h4 class="sub-viajes">A pie entre las sedes</h4>
       <div id="viajes"></div>
     </div>
   </section>
@@ -362,7 +365,7 @@ const ATAJOS = {
     ['cobertura', 'cobertura', 'Cobertura de áreas', 'Quién está en cada punto'],
     ['rondas', 'lista', 'Rondas', 'Marcar cada punto'],
     ['seguridad', 'escudo', 'Avisos y SOS', 'Responder y despachar'],
-    ['traslado', 'bus', 'Movilización', 'Salidas a pie y conteo'],
+    ['traslado', 'bus', 'Autobuses', 'Participantes a su hotel'],
     ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
     ['mapa', 'mapa', 'Mapa 3D', 'Salones y puntos']
   ],
@@ -416,6 +419,15 @@ const VIAJES = [
   { h: '13:45', de: 'malecon', a: 'sheraton', nota: 'Regreso a sesiones', estado: 'A tiempo' },
   { h: '18:30', de: 'sheraton', a: 'jaragua', nota: 'Cierre de jornada en el Jaragua', estado: 'A tiempo' }
 ];
+// Hoteles de hospedaje y autobuses de participantes (lo mismo que en Seguridad y Traslado; ahí se editan)
+const HOTELES = [
+  { id: 'HJ', n: 'Renaissance Jaragua', pax: 0, apie: true }, { id: 'HS', n: 'Sheraton Santo Domingo', pax: 0, apie: true },
+  { id: 'H3', n: 'Hotel por confirmar', pax: 45, apie: false }
+];
+const BUSES = [
+  { id: 'B1-ida', h: '7:00', tipo: 'Ida', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', pax: 45 },
+  { id: 'B1-regreso', h: '18:45', tipo: 'Regreso', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', pax: 45 }
+];
 const RESPONSABLES = [
   ['Coordinación de Asistencia', 'Beatriz Pérez'], ['Subsecretario de Asistencia', 'Baldwin Ureña'], ['Gestión de Voluntarios', 'Adrian Triunfer'],
   ['Bienestar', 'Laura Melián'], ['Seguridad / Traslado', 'Brahyant Pérez'], ['Eventos / Protocolo', 'Daniela Sirit'], ['Soporte SGL', 'Kervin Diaz']
@@ -443,6 +455,8 @@ function aplicarConfigInicio() {
   const vieja = l => l.some(x => x && ['sede', 'de', 'a'].some(k => x[k] && !SEDES[x[k]]));
   const com = c('comisiones'); if (com && !vieja(com)) com.forEach(r => { ASIGNA[r.com] = [r.sede, r.salon]; });
   const bus = c('autobuses'); if (bus && !vieja(bus)) VIAJES.splice(0, VIAJES.length, ...bus.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
+  const hot = c('hoteles'); if (hot) HOTELES.splice(0, HOTELES.length, ...hot);
+  const bs = c('buses'); if (bs && !vieja(bs.map(b => ({ sede: b.sede })))) BUSES.splice(0, BUSES.length, ...bs.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
   const res = c('responsables'); if (res) RESPONSABLES.splice(0, RESPONSABLES.length, ...res.map(r => [r.area, r.persona]));
   $('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join('');
 }
@@ -627,7 +641,21 @@ $('#bPrueba').addEventListener('click', () => {
 
 /* ---------- Traslados ---------- */
 function proximoViaje(d) { if (!enEvento(d)) return null; const m = minutos(d); return VIAJES.find(v => aMin(v.h) >= m - 5) || null; }
+function pintarBuses() {
+  const d = ahora(), ev = enEvento(d), m = minutos(d), vv = leerLS('minume.compartido.buses', null), vivo = vv && vv.dia === fechaLocal(d) && vv.v ? vv.v : {};
+  const hotel = c => HOTELES.find(h => h.id.toLowerCase() === String(c).trim().toLowerCase()) || { id: String(c).trim().toUpperCase(), n: String(c).trim() };
+  $('#buses').innerHTML = BUSES.length ? BUSES.map(b => {
+    const s = vivo[b.id] || {}, ps = String(b.paradas || '').split(',').filter(x => x.trim()).map(hotel), ida = b.tipo === 'Ida';
+    const hechas = ps.filter(p => s.p && s.p[p.id] && s.p[p.id].t), bajaron = hechas.reduce((a, p) => a + (+s.p[p.id].n || 0), 0);
+    const fin = ida ? !!(s.sede && s.sede.t) : ps.length && hechas.length === ps.length;
+    const est = fin ? `<span class="chip verde">${ida ? 'En la sede' : `En su hotel · ${bajaron}`}</span>` : s.salio || hechas.length ? '<span class="chip amar">En camino</span>'
+      : ev && m > aMin(b.h) + 10 ? `<span class="chip rojo">Retrasado ${m - aMin(b.h)} min</span>` : '<span class="chip">Programado</span>';
+    const ruta = ida ? `${ps.map(p => p.n).join(', ')} → ${SEDES[b.sede] || b.sede}` : `${SEDES[b.sede] || b.sede} → ${ps.map(p => p.n).join(', ')}`;
+    return `<div class="viaje"><span class="h">${b.h}</span><div><b>${esc(b.unidad)} · ${ida ? 'Ida' : 'Regreso'}</b><small>${esc(ruta)}${b.pax ? ` · ${b.pax} participantes` : ''}</small></div>${est}</div>`;
+  }).join('') : '<p style="margin:0;color:var(--suave);font-size:13px">Todavía no hay autobuses. Traslado los agrega en su sistema.</p>';
+}
 function pintarViajes() {
+  pintarBuses();
   const d = ahora(), ev = enEvento(d), m = minutos(d), prox = proximoViaje(d);
   $('#viajes').innerHTML = (ev ? '' : `<p style="margin:0 0 8px;color:var(--suave);font-size:13px">Horario de cada día de sesiones (15 y 16 de noviembre).</p>`) + VIAJES.map(v => {
     const ya = ev && aMin(v.h) < m - 5, es = prox === v, falta = es ? aMin(v.h) - m : 0;

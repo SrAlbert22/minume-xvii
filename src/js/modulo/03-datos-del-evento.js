@@ -30,6 +30,19 @@ const VIAJES = [
   { h: '13:45', de: 'malecon', a: 'sheraton', nota: 'Regreso a sesiones', estado: 'A tiempo' },
   { h: '18:30', de: 'sheraton', a: 'jaragua', nota: 'Cierre de jornada en el Jaragua', estado: 'A tiempo' },
 ];
+// Hoteles donde se hospedan los participantes. Todavía faltan hoteles: se agregan en «Datos del evento → Hoteles de hospedaje».
+// «apie»: el hotel es una de las sedes, así que esos participantes llegan caminando y no necesitan autobús.
+const HOTELES = [
+  { id: 'HJ', n: 'Renaissance Jaragua', zona: 'Av. George Washington 367 · Malecón', pax: 0, apie: true },
+  { id: 'HS', n: 'Sheraton Santo Domingo', zona: 'Av. George Washington 365 · Malecón', pax: 0, apie: true },
+  { id: 'H3', n: 'Hotel por confirmar', zona: 'Cámbialo por el hotel real', pax: 45, apie: false },
+];
+// Autobuses de participantes: «Ida» recoge en los hoteles y los lleva a la sede; «Regreso» sale de la sede y los deja en sus hoteles.
+// Ejemplo hasta tener las rutas reales (se cambian en «Datos del evento → Autobuses de participantes»).
+const BUSES = [
+  { id: 'B1-ida', h: '7:00', tipo: 'Ida', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', resp: 'Ana Rosario', pax: 45 },
+  { id: 'B1-regreso', h: '18:45', tipo: 'Regreso', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', resp: 'Ana Rosario', pax: 45 },
+];
 const LISTAS = {
   pre: ['Conozco el nombre, la modalidad y la estructura básica de mi comisión', 'Sé quiénes integran la mesa directiva y cuál es el canal de comunicación acordado', 'Tengo el listado oficial de participantes y la representación de cada delegado', 'Conozco los canales oficiales de la comisión y si los delegados están integrados', 'Conozco el horario de sesiones, talleres, comidas, eventos generales y transiciones', 'Conozco las necesidades de mi comisión: materiales, audiovisuales, invitados o circulación', 'Di seguimiento a las reuniones o talleres con la mesa directiva que se me pidieron', 'Di seguimiento a la asistencia de delegados en actividades preparatorias', 'Envié la información para los placards antes de impresión', 'Reporté las novedades en listados: nombres, comisión, representación u otras diferencias'],
   montaje: ['Identifiqué el salón correcto y confirmé que puedo acceder a tiempo', 'Verifiqué placards de delegados (por letra de apertura) y de mesa directiva', 'Confirmé malletes y demás materiales definidos para la comisión', 'Revisé micrófonos, proyector, banners y otros recursos audiovisuales', 'Observé mesas, sillas, entradas, salidas y zonas de circulación', 'Reporté cualquier faltante y di seguimiento hasta conocer su estatus', 'Tengo a mano el contacto de Beatriz y sé cómo reportar una incidencia', 'La comisión está lista antes de que entren los delegados'],

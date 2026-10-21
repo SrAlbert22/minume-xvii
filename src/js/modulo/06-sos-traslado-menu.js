@@ -24,6 +24,7 @@ const rutaViaje = v => calcularRuta(LUGAR_SALIDA[v.de], LUGAR_LLEGADA[v.a]);
 function viajesDeMiSede() { if (!estado.comision) return []; const s = ASIGNA[estado.comision][0]; return VIAJES.filter(v => v.de === s || v.a === s); }
 function proximoViaje() { const ahora = new Date(), m = ahora.getHours() * 60 + ahora.getMinutes(); const l = viajesDeMiSede(); return l.find(v => minutos(v.h) > m) || l[0]; }
 function pintarTraslado() {
+  if (window.BUSES_LISTO) pintarBuses();
   const mis = new Set(viajesDeMiSede());
   $('#tLista').innerHTML = VIAJES.map(v => { const r = rutaViaje(v); return `<div class="viaje${mis.has(v) ? ' mio' : ''}"><div class="hora">${v.h}<small>${minutos(v.h) < 720 ? 'a. m.' : 'p. m.'}</small></div><div class="ruta"><b>${SEDES[v.de].corto} → ${SEDES[v.a].corto}</b><span>${esc(v.nota)}${r ? ` · ${r.metros} m, ${r.minutos} min a pie` : ''}</span></div><span class="chip ${v.estado.startsWith('A tiempo') ? 'verde' : 'amarillo'}">${esc(v.estado)}</span></div>`; }).join('');
   const v = proximoViaje();

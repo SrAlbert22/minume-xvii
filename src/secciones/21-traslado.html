@@ -1,8 +1,20 @@
   <!-- 06 · Traslado (NUEVO) -->
   <section id="traslado" data-roles="traslado seguridad coordinacion">
-    <div class="titulo-sec"><span class="n">06</span><h2>Movilización entre sedes</h2><span class="chip amarillo">NUEVO</span></div>
-    <p class="lead">El Jaragua, el Sheraton y el Malecón Terrace quedan a pocos minutos a pie. Aquí están las salidas de cada grupo, la ruta y el conteo para que nadie se quede.</p>
-    <div class="ed-botones" style="margin-bottom:14px"><button class="boton sec ed-abrir" type="button" data-editar="autobuses" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar movilizaciones</button></div>
+    <div class="titulo-sec"><span class="n">06</span><h2>Autobuses y traslados</h2></div>
+    <p class="lead">Los autobuses llevan a los participantes de su hotel a la sede y de vuelta. Aquí se cuenta quién abordó, se marca cuando sale y cuando llega a cada hotel, para confirmar que todos llegaron.</p>
+    <div class="ed-botones" style="margin-bottom:14px"><button class="boton sec ed-abrir" type="button" data-editar="buses" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar autobuses</button><button class="boton sec ed-abrir" type="button" data-editar="hoteles" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar hoteles</button></div>
+    <div class="bus-cifras" id="busCifras"></div>
+    <div class="tarjeta" style="margin-top:14px">
+      <div class="bus-cab"><b class="cond" style="font-size:24px">Autobuses de hoy</b><span class="chip" id="busHoy"></span></div>
+      <div id="busLista" class="bus-lista"></div>
+    </div>
+    <div class="tarjeta" style="margin-top:14px">
+      <div class="bus-cab"><b class="cond" style="font-size:24px">¿Llegaron a su hotel?</b><small>Se marca solo cuando el autobús llega a cada parada</small></div>
+      <div id="hotLista" class="hot-lista"></div>
+    </div>
+    <h3 class="bus-sub">A pie entre las sedes</h3>
+    <p style="color:var(--suave);margin:-4px 0 12px">El Jaragua, el Sheraton y el Malecón Terrace quedan a pocos minutos caminando. Estas son las salidas de los grupos entre sedes.</p>
+    <div class="ed-botones" style="margin-bottom:14px"><button class="boton sec ed-abrir" type="button" data-editar="autobuses" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar salidas a pie</button></div>
     <div class="rejilla r2">
       <div class="tarjeta" id="proximo">
         <span class="chip" style="color:var(--naranja);border-color:rgba(255,154,60,.4)">🚶 Tu próxima movilización</span>
@@ -16,7 +28,7 @@
       </div>
     </div>
     <div class="tarjeta" style="margin-top:14px">
-      <b class="cond" style="font-size:24px">Salidas del día</b>
+      <b class="cond" style="font-size:24px">Salidas a pie del día</b>
       <div id="tLista" style="margin-top:10px"></div>
       <p style="color:var(--suave);font-size:12.5px;margin:8px 0 0">Coordinación cambia el estado de cada salida ("A tiempo", "Retrasado", "Salió") y todos lo ven al instante.</p>
     </div>

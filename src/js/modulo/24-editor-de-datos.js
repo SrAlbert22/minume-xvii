@@ -80,6 +80,20 @@ const DATOS = {
     leer: () => VIAJES.map(v => ({ ...v })),
     aplicar: recs => VIAJES.splice(0, VIAJES.length, ...recs.map(r => ({ ...r, estado: r.estado || 'A tiempo' })).sort((a, b) => aMinutos(a.h) - aMinutos(b.h))),
   },
+  hoteles: {
+    titulo: 'Hoteles de hospedaje', icono: 'casa', quien: ['traslado', 'seguridad', 'coordinacion'],
+    ayuda: 'Dónde duermen los participantes. Agrega aquí los hoteles que falten; el código corto (por ejemplo H4) se usa en las paradas de los autobuses.',
+    campos: [{ k: 'id', t: 'Código', req: 1, mayus: 1, soloViejo: 1 }, { k: 'n', t: 'Hotel', req: 1, ancho: 2 }, { k: 'zona', t: 'Dirección o zona', ancho: 2 }, { k: 'pax', t: 'Participantes hospedados', tipo: 'num' }, { k: 'apie', t: 'Está en una sede (llegan a pie)', tipo: 'si' }],
+    leer: () => HOTELES.map(h => ({ ...h })),
+    aplicar: recs => HOTELES.splice(0, HOTELES.length, ...recs.map(r => ({ id: String(r.id || nuevoId('H')).toUpperCase(), n: r.n, zona: r.zona || '', pax: +r.pax || 0, apie: !!r.apie }))),
+  },
+  buses: {
+    titulo: 'Autobuses de participantes', icono: 'bus', quien: ['traslado', 'seguridad', 'coordinacion'],
+    ayuda: 'Cada salida de autobús. «Ida» recoge en los hoteles y va a la sede; «Regreso» sale de la sede y deja a cada quien en su hotel. Paradas: códigos de hotel en orden, separados por comas (H3, H4).',
+    campos: [{ k: 'h', t: 'Sale', tipo: 'hora', req: 1 }, { k: 'tipo', t: 'Viaje', tipo: 'opc', opc: () => [['Ida', 'Ida · hotel → sede'], ['Regreso', 'Regreso · sede → hotel']], req: 1 }, { k: 'unidad', t: 'Autobús', req: 1 }, { k: 'sede', t: 'Sede', tipo: 'opc', opc: SEDE_OPC, req: 1 }, { k: 'paradas', t: 'Paradas (hoteles en orden)', req: 1, ancho: 2 }, { k: 'resp', t: 'Staff a bordo', ancho: 2 }, { k: 'pax', t: 'Participantes', tipo: 'num' }],
+    leer: () => BUSES.map(b => ({ ...b })),
+    aplicar: recs => BUSES.splice(0, BUSES.length, ...recs.map(r => ({ ...r, id: r.id || nuevoId('B'), pax: +r.pax || 0 })).sort((a, b) => aMinutos(a.h) - aMinutos(b.h))),
+  },
   responsables: {
     titulo: 'Responsables por área', icono: 'gente', quien: ['coordinacion'],
     ayuda: 'A quién acudir en cada área. Sin números de teléfono: cada uno se contacta por el canal oficial.',
@@ -88,7 +102,7 @@ const DATOS = {
     aplicar: recs => AREAS.splice(0, AREAS.length, ...recs.map(r => [r.k || nuevoId('ar'), r.area, r.persona])),
   },
 };
-const ORDEN_DATOS = ['programa', 'eventos', 'invitados', 'comisiones', 'staff', 'puntos', 'turnos', 'rutas', 'autobuses', 'responsables'];
+const ORDEN_DATOS = ['programa', 'eventos', 'invitados', 'comisiones', 'staff', 'puntos', 'turnos', 'rutas', 'hoteles', 'buses', 'autobuses', 'responsables'];
 const EJEMPLO_DATOS = Object.fromEntries(ORDEN_DATOS.map(k => [k, JSON.parse(JSON.stringify(DATOS[k].leer()))]));
 const puedeEditar = k => !!estado.usuario && DATOS[k].quien.includes(estado.usuario.rol);
 // Lo guardado antes del cambio de sedes (Dominican Fiesta, Sede 2 y 3) ya no sirve: se usa el ejemplo nuevo
