@@ -17,10 +17,16 @@ const irDesdeHash = () => {
     ir = m[2] || '';
     try { history.replaceState(null, '', location.pathname + location.search + (ir ? '#' + ir : '')); } catch {}
     const c = m[1].toUpperCase();
-    if (!estado.usuario || estado.usuario.codigo !== c) { $('#codigo').value = c; entrar(c); }
+    if (!estado.usuario || estado.usuario.codigo !== c) { $('#codigo').value = c; return Promise.resolve(entrar(c)).then(() => abrirDesdeEnlace(ir)); }
   }
+  abrirDesdeEnlace(ir);
+};
+// cada sección es su propia pantalla: el atajo abre solo esa (Mapa abre solo el mapa)
+const abrirDesdeEnlace = ir => {
   const el = /^[a-z-]+$/.test(ir) && document.getElementById(ir);
-  if (el && estado.usuario && !el.classList.contains('sin-permiso')) setTimeout(() => el.scrollIntoView({ block: 'start', behavior: 'instant' }), 500);
+  if (!el || !estado.usuario || el.classList.contains('sin-permiso')) return;
+  if (window.NAV_LISTA) abrirSeccion(ir, { historia: false });
+  else setTimeout(() => window.NAV_LISTA ? abrirSeccion(ir, { historia: false }) : el.scrollIntoView({ block: 'start', behavior: 'instant' }), 0);
 };
 irDesdeHash();
 addEventListener('hashchange', () => { if (location.hash.startsWith('#entrar=')) irDesdeHash(); });
