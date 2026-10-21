@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es-DO">
+<head>
+<meta charset="utf-8">
+<title>MINUME XVII · Lo que tenemos que hacer</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;800;900&family=Libre+Baskerville&display=swap" rel="stylesheet">
+<!-- Guía para imprimir en PDF · Albert Silvestre -->
+<style>
+  @page { size: Letter; margin: 16mm 15mm 18mm; }
+  @page :first { margin: 0; }
+  :root { --navy: #0a0464; --rey: #002193; --azul: #0043c5; --medio: #0090fb; --cian: #00b5ff; --turquesa: #00fdef; --rosa: #ffbeff; --rojo: #e53535; --morado: #0043c5; --texto: #1b1f45; --suave: #5b6390; --linea: #dde3f5; --fondo: #f2f5ff;
+    --franja: linear-gradient(90deg, #0a0464 0 16.6%, #002193 0 33.3%, #0043c5 0 50%, #0090fb 0 66.6%, #00b5ff 0 83.3%, #00fdef 0); }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 10.5pt/1.5 Barlow, 'Segoe UI', Arial, sans-serif; color: var(--texto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .portada { height: 279.4mm; width: 215.9mm; background: radial-gradient(120% 90% at 100% 0%, #0043c5 0%, #002193 45%, #0a0464 85%); color: #fff; padding: 26mm 22mm; display: flex; flex-direction: column; page-break-after: always; position: relative; overflow: hidden; }
+  .portada .marca { display: block; } .portada .marca img { position: static; width: 120mm; height: auto; border-radius: 0; box-shadow: none; display: block; }
+  .portada .marca small { display: block; margin-top: 4mm; font: 700 11pt 'Barlow Condensed', Arial; letter-spacing: 2px; text-transform: uppercase; color: var(--cian); }
+  .portada .adorno { position: absolute; right: -40mm; top: -40mm; width: 120mm; height: auto; opacity: .35; left: auto; bottom: auto; border-radius: 0; box-shadow: none; }
+  .portada .institucional { position: static; width: auto; height: 12mm; object-fit: contain; border-radius: 0; box-shadow: none; display: block; margin-top: 3mm; }
+  .portada::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3mm; background: var(--franja); }
+  .portada .logo { width: 46px; height: 46px; border-radius: 12px; background: var(--cian); color: var(--navy); display: grid; place-items: center; font-size: 26px; font-weight: 900; }
+  .portada h1 { font: 900 60pt/.95 'Barlow Condensed', Arial; text-transform: uppercase; margin: 22mm 0 6mm; letter-spacing: -.5px; }
+  .portada h1 span { color: var(--cian); }
+  .portada .sub { font-size: 16pt; color: #c8d6ff; max-width: 150mm; }
+  .portada .linea { width: 90mm; height: 5px; background: var(--franja); margin: 10mm 0; border-radius: 0; }
+  .portada img { position: absolute; left: 22mm; right: 22mm; bottom: 58mm; width: calc(100% - 44mm); height: 88mm; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+  .portada .pie { margin-top: auto; display: flex; justify-content: space-between; color: #9fb2e6; font-size: 10pt; }
+  .portada .pie b { color: #fff; }
+  h2 { break-after: avoid; font: 800 22pt/1.1 'Barlow Condensed', Arial; text-transform: uppercase; color: var(--navy); margin: 0 0 3mm; padding-top: 2mm; display: flex; align-items: center; gap: 10px; }
+  h2 .n { font-size: 11pt; background: var(--navy); color: var(--turquesa); border-radius: 0; padding: 2px 8px; border-bottom: 3px solid var(--cian); }
+  section { margin-bottom: 9mm; }
+  section.salto { page-break-before: always; }
+  .lead { break-inside: avoid; font-size: 11.5pt; color: #2a3247; border-left: 4px solid var(--cian); padding: 2mm 0 2mm 4mm; background: var(--fondo); border-radius: 0 6px 6px 0; margin: 0 0 4mm; }
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.5pt; }
+  tr { break-inside: avoid; } thead, tr:first-child { break-after: avoid; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 5px 7px; font: 700 10pt 'Barlow Condensed', Arial; text-transform: uppercase; letter-spacing: .3px; border-bottom: 2px solid var(--cian); }
+  td { padding: 5px 7px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  tr:nth-child(even) td { background: #f8f9fc; }
+  ol, ul { margin: 2mm 0 4mm; padding-left: 6mm; } li { margin: 1mm 0; break-inside: avoid; }
+  figure { margin: 4mm 0; page-break-inside: avoid; }
+  figure img { width: 100%; border-radius: 8px; display: block; }
+  figcaption { font-size: 9pt; color: var(--suave); margin-top: 1.5mm; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .cita { background: linear-gradient(135deg, #eef3ff, #e6fbff); border: 1px solid #cfdcff; border-radius: 10px; padding: 4mm 5mm; margin: 4mm 0; page-break-inside: avoid; }
+  .cita b { color: var(--morado); display: block; margin-bottom: 1.5mm; font-size: 10pt; text-transform: uppercase; letter-spacing: .4px; }
+  .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 3mm 0 4mm; }
+  .cifra { background: linear-gradient(150deg, var(--azul), var(--navy)); color: #fff; border-radius: 10px; padding: 4mm; }
+  .cifra b { font: 900 26pt/1 'Barlow Condensed', Arial; color: var(--turquesa); display: block; }
+  .cifra small { color: #b8c6ec; font-size: 9pt; }
+  .colores span { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; font-size: 9.5pt; }
+  .colores i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .tareas li { list-style: none; position: relative; padding-left: 6mm; } .tareas { padding-left: 0; }
+  .tareas li::before { content: ''; position: absolute; left: 0; top: 1.2mm; width: 3.2mm; height: 3.2mm; border: 1.5px solid var(--azul); border-radius: 3px; }
+  code { background: #eef1f8; padding: 1px 5px; border-radius: 4px; font-size: 9pt; }
+  a { color: var(--azul); text-decoration: none; }
+  .nota { font-size: 9pt; color: var(--suave); }
+  footer.firma { break-before: avoid; margin-top: 3mm; padding-top: 2mm; border-top: 1px solid var(--linea); font-size: 9pt; color: var(--suave); display: flex; justify-content: space-between; }
+
+
+  /* lista de pendientes */
+  body { font-size: 9.4pt; line-height: 1.42; }
+  section { margin-bottom: 4mm; }
+  h2 { margin-bottom: 2mm; }
+  table { margin: 2mm 0 3mm; }
+  .t { break-inside: avoid; border: 1px solid var(--linea); border-left: 4px solid var(--cian); border-radius: 0 8px 8px 0; padding: 2mm 3.5mm 1mm; margin: 0 0 2.4mm; background: #fbfcff; }
+  .t .cab { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1mm; }
+  .t .cab b { font: 800 12.5pt/1.15 'Barlow Condensed', Arial; text-transform: uppercase; letter-spacing: .2px; color: var(--navy); flex: 1; }
+  .t ul { margin: 1mm 0 1.5mm; padding-left: 5mm; } .t li { margin: .6mm 0; }
+  .caja { width: 4mm; height: 4mm; border: 1.5px solid var(--azul); border-radius: 1mm; flex: none; display: inline-block; }
+  .prio { font: 800 7.5pt 'Barlow Condensed', Arial; text-transform: uppercase; letter-spacing: .6px; padding: 1px 7px; border-radius: 99px; color: #fff; white-space: nowrap; }
+  .prio.alta { background: var(--rojo); } .prio.media { background: var(--medio); } .prio.baja { background: #6b7394; }
+  .quien { font: 700 8.5pt Barlow, Arial; color: var(--suave); white-space: nowrap; }
+  section:nth-of-type(4) { break-before: page; }
+  .prios { font-size: 8.8pt; color: var(--suave); }
+  table.llave { width: auto; } table.llave td:first-child { white-space: nowrap; }
+  ol.urgente { padding-left: 6mm; } ol.urgente li { margin: 1.2mm 0; font-size: 10.5pt; }
+  ul.tareas li { list-style: none; position: relative; padding-left: 6mm; margin: 1.2mm 0; } ul.tareas { padding-left: 0; }
+  ul.tareas li::before { content: ''; position: absolute; left: 0; top: 1.1mm; width: 3.2mm; height: 3.2mm; border: 1.5px solid var(--azul); border-radius: 1mm; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <img class="adorno" src="../src/marca/anillo-turquesa.svg" alt="">
+  <div class="marca"><img src="../src/marca/minume-xvii-blanco.svg" alt="MINUME XVII"><small>XVII Período de Sesiones · Pendientes</small></div>
+  <h1>Lo que tenemos<br><span>que hacer</span></h1>
+  <div class="sub">Todo lo que quedó pendiente después de la reunión del 21 de octubre: cambios a la página, datos por conseguir, decisiones y fechas.</div>
+  <div class="linea"></div>
+  
+  <div class="pie"><span><b>minume-xvii.vercel.app</b><br>14 al 16 de noviembre de 2026 · Santo Domingo</span><span style="text-align:right">Hecho por <b>Albert Silvestre</b><br>21 de octubre de 2026<img class="institucional" src="../src/marca/educacion-plerd-blanco.svg" alt="" style="margin-left:auto"></span></div>
+</div>
+<section>
+  <h2><span class="n">01</span>De dónde sale esto</h2>
+  <p class="lead">Es la lista de todo lo que quedó por hacer después de la reunión del 21 de octubre con la dirección de Seguridad y Traslado, donde se revisó la página sección por sección. Faltan 24 días para el montaje (14 de noviembre).</p>
+  <p class="nota">La transcripción escribió mal varios nombres, así que aquí se usan los cargos. Hay que confirmar los nombres de las personas.</p>
+  <table class="llave">
+    <tr><th>Quién</th><th>Qué significa</th></tr>
+    <tr><td><b>Albert</b></td><td>Lo programa en la página.</td></tr>
+    <tr><td><b>Albert + Rainer</b></td><td>Se define y se hace juntos (roles, qué ve cada quien, qué se aprovecha de la base de Rainer).</td></tr>
+    <tr><td><b>Dirección</b></td><td>Hay que conseguir un dato, una respuesta o tomar una decisión (la dirección de Seguridad y Traslado o la organización).</td></tr>
+  </table>
+  <p class="prios"><span class="prio alta">Alta</span> hace falta para el evento o para la capacitación &nbsp; <span class="prio media">Media</span> mejora mucho &nbsp; <span class="prio baja">Baja</span> puede esperar o es una propuesta</p>
+</section>
+
+<section>
+  <h2><span class="n">02</span>Lo más urgente</h2>
+  <ol class="urgente">
+    <li><b>Autobuses → 18 regionales</b> con pase de lista de delegados.</li>
+    <li><b>Paneles por nivel:</b> cada quien ve solo lo suyo; solo la dirección ve todo y asigna.</li>
+    <li><b>Pedir ubicación y alertas</b> apenas se entra a la página.</li>
+    <li><b>Historial de reportes por día</b> (la bitácora no se reinicia).</li>
+    <li><b>Alertas por correo</b> en dos niveles (SOS e incidencias normales).</li>
+    <li><b>Conseguir los datos reales:</b> listado de delegados por regional, Excel de agenda y lista oficial del staff.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">03</span>Cambios a la página</h2>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>1 · Regionales en lugar de autobuses</b><span class="prio alta">Alta</span><span class="quien">Albert</span></div><ul>
+    <li>No habrá autobuses: el staff llega el 14, las regionales llegan el 15 con su encargado y después todo es a pie.</li>
+    <li>«Autobuses» pasa a ser <b>«Regionales»</b>: las 18 regionales, cada una con su encargado fijo (no se edita durante el día).</li>
+    <li>Cada encargado ve <b>solo su regional</b> con la lista de sus delegados. Los marca uno por uno («ya bajó») y al final confirma «regional completa». Así se asegura que todos bajen a tiempo al lobby cada mañana y cada noche.</li>
+    <li>La dirección ve las 18 regionales de un vistazo: cuáles ya confirmaron y a cuáles les falta gente. Eso lo ve solo la dirección.</li>
+    <li>Si no se consigue el listado por regional: botón <b>«Agregar delegado»</b> para armar la lista el primer día.</li>
+    <li>Se mantienen las salidas a pie con conteo del grupo («salimos 50 delegados») y su recorrido en el mapa.</li>
+    <li>El mensaje rápido del chat «Llegó el autobús» pasa a «Llegó la regional».</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>2 · Paneles personalizados por nivel</b><span class="prio alta">Alta</span><span class="quien">Albert + Rainer</span></div><ul>
+    <li>Voluntarios y coordinadores: ven <b>solo lo de su subsecretaría</b>, nada de las demás.</li>
+    <li>Subsecretarios y dirección: un <b>panel general</b> de todo lo que se mueve en logística.</li>
+    <li><b>Solo la administración</b> puede asignar refuerzos, asignar personas a puntos y turnos y editar datos. Quitarlo del perfil de Seguridad (hoy lo puede hacer cualquiera).</li>
+    <li>Ocultar a cada perfil lo que no le sirve (por ejemplo, Comisiones a quien es de Seguridad).</li>
+    <li>Cambiar el nombre «Coordinación»: hoy se llama así lo que son los subsecretarios. Definir los nombres reales de los cargos.</li>
+    <li>Completar los perfiles que faltan: Bienestar y las otras subsecretarías.</li>
+    <li>Seguridad y Traslado se quedan juntos por ahora; ver si cada uno debe ver solo lo suyo.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>3 · Ubicación y alertas apenas se entra</b><span class="prio alta">Alta</span><span class="quien">Albert</span></div><ul>
+    <li>Al entrar, la página pide <b>compartir la ubicación</b> y <b>activar las alertas</b>, como el permiso que pide el teléfono. Que nadie tenga que ir a Cobertura o a «En vivo» para hacerlo.</li>
+    <li>Explicar en la capacitación que la ubicación se comparte hasta el cierre del día y solo la ve el staff autorizado.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>4 · Historial de reportes por día</b><span class="prio alta">Alta</span><span class="quien">Albert</span></div><ul>
+    <li>La bitácora <b>no se reinicia</b> al cambiar de día: se archiva.</li>
+    <li>Pantalla nueva <b>«Reportes»</b> con un botón por cada día del evento. Al abrir un día sale el reporte completo (cobertura, puntos, rondas, incidencias, objetos perdidos) y se baja en PDF y Excel.</li>
+    <li>El reporte de cada persona sale según lo que se le asignó: en qué punto estuvo, a qué hora y qué vio («estaba en la puerta del Jaragua y vio tal cosa»).</li>
+    <li>Dentro de cada día, búsqueda y filtros.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>5 · Alertas por correo en dos niveles</b><span class="prio alta">Alta</span><span class="quien">Albert + Dirección</span></div><ul>
+    <li><b>SOS y alertas urgentes:</b> correo a la persona de la organización que se indique y a la dirección. Hay que confirmar el nombre y el correo (en la transcripción suena «Disney»).</li>
+    <li><b>Incidencias normales</b> (rondas, pasillos, el evento): correo solo a tres personas de la dirección de Seguridad y Traslado (se mencionaron quien dirigió la reunión, Rainer y Schneider).</li>
+    <li>Hoy la página <b>no manda correos</b>: hace falta conectar un servicio de envío y tener los correos.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>6 · Cobertura y turnos con datos reales</b><span class="prio alta">Alta</span><span class="quien">Albert + Dirección</span></div><ul>
+    <li>Cargar el <b>Excel de agenda</b> (uno general o uno por persona) directo a la base: puntos, horarios y quién cubre cada uno.</li>
+    <li>Pegar la <b>lista real del staff</b> («Pegar una lista de personas») para poder asignar a cada quien.</li>
+    <li>Probar la <b>reasignación</b>: si a las 10 a. m. alguien pasa de la entrada del Sheraton a la del Jaragua, el turno nuevo debe aparecerle solo y el anterior borrarse.</li>
+    <li>Cuando un punto de dos personas ya tiene a las dos, se quita el refuerzo.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>7 · Rondas</b><span class="prio media">Media</span><span class="quien">Albert</span></div><ul>
+    <li>Cambiar <b>«novedad» por «incidencia»</b> en todo el sistema (rondas, bitácora y reportes).</li>
+    <li>Comprobar que de verdad pasaron por cada punto. Propuesta: al marcarlo, la página revisa por GPS que la persona esté cerca; sin QR. <i>(Por decidir.)</i></li>
+    <li>Cada ronda queda en el reporte por sede.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>8 · Programa del evento</b><span class="prio alta">Alta</span><span class="quien">Dirección + Albert</span></div><ul>
+    <li>Actualizar con el horario nuevo (el que había ya cambió). Se edita en «Datos del evento», sin programar.</li>
+    <li><b>Corregir los días de la semana:</b> la página dice Vie 14 · Sáb 15 · Dom 16, pero el 14 de noviembre de 2026 cae sábado. Confirmar con la organización si las fechas o los nombres de los días están mal.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>9 · Mapa, rutas y salones por dentro</b><span class="prio media">Media</span><span class="quien">Albert</span></div><ul>
+    <li>La ruta Jaragua → Sheraton ya sigue el recorrido que dibujó el staff (214 m, unos 3 minutos). Falta confirmarla caminando.</li>
+    <li>Llevar la maqueta a <b>escala real</b> y revisar el tramo de las canchas de tenis cuando haya fotos.</li>
+    <li>Hay un <b>camino más corto desde el lobby</b> del Jaragua (uno hacia el Sheraton y otro hacia el teatro). Confirmarlo y agregarlo.</li>
+    <li>Revisar el botón <b>«Salones por dentro»</b> y que muestre las áreas interiores.</li>
+    <li>Interiores y pisos con fotos reales (las habitaciones ya están en Blender; falta el material de referencia).</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>10 · Eventos y Protocolo</b><span class="prio media">Media</span><span class="quien">Albert + Dirección</span></div><ul>
+    <li>Eventos, producción y protocolo son unas 8 personas distintas: hablar con la subsecretaria de Eventos antes de ajustar su panel.</li>
+    <li>Agregar la <b>foto de cada invitado especial</b> para reconocerlo.</li>
+    <li>El plano de asientos se queda para marcar quién se sienta y dónde.</li>
+    <li>Presentarles la plataforma: si les sirve la usan, y si no, no.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>11 · Inicio y teléfono</b><span class="prio media">Media</span><span class="quien">Albert</span></div><ul>
+    <li>Dejar el Inicio con el título, los logos y los botones; quitar texto.</li>
+    <li>Pensar todo primero para teléfono y tableta.</li>
+    <li>Revisar las indicaciones de cómo instalar la página en el teléfono.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>12 · Panel de seguridad con walkie-talkie</b><span class="prio baja">Baja · propuesta</span><span class="quien">Albert</span></div><ul>
+    <li>Cada persona marca «ya activé mi walkie-talkie» y «voy en camino a mi puesto».</li>
+    <li>El panel muestra cuántos tienen el walkie activo y quién ya está en camino.</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>13 · Objetos perdidos</b><span class="prio baja">Baja</span><span class="quien">Dirección</span></div><ul>
+    <li>Se queda como está.</li>
+    <li>La dirección consulta con la organización si se acepta esa responsabilidad y dónde se guardarían los objetos.</li>
+    <li>Aclarar los dos botones, «Encontré algo» y «Alguien perdió algo» (en la reunión se confundieron).</li>
+  </ul></div>
+
+  <div class="t"><div class="cab"><i class="caja"></i><b>14 · Revisar el panel de Coordinación completo</b><span class="prio media">Media</span><span class="quien">Albert</span></div><ul>
+    <li>Después de los últimos cambios todavía no se había recorrido entero: revisarlo sección por sección.</li>
+  </ul></div>
+</section>
+
+<section>
+  <h2><span class="n">04</span>Datos que hay que conseguir</h2>
+  <table>
+    <tr><th>Dato</th><th>De quién</th><th>Para qué</th></tr>
+    <tr><td><b>Listado de delegados por regional</b> (18)</td><td>Dirección</td><td>El pase de lista de cada regional</td></tr>
+    <tr><td><b>Encargado de cada regional</b></td><td>Dirección</td><td>Que cada quien vea solo la suya</td></tr>
+    <tr><td><b>Excel de agenda</b>: puntos, horarios y asignaciones</td><td>Dirección</td><td>Cobertura y plan del día de cada persona</td></tr>
+    <tr><td><b>Lista oficial del staff</b> con equipo y cargo</td><td>Organización</td><td>Crear los códigos personales</td></tr>
+    <tr><td><b>Horario del evento</b> actualizado</td><td>Organización</td><td>Programa</td></tr>
+    <tr><td><b>Correos</b> para las alertas</td><td>Dirección</td><td>SOS e incidencias</td></tr>
+    <tr><td><b>Nombres oficiales de los cargos</b> y qué ve cada nivel</td><td>Dirección</td><td>Roles y paneles</td></tr>
+    <tr><td><b>Comisiones y salones</b></td><td>Coordinación</td><td>Quién va en cada salón</td></tr>
+    <tr><td><b>Fotos y video caminando</b> por las sedes (con permiso del hotel)</td><td>Quien vaya</td><td>Escala real, camino del lobby e interiores</td></tr>
+    <tr><td><b>Contacto de la subsecretaria de Eventos</b> y de producción</td><td>Dirección</td><td>Presentarles la plataforma</td></tr>
+    <tr><td><b>Respuesta sobre objetos perdidos</b></td><td>Organización</td><td>Dejar o quitar la sección</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="n">05</span>Decisiones por tomar</h2>
+  <ul class="tareas">
+    <li>¿Se quita el apartado de <b>hoteles de hospedaje</b>? (en la reunión se vio innecesario)</li>
+    <li>¿Seguridad y Traslado siguen juntos o se separan en dos sistemas?</li>
+    <li>¿Cómo se comprueba que las rondas se hicieron: GPS cerca del punto u otra forma?</li>
+    <li>¿Qué nombre llevan los cargos (subsecretario, coordinador…) y qué ve cada nivel?</li>
+    <li>¿Quién es responsable de los objetos perdidos y dónde se guardan?</li>
+    <li>¿Las fechas del evento o los nombres de los días están mal? (14 de noviembre es sábado)</li>
+    <li>¿Qué se aprovecha del prototipo y la base de Rainer?</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">06</span>Reuniones y capacitación</h2>
+  <ul class="tareas">
+    <li><b>Reunión de presentación</b> con los subsecretarios, Cristian y Rainer. Fecha por confirmar (se habló de viernes, sábado o domingo; Alexia está buscando horario).</li>
+    <li><b>Capacitación en vivo por Meet.</b> No basta con mandar la guía: nadie la lee. Albert también puede grabar un video.</li>
+    <li><b>Prueba conjunta:</b> la dirección con su perfil y a la vez con el de un voluntario, para ver qué necesita ver cada uno.</li>
+    <li><b>Presentar la plataforma a la subsecretaria de Eventos</b> y a su equipo.</li>
+    <li>Albert le manda a Rainer la transcripción ordenada (este documento) y se reparten el trabajo.</li>
+    <li>Un simulacro con todo el staff, de una hora, antes del evento.</li>
+    <li>El 14, cuando llega el staff: <b>simulacro en el sitio</b> para afinar la página.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">07</span>Base de datos, dominio y servidor</h2>
+  <ul class="tareas">
+    <li><b>Dominio y hosting propios:</b> la organización los compra. Hoy la página está en una dirección de prueba.</li>
+    <li><b>Base de datos propia:</b> hoy comparte la base con otro proyecto de Albert, en un plan gratuito. Pasarla a una nueva, de pago, para el mes del evento, y migrar los datos.</li>
+    <li>Con la base nueva se pueden guardar las <b>fotos</b> de los invitados especiales.</li>
+    <li><b>Notificaciones con el teléfono bloqueado</b> (todavía falta): hoy el chat y los avisos solo suenan con la página abierta.</li>
+    <li>Probar con muchas personas conectadas a la vez.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">08</span>Antes del evento</h2>
+  <ul class="tareas">
+    <li><b>Anular los 8 códigos de prueba</b> (están publicados en la guía) y crear los códigos reales.</li>
+    <li>Borrar los datos de ejemplo: personas que se mueven en el mapa, objetos, rondas atrasadas, atenciones.</li>
+    <li>Quitar la franja amarilla de «DEMO».</li>
+    <li><b>No guardar datos de salud reales</b> en Bienestar mientras sigan activos los códigos de prueba.</li>
+    <li>Seguir sin números de teléfono en la página; los canales oficiales se indican sin los grupos.</li>
+    <li>Repartir el enlace y las indicaciones de instalación en el teléfono.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">09</span>Calendario sugerido</h2>
+  <table>
+    <tr><th>Fechas</th><th>Qué se hace</th></tr>
+    <tr><td><b>21 – 27 oct</b></td><td>Cambios 1, 2, 3 y 7 (regionales, paneles por nivel, ubicación y alertas al entrar, «incidencia»). Pedir los datos de la sección 04.</td></tr>
+    <tr><td><b>28 oct – 3 nov</b></td><td>Cambios 4, 5, 6 y 8 (reportes por día, correos, Excel y staff reales, programa). Reunión de presentación y capacitación por Meet.</td></tr>
+    <tr><td><b>4 – 10 nov</b></td><td>Simulacro con todo el staff. Fotos y video de las sedes. Dominio, hosting y base nueva. Capacitación de los voluntarios.</td></tr>
+    <tr><td><b>11 – 13 nov</b></td><td>Anular los códigos de prueba, crear los reales y limpiar los datos de ejemplo. Ensayo general.</td></tr>
+    <tr><td><b>14 nov</b></td><td>Llega el staff: simulacro en el sitio y últimos ajustes.</td></tr>
+    <tr><td><b>15 nov</b></td><td>Llegan las regionales: pase de lista por regional.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="n">10</span>Lo que ya funciona y gustó</h2>
+  <ul>
+    <li>Entrada con código personal y un sistema por equipo; funciona sin internet y se instala en el teléfono.</li>
+    <li>Chat con mensajes urgentes y «Recibido»; comunicados con «Leído»; botón de SOS.</li>
+    <li>Cobertura de puntos, refuerzos, plan del día y ubicación en vivo en el mapa.</li>
+    <li>La ruta Jaragua → Sheraton como se pidió, con las indicaciones paso a paso.</li>
+    <li>Reportes en PDF y Excel; datos que se editan desde la página; bitácora; rondas; objetos perdidos; plano de asientos; programa.</li>
+  </ul>
+  <p class="nota">Hecho después de la reunión: la ruta sigue el recorrido dibujado y esquiva árboles y edificios; el GPS se pega al camino y te sigue; el chat distingue quién escribió cada mensaje; y Coordinación tiene la pantalla de Rendimiento del staff.</p>
+</section>
+
+</body>
+</html>
