@@ -127,7 +127,7 @@ def main():
     assert base.count(marca) == 1
     for clave, (archivo, nombre, corto, _, _) in SISTEMAS.items():
         elige = f'{marca}\n<script>window.MINUME_SISTEMA = "{clave}"; {CONFIG_JS}</script>'
-        publicado = base.replace(marca, elige.replace('</script>', ' window.PLANTEL_GLB = "../plantel.glb"; window.MINUME_INICIO = "../index.html";</script>') + '\n' + etiquetas_app(f'../iconos/{clave}', '../sw.js'), 1)
+        publicado = base.replace(marca, elige.replace('</script>', ' window.PLANTEL_GLB = "../plantel.glb"; window.MINUME_INICIO = "../";</script>') + '\n' + etiquetas_app(f'../iconos/{clave}', '../sw.js'), 1)
         escribir(DIST / clave / 'index.html', publicado)
         escribir(DIST / clave / 'manifest.webmanifest', manifest(f'MINUME XVII · {nombre}', corto, f'../iconos/{clave}', './'))
         suelto = base.replace(marca, elige.replace('</script>', f' window.PLANTEL_GLB = "data:model/gltf-binary;base64,{glb64}"; window.MINUME_INICIO = "Inicio-MINUME.html";</script>'), 1)
@@ -137,24 +137,28 @@ def main():
     plantilla = incrustar((SRC / 'inicio.html').read_text(encoding='utf-8'))
     bloques = [re.search(r'<script>\n/\*' + n + r'-INICIO\*/.*?/\*' + n + r'-FIN\*/\n</script>', base, re.S).group(0) for n in ('SYNC', 'REPORTES')]
     motor = f'<script>{CONFIG_JS}</script>\n' + '\n'.join(bloques)
-    for ruta, enlace, app in ((DIST / 'index.html', lambda c, a: f'{c}/index.html', True), (ENVIAR / 'Inicio-MINUME.html', lambda c, a: f'MINUME-{a}.html', False)):
+    for ruta, enlace, app in ((DIST / 'index.html', lambda c, a: f'{c}/', True), (ENVIAR / 'Inicio-MINUME.html', lambda c, a: f'MINUME-{a}.html', False)):
         enlaces = {c: enlace(c, a) for c, (a, *_) in SISTEMAS.items()}
         html = re.sub(r'/\*__ENLACES__\*/ \{[^}]*\}', lambda _: json.dumps(enlaces, ensure_ascii=False), plantilla, count=1)
         html = html.replace('<!--__APP__-->', etiquetas_app('iconos/inicio', 'sw.js') if app else '').replace('<!--__REPORTES__-->', motor)
         escribir(ruta, html)
-    escribir(DIST / 'manifest.webmanifest', manifest('MINUME XVII · Staff', 'MINUME', 'iconos/inicio', './index.html'))
+    escribir(DIST / 'manifest.webmanifest', manifest('MINUME XVII · Staff', 'MINUME', 'iconos/inicio', './'))
 
     # Service worker: guarda lo necesario para abrir sin internet
     libs = sorted(set(re.findall(r"https://cdn\.jsdelivr\.net/npm/[^']+\.js", motor))) + LIBS_3D
-    precarga = ['./', './index.html', './manifest.webmanifest', './plantel.glb'] + [f'./iconos/{c}-{t}.png' for c in ICONOS for t in (180, 192, 512)]
+    precarga = ['./', './manifest.webmanifest', './plantel.glb'] + [f'./iconos/{c}-{t}.png' for c in ICONOS for t in (180, 192, 512)]
     for c in SISTEMAS:
-        precarga += [f'./{c}/', f'./{c}/index.html', f'./{c}/manifest.webmanifest']
+        precarga += [f'./{c}/', f'./{c}/manifest.webmanifest']
     sw = (SRC / 'sw.js').read_text(encoding='utf-8')
     sw = sw.replace('__VERSION__', time.strftime('%Y%m%d-%H%M%S')).replace('__PRECARGA__', json.dumps(precarga, indent=1)).replace('__LIBS__', json.dumps(libs))
     escribir(DIST / 'sw.js', sw)
 
     escribir(DIST / 'vercel.json', json.dumps({
         'cleanUrls': False,
+        # direcciones limpias: /coordinacion/mapa abre el sistema en esa sección; index.html ya no se ve
+        'redirects': [{'source': '/index.html', 'destination': '/', 'permanent': True}]
+                   + [{'source': f'/{c}/index.html', 'destination': f'/{c}/', 'permanent': True} for c in SISTEMAS],
+        'rewrites': [{'source': f'/{c}/:seccion([a-z-]+)', 'destination': f'/{c}/index.html'} for c in SISTEMAS],
         'headers': [
             {'source': '/sw.js', 'headers': [{'key': 'Cache-Control', 'value': 'no-cache'}, {'key': 'Service-Worker-Allowed', 'value': '/'}]},
             {'source': '/(.*).html', 'headers': [{'key': 'Cache-Control', 'value': 'no-cache'}]},

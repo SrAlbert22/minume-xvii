@@ -15,7 +15,7 @@ const irDesdeHash = () => {
   let ir = location.hash.slice(1);
   if (m) {
     ir = m[2] || '';
-    try { history.replaceState(null, '', location.pathname + location.search + (ir ? '#' + ir : '')); } catch {}
+    try { history.replaceState(null, '', urlSeccion(ir)); } catch {}
     const c = m[1].toUpperCase();
     if (!estado.usuario || estado.usuario.codigo !== c) { $('#codigo').value = c; return Promise.resolve(entrar(c)).then(() => abrirDesdeEnlace(ir)); }
   }

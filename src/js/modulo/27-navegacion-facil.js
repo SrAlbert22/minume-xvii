@@ -35,6 +35,17 @@ const SECCION = {
 // lo que va en la barra de abajo (además de Inicio, Mapa y Comunicados)
 const PRINCIPAL = { asistencia: 'listas', acreditacion: 'delegados', seguridad: 'cobertura', traslado: 'traslado', bienestar: 'casos', eventos: 'eventos', coordinacion: SISTEMA === 'asistencia' ? 'comisiones-vivo' : 'datos' };
 let seccionActual = 'inicio';
+// Direcciones limpias: …/coordinacion/mapa en vez de index.html#mapa (el archivo suelto, sin servidor, sigue con #mapa)
+function baseRuta() { return (location.pathname.match(new RegExp(`^(.*/${SISTEMA}/)`)) || [])[1] || ''; }
+function urlSeccion(id) {
+  const s = id && id !== 'inicio' ? id : '', b = baseRuta();
+  return b ? b + s + location.search : location.pathname + location.search + (s ? '#' + s : '');
+}
+function seccionDeUrl() {
+  const h = location.hash.slice(1).split('/')[0];
+  if (h && !h.startsWith('entrar=')) return h;
+  const b = baseRuta(); return b ? location.pathname.slice(b.length).split('/')[0] : '';
+}
 const seccionesDe = () => $$('main > section').filter(s => !s.classList.contains('sin-permiso') && SECCION[s.id] && s.id !== 'mejoras');
 function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   if (!document.body.classList.contains('app')) return;
@@ -44,7 +55,8 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   $$('main > section').forEach(x => x.classList.toggle('activa', x.id === id));
   $$('#rail a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + id));
   $$('.barra-abajo button').forEach(b => b.classList.toggle('on', b.dataset.ir === id));
-  if (historia && location.hash !== '#' + id) history.pushState({ seccion: id }, '', '#' + id);
+  const url = urlSeccion(id), ahora = location.pathname + location.search + location.hash;
+  if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
   document.title = `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
 }
@@ -62,7 +74,7 @@ function modoApp() {
   $('#barraAbajo').innerHTML = abajo.map(id => `<button type="button" data-ir="${id}">${ico(SECCION[id][0], 22)}<span>${corto[id] || SECCION[id][1]}</span></button>`).join('');
   // «Volver» arriba de cada sección
   for (const s of seccionesDe()) if (s.id !== 'inicio' && !s.querySelector(':scope > .volver')) s.insertAdjacentHTML('afterbegin', `<button type="button" class="volver" data-ir="inicio">← Volver al inicio</button>`);
-  const h = location.hash.slice(1).split('/')[0];
+  const h = seccionDeUrl();
   abrirSeccion(SECCION[h] && ids.includes(h) ? h : 'inicio', { historia: false });
 }
 document.addEventListener('click', e => {
@@ -70,8 +82,8 @@ document.addEventListener('click', e => {
     if (b.matches('.acceso, .barra-abajo button, .volver')) { e.preventDefault(); abrirSeccion(b.dataset.ir); }
   }
 });
-addEventListener('popstate', () => abrirSeccion(location.hash.slice(1) || 'inicio', { historia: false }));
-addEventListener('hashchange', () => { const id = location.hash.slice(1).split('/')[0]; if (SECCION[id] && id !== seccionActual) abrirSeccion(id, { historia: false }); });
+addEventListener('popstate', () => abrirSeccion(seccionDeUrl() || 'inicio', { historia: false }));
+addEventListener('hashchange', () => { const id = location.hash.slice(1).split('/')[0]; if (SECCION[id]) abrirSeccion(id, { historia: false }); });
 // Lo que antes «bajaba» a una sección (enlaces, avisos, alarmas) ahora la abre
 const scrollOriginal = Element.prototype.scrollIntoView;
 Element.prototype.scrollIntoView = function (...a) {

@@ -37,7 +37,7 @@ self.addEventListener('fetch', e => {
   if (r.mode === 'navigate') {
     e.respondWith(fetch(r.url, { cache: 'no-cache', credentials: 'same-origin' })
       .then(res => { const c = res.clone(); caches.open(VERSION).then(k => k.put(r, c)); return res; })
-      .catch(() => caches.match(r, { ignoreSearch: true }).then(m => m || caches.match(new URL('index.html', url.href.replace(/[^/]*$/, ''))))));
+      .catch(() => caches.match(r, { ignoreSearch: true }).then(m => m || caches.match(url.href.replace(/[^/]*$/, '')))));
     return;
   }
   if (url.origin === location.origin) {
