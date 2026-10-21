@@ -38,7 +38,7 @@ CSP = '; '.join([
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
-    "connect-src 'self' data: blob: https://fakkqpwgidjvodippxup.supabase.co wss://fakkqpwgidjvodippxup.supabase.co https://cdn.jsdelivr.net",
+    "connect-src 'self' data: blob: https://fakkqpwgidjvodippxup.supabase.co wss://fakkqpwgidjvodippxup.supabase.co https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com",
     "worker-src 'self' blob:",
     "frame-ancestors 'none'",
     "base-uri 'self'",
