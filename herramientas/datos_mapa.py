@@ -44,6 +44,8 @@ NODOS = {
     # Renaissance Jaragua (por dentro, aproximado)
     'j-lobby': foto(455, 478), 'j-pasillo': foto(425, 430), 'j-salones': foto(430, 515), 'j-oeste': foto(335, 498),
     'j-norte': (-89.0, -11.5), 'j-este': (-97.0, 9.0),
+    # Camino directo al Sheraton por el borde sur de las canchas de tenis (el que el staff usa; dibujado sobre Google Maps)
+    'c-sur-o': (-72.0, -0.5), 'c-sur-e': (-21.0, 12.5), 'c-sheraton-o': (52.5, 43.0),
     # Afuera: al norte por el borde de las canchas y la calle de servicio (OSM 1033698834)
     'c-sendero': (-92.0, 34.0), 'c-servicio': (-85.0, 46.0), 'c-canchas-n': (-46.7, 60.5), 'c-canchas-e': (-4.6, 75.3),
     # Acceso del Sheraton (OSM 1033698833 y 325084443)
@@ -61,7 +63,10 @@ TRAMOS = [
     ('j-norte', 'j-este', 'Sal por la puerta este del Jaragua, junto a la piscina', False),
     ('j-lobby', 'j-salones', 'Entra al área de salones del Jaragua (Anacaona y salones pequeños)', False),
     ('j-lobby', 'j-oeste', 'Ve hacia el ala oeste del Jaragua (casino y Teatro La Fiesta)', False),
-    ('j-este', 'c-sendero', 'Camina hacia el norte por la acera, con las canchas de tenis a tu derecha', True),
+    ('j-este', 'c-sur-o', 'Al salir, camina hacia el este pegado al jardín de la piscina', True),
+    ('c-sur-o', 'c-sur-e', 'Sigue derecho por el borde sur de las canchas de tenis', True),
+    ('c-sur-e', 'c-sheraton-o', 'Continúa hacia el este hasta el lado oeste de la torre del Sheraton', True),
+    ('c-sheraton-o', 's-acceso', 'Llega al acceso lateral del Sheraton', True),
     ('c-sendero', 'c-servicio', 'Llega a la calle de servicio que pasa al norte de las canchas', True),
     ('c-servicio', 'c-canchas-n', 'Gira a la derecha y sigue por la calle de servicio', True),
     ('c-canchas-n', 'c-canchas-e', 'Sigue derecho por el borde norte de las canchas', True),
@@ -118,7 +123,7 @@ LUGARES = [
 ]
 # Rutas que se pintan siempre en la maqueta
 RUTAS_FIJAS = {
-    'jaragua-sheraton': ['j-este', 'c-sendero', 'c-servicio', 'c-canchas-n', 'c-canchas-e', 'c-calle', 'c-sur', 'c-giro', 's-acceso', 's-oeste'],
+    'jaragua-sheraton': ['j-este', 'c-sur-o', 'c-sur-e', 'c-sheraton-o', 's-acceso', 's-oeste'],
     'sheraton-malecon': ['s-oeste', 's-acceso', 'c-giro', 'c-sur', 'c-calle', 'c-norte', 'm-calle', 'm-entrada'],
 }
 

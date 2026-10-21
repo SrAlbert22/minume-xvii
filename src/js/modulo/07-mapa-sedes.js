@@ -35,6 +35,17 @@ function nodoCercano(p) {
   for (const [k, q] of Object.entries(MAPA.xy)) { const d = distXY(p, q); if (d < dm) { dm = d; mejor = k; } }
   return [mejor, dm];
 }
+// Punto del camino más cercano a una posición, sobre cualquier tramo (no solo en los cruces)
+function puntoEnCamino(p) {
+  let m = null;
+  for (const [a, b, nota] of MAPA.tramos) {
+    const A = MAPA.xy[a], B = MAPA.xy[b], dx = B[0] - A[0], dy = B[1] - A[1], L2 = dx * dx + dy * dy;
+    const t = L2 ? Math.max(0, Math.min(1, ((p[0] - A[0]) * dx + (p[1] - A[1]) * dy) / L2)) : 0;
+    const q = [A[0] + t * dx, A[1] + t * dy], d = distXY(p, q);
+    if (!m || d < m.d) m = { a, b, nota, q, d, t, L: Math.sqrt(L2) };
+  }
+  return m;
+}
 function caminoEntre(a, b) {
   const dist = { [a]: 0 }, previo = {}, notas = {}, abiertos = new Set([a]), cerrados = new Set();
   while (abiertos.size) {
@@ -49,18 +60,29 @@ function caminoEntre(a, b) {
   }
   if (dist[b] === undefined) return null;
   const nodos = [b]; while (nodos[0] !== a) nodos.unshift(previo[nodos[0]]);
-  return { nodos, notas: nodos.slice(1).map(n => notas[n]) };
+  return { nodos, notas: nodos.slice(1).map(n => notas[n]), metros: dist[b] };
 }
 // origen: id de un lugar o {xy} (la posición del GPS); destino: id de un lugar
 function calcularRuta(origen, destino) {
   const dest = LUGAR[destino]; if (!dest) return null;
   const desdeGps = typeof origen !== 'string', pO = desdeGps ? origen.xy : LUGAR[origen].xy;
-  const [nO, dO] = desdeGps ? nodoCercano(pO) : [LUGAR[origen].nodo, 0];
-  const c = caminoEntre(nO, dest.nodo); if (!c) return null;
-  const puntos = [pO, ...c.nodos.map(n => MAPA.xy[n]), dest.xy].filter((p, i, l) => i === 0 || distXY(p, l[i - 1]) > 1.5);
+  let c, inicio = [pO], dO = 0, notaInicio = null;
+  if (desdeGps) {
+    // El GPS se «pega» al tramo más cercano y sigue hacia el extremo que deja la ruta más corta:
+    // así nunca te manda primero hacia atrás ni traza una línea que atraviese un edificio hasta un cruce.
+    const s = puntoEnCamino(pO); dO = s.d;
+    const opciones = [[s.a, s.t * s.L], [s.b, (1 - s.t) * s.L]]
+      .map(([n, d]) => { const r = caminoEntre(n, dest.nodo); return r && { n, r, total: d + r.metros }; }).filter(Boolean);
+    if (!opciones.length) return null;
+    const mejor = opciones.sort((x, y) => x.total - y.total)[0]; c = mejor.r;
+    inicio = dO > 3 ? [pO, s.q] : [s.q];
+    if (mejor.n === s.b && distXY(s.q, MAPA.xy[s.b]) > 6) notaInicio = s.nota;   // las indicaciones están escritas de «a» hacia «b»
+  } else { c = caminoEntre(LUGAR[origen].nodo, dest.nodo); if (!c) return null; }
+  const puntos = [...inicio, ...c.nodos.map(n => MAPA.xy[n]), dest.xy].filter((p, i, l) => i === 0 || distXY(p, l[i - 1]) > 1.5);
   let metros = 0; for (let i = 1; i < puntos.length; i++) metros += distXY(puntos[i - 1], puntos[i]);
   const pasos = [];
   if (desdeGps && dO > 12) pasos.push(`Camina unos ${Math.round(dO)} m hasta el camino marcado en morado`);
+  if (notaInicio) pasos.push(notaInicio);
   for (const n of c.notas) if (n && pasos[pasos.length - 1] !== n) pasos.push(n);
   pasos.push(`Llegaste: ${dest.n}`);
   return { puntos, metros: Math.round(metros), minutos: Math.max(1, Math.round(metros / 70)), pasos, destino: dest };
@@ -154,7 +176,7 @@ function crearVisor(caja, { capaHTML }) {
   escena.add(sol, sol.target);
   const control = new OrbitControls(camara, lienzo);
   control.enableDamping = true; control.dampingFactor = 0.08; control.maxPolarAngle = Math.PI * 0.46; control.minDistance = 25; control.maxDistance = 900; control.screenSpacePanning = false;
-  control.addEventListener('change', () => pedir());
+  control.addEventListener('change', () => { pedir(); if (v.alGirar) v.alGirar(); });
   const ruta = new THREE.Group(), extras = new THREE.Group(); escena.add(ruta, extras);
   const texFlechas = TEX_FLECHAS(), texBrillo = TEX_BRILLO();
   let pedido = false, ultimo = 0, tocando = false;
@@ -185,6 +207,15 @@ function crearVisor(caja, { capaHTML }) {
     if (v.vuelo || ruta.children.length || tocando) pedir();
   }
   v.pedir = pedir;
+  // Rumbo (grados desde el norte) hacia donde apunta la parte de arriba de la pantalla
+  v.rumboPantalla = () => { const f = control.target.clone().sub(camara.position); return Math.atan2(f.x, -f.z) * 180 / Math.PI; };
+  // Acompaña a la persona mientras camina: mueve la cámara sin girarla
+  v.seguir = xy => {
+    if (v.vuelo || tocando) return;
+    const d = V3(xy[0], xy[1]).sub(control.target); d.y = 0;
+    if (d.length() < 8) return;
+    v.vuelo = { t0: performance.now(), dur: 700, p0: camara.position.clone(), p1: camara.position.clone().add(d), c0: control.target.clone(), c1: control.target.clone().add(d) }; pedir();
+  };
   v.volar = (vista, dur = 1400) => {
     const c = V3(vista.centro[0], vista.centro[1]), d = vista.dist * (v.cenital ? 1.05 : 1);
     const alto = v.cenital ? 0.999 : vista.alto, r = d * Math.sqrt(1 - alto * alto);
@@ -194,8 +225,8 @@ function crearVisor(caja, { capaHTML }) {
   v.ruta = puntos => {
     ruta.clear();
     if (!puntos) return pedir();
-    const brillo = new THREE.Mesh(cintaGeo(puntos, 7, 0.32), new THREE.MeshBasicMaterial({ map: texBrillo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-    const linea = new THREE.Mesh(cintaGeo(puntos, 2.6, 0.38), new THREE.MeshBasicMaterial({ map: texFlechas }));
+    const brillo = new THREE.Mesh(cintaGeo(puntos, 4.5, 0.32), new THREE.MeshBasicMaterial({ map: texBrillo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    const linea = new THREE.Mesh(cintaGeo(puntos, 2, 0.38), new THREE.MeshBasicMaterial({ map: texFlechas }));
     linea.renderOrder = 2; brillo.renderOrder = 1; ruta.add(brillo, linea); pedir();
   };
   v.marca = (id, xy, el, alto = 1.5) => {
@@ -314,38 +345,84 @@ $('#rMiSalon').onclick = () => {
 };
 
 // ---------- GPS del teléfono ----------
-// Afuera el GPS da ±5 a 15 m; bajo techo empeora. Se ignoran las lecturas peores de 60 m y se promedian
-// las últimas (pesan más las precisas). La ruta se recalcula desde el punto del camino más cercano.
-let gpsId = null, gpsLecturas = [], posGPS = null, siguiendo = false, avisoLejos = false;
+// Afuera el GPS da ±5 a 15 m; bajo techo empeora. Se ignoran las lecturas peores de 60 m y los saltos imposibles
+// caminando, y cada lectura se suaviza según su precisión. El rumbo sale del GPS al caminar y de la brújula al estar quieto.
+let gpsId = null, posGPS = null, siguiendo = false, avisoLejos = false, brujula = null, brujulaOn = false, ultimoCalculo = null, despierta = null;
 function encenderGPS() {
   if (gpsId !== null) return true;
   if (!navigator.geolocation || !isSecureContext) { toast('Este navegador no deja usar el GPS aquí. Elige el lugar donde estás.'); return false; }
   $('#gpsEstado').textContent = 'Buscando tu ubicación…';
   gpsId = navigator.geolocation.watchPosition(p => {
-    const { latitude: la, longitude: lo, accuracy: acc, heading } = p.coords;
+    const { latitude: la, longitude: lo, accuracy: acc, heading, speed } = p.coords, t = p.timestamp || Date.now();
     $('#gpsEstado').textContent = `GPS ±${Math.round(acc)} m`;
     if (acc > 60) return;
-    gpsLecturas.push([la, lo, acc]); if (gpsLecturas.length > 4) gpsLecturas.shift();
-    let w = 0, a = 0, b = 0; for (const [x, y, c] of gpsLecturas) { const k = 1 / (c * c); w += k; a += x * k; b += y * k; }
-    const ll = [a / w, b / w];
-    posGPS = { ll, xy: aXY(ll), acc: Math.round(Math.min(...gpsLecturas.map(l => l[2]))), rumbo: heading };
+    const xy = aXY([la, lo]);
+    if (!posGPS) posGPS = { xy, ll: [la, lo], acc: Math.round(acc), rumbo: null, vel: 0, t, ancla: xy };
+    else {
+      const dt = Math.max(0.5, (t - posGPS.t) / 1000), salto = distXY(xy, posGPS.xy);
+      if (salto > acc + posGPS.acc + 3 * dt + 10 && dt < 30) return;                 // nadie camina tan rápido: lectura falsa
+      const k = Math.min(1, Math.max(0.3, 1.6 * posGPS.acc ** 2 / (posGPS.acc ** 2 + acc ** 2)));   // pesa más la más precisa
+      const n = [posGPS.xy[0] + (xy[0] - posGPS.xy[0]) * k, posGPS.xy[1] + (xy[1] - posGPS.xy[1]) * k];
+      const vel = speed != null && !isNaN(speed) ? speed : distXY(n, posGPS.xy) / dt;
+      let rumbo = posGPS.rumbo, ancla = posGPS.ancla;
+      if (heading != null && !isNaN(heading) && vel > 0.6) rumbo = heading;
+      else if (distXY(n, ancla) > 4) { rumbo = (Math.atan2(n[0] - ancla[0], n[1] - ancla[1]) * 180 / Math.PI + 360) % 360; ancla = n; }
+      posGPS = { xy: n, ll: aLL(n), acc: Math.round(Math.min(acc, (posGPS.acc + acc) / 2 + 2)), rumbo, vel, t, ancla };
+    }
     moverYo();
-  }, err => { $('#gpsEstado').textContent = err.code === 1 ? 'Sin permiso de ubicación' : 'No se pudo leer el GPS'; apagarGPS(); }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
+  }, err => { $('#gpsEstado').textContent = err.code === 1 ? 'Sin permiso de ubicación' : 'No se pudo leer el GPS'; apagarGPS(); }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   return true;
 }
-function apagarGPS() { if (gpsId !== null) navigator.geolocation.clearWatch(gpsId); gpsId = null; siguiendo = false; $('#rSeguir').classList.remove('on'); }
+// Brújula del teléfono (en iPhone hay que pedir permiso tocando un botón)
+function encenderBrujula() {
+  if (brujulaOn) return; brujulaOn = true;
+  const leerBrujula = e => {
+    const h = e.webkitCompassHeading != null ? e.webkitCompassHeading : (e.absolute && e.alpha != null ? (360 - e.alpha) % 360 : null);
+    if (h == null) return;
+    brujula = (h + (screen.orientation ? screen.orientation.angle || 0 : 0)) % 360;
+    if (posGPS && (posGPS.vel || 0) < 0.6) girarYo();
+  };
+  const escuchar = () => { addEventListener('deviceorientationabsolute', leerBrujula); addEventListener('deviceorientation', leerBrujula); };
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function')
+    DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') escuchar(); }).catch(() => {});
+  else escuchar();
+}
+// La pantalla no se apaga mientras te guía
+async function pantallaDespierta(si) {
+  try {
+    if (si && !despierta && 'wakeLock' in navigator) { despierta = await navigator.wakeLock.request('screen'); despierta.addEventListener('release', () => { despierta = null; }); }
+    if (!si && despierta) { await despierta.release(); despierta = null; }
+  } catch {}
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && siguiendo) pantallaDespierta(true); });
+function dejarDeGuiar() { siguiendo = false; $('#rSeguir').classList.remove('on'); pantallaDespierta(false); }
+function apagarGPS() { if (gpsId !== null) navigator.geolocation.clearWatch(gpsId); gpsId = null; dejarDeGuiar(); }
 const lejosDeSedes = () => posGPS ? Math.min(...Object.values(SEDES_XY).map(s => distXY(posGPS.xy, s))) : Infinity;
+// Mientras te guía, el punto azul se pega al camino si estás cerca de él (el GPS suele bailar unos metros)
+const posMostrada = () => { if (!siguiendo || !posGPS) return posGPS && posGPS.xy; const s = puntoEnCamino(posGPS.xy); return s.d <= Math.max(8, posGPS.acc) ? s.q : posGPS.xy; };
+function girarYo() {
+  if (!mapa || !mapa.marcas.has('gps:yo') || !posGPS) return;
+  const r = (posGPS.vel || 0) > 0.6 || brujula == null ? posGPS.rumbo : brujula, el = mapa.marcas.get('gps:yo').el;
+  el.classList.toggle('sin-rumbo', r == null);
+  if (r != null) el.querySelector('i').style.rotate = (r - mapa.rumboPantalla()) + 'deg';
+}
 function moverYo() {
   if (!posGPS) return;
+  const xy = posMostrada();
   if (mapa && mapa.listo && lejosDeSedes() < 700) {
-    if (!mapa.marcas.has('gps:yo')) { const d = document.createElement('div'); d.className = 'yo-mapa'; d.innerHTML = '<i></i>'; mapa.marca('gps:yo', posGPS.xy, d, 1); } else mapa.marca('gps:yo', posGPS.xy);
-    if (posGPS.rumbo != null && !isNaN(posGPS.rumbo)) mapa.marcas.get('gps:yo').el.querySelector('i').style.rotate = posGPS.rumbo + 'deg';
+    if (!mapa.marcas.has('gps:yo')) { const d = document.createElement('div'); d.className = 'yo-mapa sin-rumbo'; d.innerHTML = '<i></i>'; mapa.marca('gps:yo', xy, d, 1); } else mapa.marca('gps:yo', xy);
+    mapa.alGirar = girarYo; girarYo();
     mapa.aro('precision', posGPS.xy, posGPS.acc || 10, '#3b8bff');
+    if (siguiendo) mapa.seguir(xy);
   }
   if (siguiendo) {
-    const dest = LUGAR[$('#rDestino').value];
-    if (dest && distXY(posGPS.xy, dest.xy) < 15) { toast(`Llegaste a ${dest.n}`); siguiendo = false; $('#rSeguir').classList.remove('on'); }
-    else if (dest) irDesdeGPS(dest.id, true);
+    const dest = LUGAR[$('#rDestino').value]; if (!dest) return;
+    const falta = rutaActual && rutaActual.destino === dest ? rutaActual.metros : distXY(posGPS.xy, dest.xy);
+    if (distXY(posGPS.xy, dest.xy) < Math.max(10, Math.min(posGPS.acc, 20)) || falta < 8) {
+      toast(`Llegaste a ${dest.n}`); vibrar([200, 100, 200]); dejarDeGuiar(); return;
+    }
+    // la ruta se recalcula al moverte 3 m (o cada 8 s), no con cada lectura: así no parpadea
+    if (!ultimoCalculo || distXY(posGPS.xy, ultimoCalculo.xy) > 3 || Date.now() - ultimoCalculo.t > 8000) { ultimoCalculo = { xy: posGPS.xy, t: Date.now() }; irDesdeGPS(dest.id, true); }
   }
 }
 function irDesdeGPS(destino, silencioso) {
@@ -362,12 +439,17 @@ function irDesdeGPS(destino, silencioso) {
     return;
   }
   const r = calcularRuta({ xy: posGPS.xy }, destino); if (!r) return;
-  pintarRutaTexto(r, `Tu posición: GPS ±${posGPS.acc} m${posGPS.acc > 25 ? ' · bajo techo el GPS se mueve; guíate por los pasos' : ''}`);
+  pintarRutaTexto(r, `Tu posición: GPS ±${posGPS.acc} m${posGPS.acc > 25 ? ' · bajo techo el GPS se mueve; guíate por los pasos' : ''}${siguiendo ? ' · te sigo mientras caminas' : ''}`);
   dibujarRuta(r, !silencioso);
 }
 $('#rSeguir').onclick = () => {
   siguiendo = !siguiendo; $('#rSeguir').classList.toggle('on', siguiendo);
-  if (siguiendo) { $('#rOrigen').value = 'gps'; irDesdeGPS($('#rDestino').value); toast('Te guío con el GPS: la ruta se actualiza mientras caminas'); }
+  if (siguiendo) {
+    encenderBrujula(); pantallaDespierta(true); ultimoCalculo = null;
+    $('#rOrigen').value = 'gps'; irDesdeGPS($('#rDestino').value);
+    if (posGPS && mapa && mapa.listo) mapa.volar({ centro: posMostrada(), dist: 90, alto: 0.7, rumbo: -0.4 }, 900);
+    toast('Te guío con el GPS: la ruta se actualiza mientras caminas');
+  } else dejarDeGuiar();
 };
 $('#rCentrar').onclick = () => {
   if (!encenderGPS()) return;

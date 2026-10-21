@@ -71,3 +71,6 @@
     .mapa-sedes-rejilla { grid-template-columns: 1fr; }
     .lienzo-caja { height: min(62vh, 520px); }
   }
+  /* sin rumbo todavía (recién encendido el GPS): solo el punto, sin flecha */
+  .yo-mapa.sin-rumbo i::after { display: none; }
+  .yo-mapa i { transition: rotate .35s ease; }

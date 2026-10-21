@@ -28,6 +28,18 @@
    18.4628814,
    -69.8997186
   ],
+  "c-sur-o": [
+   18.4627955,
+   -69.8994819
+  ],
+  "c-sur-e": [
+   18.4629131,
+   -69.8989989
+  ],
+  "c-sheraton-o": [
+   18.463189,
+   -69.8983028
+  ],
   "c-sendero": [
    18.4631076,
    -69.8996713
@@ -129,6 +141,18 @@
   "j-este": [
    -97.0,
    9.0
+  ],
+  "c-sur-o": [
+   -72.0,
+   -0.5
+  ],
+  "c-sur-e": [
+   -21.0,
+   12.5
+  ],
+  "c-sheraton-o": [
+   52.5,
+   43.0
   ],
   "c-sendero": [
    -92.0,
@@ -240,8 +264,26 @@
   ],
   [
    "j-este",
-   "c-sendero",
-   "Camina hacia el norte por la acera, con las canchas de tenis a tu derecha",
+   "c-sur-o",
+   "Al salir, camina hacia el este pegado al jardín de la piscina",
+   true
+  ],
+  [
+   "c-sur-o",
+   "c-sur-e",
+   "Sigue derecho por el borde sur de las canchas de tenis",
+   true
+  ],
+  [
+   "c-sur-e",
+   "c-sheraton-o",
+   "Continúa hacia el este hasta el lado oeste de la torre del Sheraton",
+   true
+  ],
+  [
+   "c-sheraton-o",
+   "s-acceso",
+   "Llega al acceso lateral del Sheraton",
    true
   ],
   [
@@ -830,17 +872,13 @@
   "jaragua-sheraton": {
    "nodos": [
     "j-este",
-    "c-sendero",
-    "c-servicio",
-    "c-canchas-n",
-    "c-canchas-e",
-    "c-calle",
-    "c-sur",
-    "c-giro",
+    "c-sur-o",
+    "c-sur-e",
+    "c-sheraton-o",
     "s-acceso",
     "s-oeste"
    ],
-   "metros": 259
+   "metros": 214
   },
   "sheraton-malecon": {
    "nodos": [

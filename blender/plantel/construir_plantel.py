@@ -276,6 +276,9 @@ def foto_xy(px, py):
     lat = math.degrees(math.atan(math.sinh(math.pi * (1 - 2 * yt / n)))); lon = xt / n * 360 - 180
     return ((lon - LON0) * M_LON, (lat - LAT0) * M_LAT)
 torre_j = [foto_xy(*p) for p in [(318, 352), (395, 333), (440, 465), (360, 490)]]
+for _ in range(40):                       # la torre (sacada de la foto) se achica hasta quedar dentro del complejo: no flota sobre la acera
+    if all(dentro(p, jar) for p in torre_j): break
+    torre_j = encoger(torre_j, 0.5)
 z = 12.0
 for piso in range(1, 9):                  # torre del Jaragua: 8 pisos sobre el complejo
     losa(f'Jaragua · torre losa {piso}', torre_j, z, z + 0.35, MP['jaragua'], C_JARAGUA)
@@ -332,6 +335,35 @@ for pts, ancho in CALLES:                # árboles en las orillas de las calles
 for _ in range(500):                     # algo de verde suelto en los espacios abiertos
     plantar((random.uniform(X0, X1), random.uniform(Y0, Y1)), random.choice(('palma', 'arbol', 'arbol')))
 print('ÁRBOLES:', len(puestos))
+
+# ---------------- La ruta morada no pasa por encima de árboles ni atraviesa nada ----------------
+# La página dibuja la ruta sobre cualquier tramo (también desde el GPS), así que se revisan todos.
+TRAMOS = [(XY[a], XY[b], a, b, afuera) for a, b, _, afuera in CAMINOS['tramos']]
+def cerca_de_ruta(p, holgura):
+    return min(dist_seg(p, a, b) for a, b, *_ in TRAMOS) < holgura
+quitados = 0
+for ob in list(escena.objects):          # palmas y árboles (también las del Sheraton) a menos de 6 m de un tramo: la copa no tapa la ruta
+    if ob.name.startswith(('Palma', 'Árbol')) and cerca_de_ruta((ob.matrix_world.translation.x, ob.matrix_world.translation.y), 6.0):
+        bpy.data.objects.remove(ob); quitados += 1
+print('ÁRBOLES QUITADOS DE LA RUTA:', quitados)
+def revisar_ruta():
+    # se «mira desde arriba» cada medio metro de la ruta (y 1 m a cada lado): nada más alto que el suelo puede taparla
+    deps = bpy.context.evaluated_depsgraph_get(); choques = {}
+    for a, b, na, nb, afuera in TRAMOS:
+        if not afuera: continue                  # los tramos de adentro van por los pasillos de los hoteles
+        d = Vector((b[0] - a[0], b[1] - a[1])); L = d.length
+        if L < 0.1: continue
+        d.normalize(); n = Vector((-d.y, d.x)); pasos = max(2, int(L / 0.5))
+        for i in range(pasos + 1):
+            c = Vector(a) + d * (L * i / pasos)
+            for lado in (0, 1.0, -1.0):          # la ruta de la página mide 2 m de ancho
+                q = c + n * lado
+                ok, loc, _, _, ob, _ = escena.ray_cast(deps, Vector((q.x, q.y, 300)), Vector((0, 0, -1)))
+                if ok and loc.z > 0.6 and not ob.name.startswith(('Ruta', 'Flecha', 'Raya')):
+                    choques.setdefault(f'{na} → {nb}', set()).add(ob.name.split('.')[0])
+    return choques
+CHOQUES = revisar_ruta()
+print('CHOQUES DE LA RUTA:', json.dumps({k: sorted(v) for k, v in CHOQUES.items()}, ensure_ascii=False))
 
 # ---------------- Nombres grandes (solo para las imágenes) ----------------
 NOMBRES = [
