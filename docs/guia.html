@@ -3,31 +3,37 @@
 <head>
 <meta charset="utf-8">
 <title>MINUME XVII · Guía de los sistemas del staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;800;900&family=Libre+Baskerville&display=swap" rel="stylesheet">
 <!-- Guía para imprimir en PDF · Albert Silvestre -->
 <style>
   @page { size: Letter; margin: 16mm 15mm 18mm; }
   @page :first { margin: 0; }
-  :root { --navy: #071433; --azul: #2f6bff; --cian: #2bb3e8; --morado: #8b2cff; --texto: #1d2433; --suave: #5b6478; --linea: #dfe4ee; --fondo: #f4f6fb; }
+  :root { --navy: #0a0464; --rey: #002193; --azul: #0043c5; --medio: #0090fb; --cian: #00b5ff; --turquesa: #00fdef; --rosa: #ffbeff; --rojo: #e53535; --morado: #0043c5; --texto: #1b1f45; --suave: #5b6390; --linea: #dde3f5; --fondo: #f2f5ff;
+    --franja: linear-gradient(90deg, #0a0464 0 16.6%, #002193 0 33.3%, #0043c5 0 50%, #0090fb 0 66.6%, #00b5ff 0 83.3%, #00fdef 0); }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 10.5pt/1.5 'Segoe UI', Inter, Arial, sans-serif; color: var(--texto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .portada { height: 279.4mm; width: 215.9mm; background: radial-gradient(120% 80% at 90% 0%, #1a3f9e 0%, #0b1f55 40%, var(--navy) 75%); color: #fff; padding: 26mm 22mm; display: flex; flex-direction: column; page-break-after: always; position: relative; overflow: hidden; }
-  .portada .marca { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .5px; }
+  body { margin: 0; font: 10.5pt/1.5 Barlow, 'Segoe UI', Arial, sans-serif; color: var(--texto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .portada { height: 279.4mm; width: 215.9mm; background: radial-gradient(120% 90% at 100% 0%, #0043c5 0%, #002193 45%, #0a0464 85%); color: #fff; padding: 26mm 22mm; display: flex; flex-direction: column; page-break-after: always; position: relative; overflow: hidden; }
+  .portada .marca { display: block; } .portada .marca img { position: static; width: 120mm; height: auto; border-radius: 0; box-shadow: none; display: block; }
+  .portada .marca small { display: block; margin-top: 4mm; font: 700 11pt 'Barlow Condensed', Arial; letter-spacing: 2px; text-transform: uppercase; color: var(--cian); }
+  .portada .adorno { position: absolute; right: -40mm; top: -40mm; width: 120mm; height: auto; opacity: .35; left: auto; bottom: auto; border-radius: 0; box-shadow: none; }
+  .portada .institucional { position: static; width: auto; height: 12mm; object-fit: contain; border-radius: 0; box-shadow: none; display: block; margin-top: 3mm; }
+  .portada::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3mm; background: var(--franja); }
   .portada .logo { width: 46px; height: 46px; border-radius: 12px; background: var(--cian); color: var(--navy); display: grid; place-items: center; font-size: 26px; font-weight: 900; }
-  .portada h1 { font: 900 54pt/1 'Segoe UI', Arial; margin: 30mm 0 6mm; letter-spacing: -1px; }
+  .portada h1 { font: 900 60pt/.95 'Barlow Condensed', Arial; text-transform: uppercase; margin: 22mm 0 6mm; letter-spacing: -.5px; }
   .portada h1 span { color: var(--cian); }
   .portada .sub { font-size: 16pt; color: #c8d6ff; max-width: 150mm; }
-  .portada .linea { width: 70mm; height: 4px; background: linear-gradient(90deg, var(--cian), var(--morado)); margin: 10mm 0; border-radius: 4px; }
-  .portada img { position: absolute; left: 22mm; right: 22mm; bottom: 46mm; width: calc(100% - 44mm); border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+  .portada .linea { width: 90mm; height: 5px; background: var(--franja); margin: 10mm 0; border-radius: 0; }
+  .portada img { position: absolute; left: 22mm; right: 22mm; bottom: 58mm; width: calc(100% - 44mm); height: 88mm; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
   .portada .pie { margin-top: auto; display: flex; justify-content: space-between; color: #9fb2e6; font-size: 10pt; }
   .portada .pie b { color: #fff; }
-  h2 { break-after: avoid; font: 800 19pt/1.2 'Segoe UI', Arial; color: var(--navy); margin: 0 0 3mm; padding-top: 2mm; display: flex; align-items: center; gap: 10px; }
-  h2 .n { font-size: 10pt; background: var(--navy); color: #fff; border-radius: 6px; padding: 2px 8px; }
+  h2 { break-after: avoid; font: 800 22pt/1.1 'Barlow Condensed', Arial; text-transform: uppercase; color: var(--navy); margin: 0 0 3mm; padding-top: 2mm; display: flex; align-items: center; gap: 10px; }
+  h2 .n { font-size: 11pt; background: var(--navy); color: var(--turquesa); border-radius: 0; padding: 2px 8px; border-bottom: 3px solid var(--cian); }
   section { margin-bottom: 9mm; }
   section.salto { page-break-before: always; }
   .lead { break-inside: avoid; font-size: 11.5pt; color: #2a3247; border-left: 4px solid var(--cian); padding: 2mm 0 2mm 4mm; background: var(--fondo); border-radius: 0 6px 6px 0; margin: 0 0 4mm; }
   table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.5pt; }
   tr { break-inside: avoid; } thead, tr:first-child { break-after: avoid; }
-  th { background: var(--navy); color: #fff; text-align: left; padding: 5px 7px; font-weight: 700; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 5px 7px; font: 700 10pt 'Barlow Condensed', Arial; text-transform: uppercase; letter-spacing: .3px; border-bottom: 2px solid var(--cian); }
   td { padding: 5px 7px; border-bottom: 1px solid var(--linea); vertical-align: top; }
   tr:nth-child(even) td { background: #f8f9fc; }
   ol, ul { margin: 2mm 0 4mm; padding-left: 6mm; } li { margin: 1mm 0; break-inside: avoid; }
@@ -35,11 +41,11 @@
   figure img { width: 100%; border-radius: 8px; display: block; }
   figcaption { font-size: 9pt; color: var(--suave); margin-top: 1.5mm; }
   .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
-  .cita { background: linear-gradient(135deg, #f3ecff, #eaf6ff); border: 1px solid #d8c8ff; border-radius: 10px; padding: 4mm 5mm; margin: 4mm 0; page-break-inside: avoid; }
+  .cita { background: linear-gradient(135deg, #eef3ff, #e6fbff); border: 1px solid #cfdcff; border-radius: 10px; padding: 4mm 5mm; margin: 4mm 0; page-break-inside: avoid; }
   .cita b { color: var(--morado); display: block; margin-bottom: 1.5mm; font-size: 10pt; text-transform: uppercase; letter-spacing: .4px; }
   .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 3mm 0 4mm; }
-  .cifra { background: var(--navy); color: #fff; border-radius: 10px; padding: 4mm; }
-  .cifra b { font: 900 22pt/1 'Segoe UI', Arial; color: #c58bff; display: block; }
+  .cifra { background: linear-gradient(150deg, var(--azul), var(--navy)); color: #fff; border-radius: 10px; padding: 4mm; }
+  .cifra b { font: 900 26pt/1 'Barlow Condensed', Arial; color: var(--turquesa); display: block; }
   .cifra small { color: #b8c6ec; font-size: 9pt; }
   .colores span { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; font-size: 9.5pt; }
   .colores i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
@@ -54,12 +60,13 @@
 <body>
 
 <div class="portada">
-  <div class="marca"><div class="logo">M</div>MINUME XVII · Sistemas del staff</div>
+  <img class="adorno" src="../src/marca/anillo-turquesa.svg" alt="">
+  <div class="marca"><img src="../src/marca/minume-xvii-blanco.svg" alt="MINUME XVII"><small>XVII Período de Sesiones · Sistemas del staff</small></div>
   <h1>Guía de los<br><span>sistemas del staff</span></h1>
   <div class="sub">Cómo entrar, qué hace cada equipo, el mapa 3D de las sedes, el plano de asientos y los salones de eventos.</div>
   <div class="linea"></div>
   <img src="../blender/plantel/renders/plantel_general.jpg" alt="Maqueta 3D del Renaissance Jaragua y el Sheraton">
-  <div class="pie"><span><b>minume-xvii.vercel.app</b><br>14 al 16 de noviembre de 2026 · Santo Domingo</span><span style="text-align:right">Hecho por <b>Albert Silvestre</b><br>20 de octubre de 2026</span></div>
+  <div class="pie"><span><b>minume-xvii.vercel.app</b><br>14 al 16 de noviembre de 2026 · Santo Domingo</span><span style="text-align:right">Hecho por <b>Albert Silvestre</b><br>21 de octubre de 2026<img class="institucional" src="../src/marca/educacion-plerd-blanco.svg" alt="" style="margin-left:auto"></span></div>
 </div>
 
 <section>

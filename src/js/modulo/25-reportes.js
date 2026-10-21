@@ -1,6 +1,6 @@
 // ---------- Reportes en PDF y Excel (plantilla de MINUME XVII) ----------
 window.toastMinume = toast;
-const colorEquipo = () => (getComputedStyle(document.documentElement).getPropertyValue('--equipo') || '').trim() || SIS.color || '#2f7bff';
+const colorEquipo = () => SIS.color || (getComputedStyle(document.documentElement).getPropertyValue('--equipo') || '').trim() || '#0090fb';
 const baseReporte = (titulo, archivo, extra) => ({ titulo, archivo: `${archivo}-${hoyDR()}`, equipo: SIS.nombre, color: colorEquipo(), letra: SIS.letra || 'M', autor: estado.usuario ? estado.usuario.nombre : '', nota: 'Datos de ejemplo · MINUME XVII', ...extra });
 const tonoEstado = v => { v = String(v); return /Resuelto|Cubierto|En orden|Completa|Entregado|Apareció|Llegó|En su lugar|Terminó|En sesión|Sí, hay|Todos lo/.test(v) ? 'verde' : /Pendiente|Falta|Montando|Por empezar|Atrasada|Novedad|La buscan|Guardado|En el punto|Por llegar|receso/i.test(v) ? 'amarillo' : /Escalado|Sin nadie|Detenida|No pasó|problema|9-1-1|No vendrá/i.test(v) ? 'rojo' : null; };
 const REPORTES = {

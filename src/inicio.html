@@ -612,7 +612,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('.exp-btns [data-fmt]'); if (!b) return;
   const l = leerAvisos().slice().sort((a, x) => x.t - a.t), abiertos = l.filter(a => !CERRADO(a));
   window.exportarReporte(b.dataset.fmt, {
-    titulo: 'Avisos entre equipos', archivo: `avisos-minume-${fechaLocal(new Date())}`, equipo: 'Centro de operaciones del staff', color: '#45c8ff', letra: 'M', nota: 'Datos de ejemplo · MINUME XVII',
+    titulo: 'Avisos entre equipos', archivo: `avisos-minume-${fechaLocal(new Date())}`, equipo: 'Centro de operaciones del staff', color: '#0090fb', letra: 'M', nota: 'Datos de ejemplo · MINUME XVII',
     resumen: [[l.length, 'avisos en total'], [abiertos.length, 'abiertos'], [abiertos.filter(esSOS).length, 'SOS activos'], [l.filter(CERRADO).length, 'cerrados']],
     columnas: [{ t: 'Fecha', w: 11, pdf: 20 }, { t: 'Hora', w: 9, pdf: 15 }, { t: 'De', w: 13, pdf: 22 }, { t: 'Para', w: 13, pdf: 22 }, { t: 'Tipo', w: 26 }, { t: 'Detalle', w: 34 }, { t: 'Comisión', w: 10, pdf: 17 }, { t: 'Lugar', w: 18 }, { t: 'Enviado por', w: 18 }, { t: 'Estado', w: 15, pdf: 22 }, { t: 'Atendió', w: 18 }],
     filas: l.map(a => [fechaLocal(new Date(a.t)), hora(a.t), EQUIPOS[a.de]?.corto || a.de, EQUIPOS[a.para]?.corto || a.para, a.tipo, a.texto, a.comision, a.salon ? 'Salón ' + a.salon : a.donde || a.sede, a.por, (EST[a.estado] || EST.nuevo)[0], a.quien]),

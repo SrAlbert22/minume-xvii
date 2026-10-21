@@ -61,17 +61,17 @@ CABECERAS = [
 
 
 def icono(ruta, tam, color, letra):
-    """Icono de la app con la línea gráfica: degradado azul de MINUME, el símbolo y una franja con el color del equipo."""
+    """Icono de la app con la línea gráfica: degradado azul de MINUME, el logo de MINUME y una franja con el color del equipo."""
     im = Image.new('RGB', (tam, tam))
     d = ImageDraw.Draw(im)
     for y in range(tam):                       # degradado #0a0464 → #0043c5
         t = y / tam
         d.line([(0, y), (tam, y)], fill=(int(10 - 10 * t), int(4 + 63 * t), int(100 + 97 * t)))
-    sim = Image.open(SRC / 'marca' / 'simbolo-blanco.png').convert('RGBA')
-    alto = int(tam * .46); sim = sim.resize((int(sim.width * alto / sim.height), alto), Image.LANCZOS)
-    im.paste(sim, ((tam - sim.width) // 2, int(tam * .2)), sim)
+    logo = Image.open(SRC / 'marca' / 'minume-blanco.png').convert('RGBA')
+    ancho = int(tam * .8); logo = logo.resize((ancho, int(logo.height * ancho / logo.width)), Image.LANCZOS)
+    im.paste(logo, ((tam - logo.width) // 2, (tam - logo.height) // 2 - (int(tam * .04) if letra != 'M' else 0)), logo)
     if letra != 'M':                           # franja del equipo abajo
-        d.rounded_rectangle([int(tam * .3), int(tam * .76), int(tam * .7), int(tam * .81)], radius=int(tam * .03), fill=color)
+        d.rounded_rectangle([int(tam * .3), int(tam * .66), int(tam * .7), int(tam * .7)], radius=int(tam * .02), fill=color)
     im.save(ruta)
 
 
@@ -95,7 +95,7 @@ def manifest(nombre, corto, icono_base, inicio):
 
 
 def etiquetas_app(icono_base, sw):
-    return (f'<link rel="manifest" href="manifest.webmanifest">\n<link rel="apple-touch-icon" href="{icono_base}-180.png">\n'
+    return (f'<link rel="manifest" href="manifest.webmanifest">\n<link rel="apple-touch-icon" href="{icono_base}-180.png">\n<link rel="icon" type="image/png" href="{icono_base}-192.png">\n'
             '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n'
             '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="theme-color" content="#050a1a">\n'
             f"<script>if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => navigator.serviceWorker.register('{sw}').catch(() => {{}}));</script>")
@@ -118,6 +118,10 @@ def main():
     # enlace al proyecto de Vercel (minume-xvii.vercel.app) para publicar con: npx vercel deploy --prod desde dist/
     escribir(DIST / '.vercel' / 'project.json', json.dumps(VERCEL))
     shutil.copy(glb, DIST / 'plantel.glb')
+    # letras de la marca (Barlow, licencia OFL) para los reportes en PDF
+    (DIST / 'fuentes').mkdir(exist_ok=True)
+    for f in (SRC / 'fuentes').glob('*.ttf'):
+        shutil.copy(f, DIST / 'fuentes' / f.name)
     for c, (col, le) in ICONOS.items():
         for t in (180, 192, 512):
             icono(DIST / 'iconos' / f'{c}-{t}.png', t, col, le)
@@ -146,7 +150,7 @@ def main():
 
     # Service worker: guarda lo necesario para abrir sin internet
     libs = sorted(set(re.findall(r"https://cdn\.jsdelivr\.net/npm/[^']+\.js", motor))) + LIBS_3D
-    precarga = ['./', './manifest.webmanifest', './plantel.glb'] + [f'./iconos/{c}-{t}.png' for c in ICONOS for t in (180, 192, 512)]
+    precarga = ['./', './manifest.webmanifest', './plantel.glb'] + [f'./fuentes/{f.name}' for f in sorted((SRC / 'fuentes').glob('*.ttf'))] + [f'./iconos/{c}-{t}.png' for c in ICONOS for t in (180, 192, 512)]
     for c in SISTEMAS:
         precarga += [f'./{c}/', f'./{c}/manifest.webmanifest']
     sw = (SRC / 'sw.js').read_text(encoding='utf-8')
