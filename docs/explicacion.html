@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es-DO">
+<head>
+<meta charset="utf-8">
+<title>MINUME XVII · Así funciona nuestra página del staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;800;900&family=Libre+Baskerville&display=swap" rel="stylesheet">
+<!-- Guía para imprimir en PDF · Albert Silvestre -->
+<style>
+  @page { size: Letter; margin: 16mm 15mm 18mm; }
+  @page :first { margin: 0; }
+  :root { --navy: #0a0464; --rey: #002193; --azul: #0043c5; --medio: #0090fb; --cian: #00b5ff; --turquesa: #00fdef; --rosa: #ffbeff; --rojo: #e53535; --morado: #0043c5; --texto: #1b1f45; --suave: #5b6390; --linea: #dde3f5; --fondo: #f2f5ff;
+    --franja: linear-gradient(90deg, #0a0464 0 16.6%, #002193 0 33.3%, #0043c5 0 50%, #0090fb 0 66.6%, #00b5ff 0 83.3%, #00fdef 0); }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 10.5pt/1.5 Barlow, 'Segoe UI', Arial, sans-serif; color: var(--texto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .portada { height: 279.4mm; width: 215.9mm; background: radial-gradient(120% 90% at 100% 0%, #0043c5 0%, #002193 45%, #0a0464 85%); color: #fff; padding: 26mm 22mm; display: flex; flex-direction: column; page-break-after: always; position: relative; overflow: hidden; }
+  .portada .marca { display: block; } .portada .marca img { position: static; width: 120mm; height: auto; border-radius: 0; box-shadow: none; display: block; }
+  .portada .marca small { display: block; margin-top: 4mm; font: 700 11pt 'Barlow Condensed', Arial; letter-spacing: 2px; text-transform: uppercase; color: var(--cian); }
+  .portada .adorno { position: absolute; right: -40mm; top: -40mm; width: 120mm; height: auto; opacity: .35; left: auto; bottom: auto; border-radius: 0; box-shadow: none; }
+  .portada .institucional { position: static; width: auto; height: 12mm; object-fit: contain; border-radius: 0; box-shadow: none; display: block; margin-top: 3mm; }
+  .portada::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3mm; background: var(--franja); }
+  .portada .logo { width: 46px; height: 46px; border-radius: 12px; background: var(--cian); color: var(--navy); display: grid; place-items: center; font-size: 26px; font-weight: 900; }
+  .portada h1 { font: 900 60pt/.95 'Barlow Condensed', Arial; text-transform: uppercase; margin: 22mm 0 6mm; letter-spacing: -.5px; }
+  .portada h1 span { color: var(--cian); }
+  .portada .sub { font-size: 16pt; color: #c8d6ff; max-width: 150mm; }
+  .portada .linea { width: 90mm; height: 5px; background: var(--franja); margin: 10mm 0; border-radius: 0; }
+  .portada img { position: absolute; left: 22mm; right: 22mm; bottom: 58mm; width: calc(100% - 44mm); height: 88mm; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+  .portada .pie { margin-top: auto; display: flex; justify-content: space-between; color: #9fb2e6; font-size: 10pt; }
+  .portada .pie b { color: #fff; }
+  h2 { break-after: avoid; font: 800 22pt/1.1 'Barlow Condensed', Arial; text-transform: uppercase; color: var(--navy); margin: 0 0 3mm; padding-top: 2mm; display: flex; align-items: center; gap: 10px; }
+  h2 .n { font-size: 11pt; background: var(--navy); color: var(--turquesa); border-radius: 0; padding: 2px 8px; border-bottom: 3px solid var(--cian); }
+  section { margin-bottom: 9mm; }
+  section.salto { page-break-before: always; }
+  .lead { break-inside: avoid; font-size: 11.5pt; color: #2a3247; border-left: 4px solid var(--cian); padding: 2mm 0 2mm 4mm; background: var(--fondo); border-radius: 0 6px 6px 0; margin: 0 0 4mm; }
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.5pt; }
+  tr { break-inside: avoid; } thead, tr:first-child { break-after: avoid; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 5px 7px; font: 700 10pt 'Barlow Condensed', Arial; text-transform: uppercase; letter-spacing: .3px; border-bottom: 2px solid var(--cian); }
+  td { padding: 5px 7px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  tr:nth-child(even) td { background: #f8f9fc; }
+  ol, ul { margin: 2mm 0 4mm; padding-left: 6mm; } li { margin: 1mm 0; break-inside: avoid; }
+  figure { margin: 4mm 0; page-break-inside: avoid; }
+  figure img { width: 100%; border-radius: 8px; display: block; }
+  figcaption { font-size: 9pt; color: var(--suave); margin-top: 1.5mm; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .cita { background: linear-gradient(135deg, #eef3ff, #e6fbff); border: 1px solid #cfdcff; border-radius: 10px; padding: 4mm 5mm; margin: 4mm 0; page-break-inside: avoid; }
+  .cita b { color: var(--morado); display: block; margin-bottom: 1.5mm; font-size: 10pt; text-transform: uppercase; letter-spacing: .4px; }
+  .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 3mm 0 4mm; }
+  .cifra { background: linear-gradient(150deg, var(--azul), var(--navy)); color: #fff; border-radius: 10px; padding: 4mm; }
+  .cifra b { font: 900 26pt/1 'Barlow Condensed', Arial; color: var(--turquesa); display: block; }
+  .cifra small { color: #b8c6ec; font-size: 9pt; }
+  .colores span { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; font-size: 9.5pt; }
+  .colores i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .tareas li { list-style: none; position: relative; padding-left: 6mm; } .tareas { padding-left: 0; }
+  .tareas li::before { content: ''; position: absolute; left: 0; top: 1.2mm; width: 3.2mm; height: 3.2mm; border: 1.5px solid var(--azul); border-radius: 3px; }
+  code { background: #eef1f8; padding: 1px 5px; border-radius: 4px; font-size: 9pt; }
+  a { color: var(--azul); text-decoration: none; }
+  .nota { font-size: 9pt; color: var(--suave); }
+  footer.firma { break-before: avoid; margin-top: 3mm; padding-top: 2mm; border-top: 1px solid var(--linea); font-size: 9pt; color: var(--suave); display: flex; justify-content: space-between; }
+  /* esta hoja es más corta: menos aire entre secciones */
+  body { font-size: 9.8pt; } table { font-size: 9pt; } li { margin: .6mm 0; }
+  section { margin-bottom: 4mm; } .cita { margin: 2mm 0 0; padding: 3mm 4mm; } h2 { margin-bottom: 2mm; } .lead { margin-bottom: 3mm; } table { margin: 2mm 0 3mm; } .cifras { margin: 2mm 0 3mm; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <img class="adorno" src="../src/marca/anillo-turquesa.svg" alt="">
+  <div class="marca"><img src="../src/marca/minume-xvii-blanco.svg" alt="MINUME XVII"><small>XVII Período de Sesiones · Sistemas del staff</small></div>
+  <h1>Así funciona<br><span>nuestra página</span></h1>
+  <div class="sub">Qué hace, qué le facilita a cada equipo, qué documentos se pueden sacar y cómo se cambia cualquier dato.</div>
+  <div class="linea"></div>
+  <img src="../blender/plantel/renders/plantel_general.jpg" alt="Maqueta 3D del Renaissance Jaragua y el Sheraton">
+  <div class="pie"><span><b>minume-xvii.vercel.app</b><br>14 al 16 de noviembre de 2026 · Santo Domingo</span><span style="text-align:right">Hecho por <b>Albert Silvestre</b><br>21 de octubre de 2026<img class="institucional" src="../src/marca/educacion-plerd-blanco.svg" alt="" style="margin-left:auto"></span></div>
+</div>
+
+<section>
+  <h2><span class="n">01</span>Qué es</h2>
+  <p class="lead">Hicimos un sistema propio para el staff de MINUME XVII. Es una página web: se abre desde el teléfono o la computadora en <b>minume-xvii.vercel.app</b>, sin descargar nada. Si se quiere, se instala como app, y <b>sigue funcionando aunque se vaya el internet</b>: guarda todo y lo envía cuando vuelve la señal.</p>
+</section>
+<section>
+  <h2><span class="n">02</span>Cómo se entra</h2>
+  <p>Cada persona tiene un <b>código personal</b>. Lo escribe y la página sola sabe quién es, de qué equipo es y qué le toca. Cada equipo ve <b>solo lo suyo</b>, con botones grandes de «¿Qué quieres hacer?», así nadie se pierde. Si alguien deja el staff o pierde su código, Coordinación se lo anula y ya no puede entrar.</p>
+</section>
+<section>
+  <h2><span class="n">03</span>Qué le facilita a cada equipo</h2>
+  <table>
+    <tr><th>Equipo</th><th>Lo que tiene</th></tr>
+    <tr><td><b>Asistencia</b></td><td>El checklist de cada momento del día según el Manual del Asistente, su comisión y su salón, sus turnos, reportar incidencias por nivel (1, 2 o 3), la bitácora y pedir material con un toque (agua, micrófono, sillas).</td></tr>
+    <tr><td><b>Seguridad y Traslado</b></td><td>Quién cubre cada punto y a qué hora («ya estoy en mi puesto» y refuerzos), las rondas, el código del evento (verde, amarillo, rojo), la alarma de SOS y los <b>autobuses</b>: cuántos participantes subieron, cuándo salió y si llegaron a su hotel, con alerta si falta alguien.</td></tr>
+    <tr><td><b>Bienestar</b></td><td>El registro de cada atención física o emocional (solo lo ven Bienestar y Coordinación), los protocolos y el kit del punto de bienestar.</td></tr>
+    <tr><td><b>Eventos y Protocolo</b></td><td>Cada evento avanza con un botón (montaje, listo, empezó, terminó), los invitados especiales y el <b>plano de asientos</b>: verde es libre y se asigna tocando la silla. También se ve en 3D.</td></tr>
+    <tr><td><b>Coordinación general</b></td><td>Lo ve todo en un solo lugar, crea y anula los códigos, edita los datos y evalúa el rendimiento del staff.</td></tr>
+  </table>
+</section>
+<section>
+  <h2><span class="n">04</span>Lo que tenemos todos</h2>
+  <ul>
+    <li><b>Chat</b> por equipo y uno general. Cada persona sale con su color y sus iniciales; los mensajes <b>urgentes</b> piden «Recibido».</li>
+    <li><b>Comunicados</b> de dirección con «Leído», para saber quién falta por enterarse.</li>
+    <li><b>Botón de SOS</b>: avisa al instante a Seguridad (y a Bienestar si hay alguien herido) con dónde estás.</li>
+    <li><b>Mapa 3D</b> del Jaragua, el Sheraton y el Malecón Terrace, con la ruta caminando (214 m, unos 3 minutos del Jaragua al Sheraton) y el <b>GPS que te guía</b> paso a paso.</li>
+    <li>Programa del día, objetos perdidos y bitácora.</li>
+    <li>Todo pasa <b>en tiempo real</b>: lo que uno marca, los demás lo ven al instante.</li>
+  </ul>
+</section>
+<section>
+  <h2><span class="n">05</span>Los documentos que se pueden sacar</h2>
+  <p class="lead">Con un botón se descargan en <b>PDF o Excel</b>, con la línea gráfica de MINUME, listos para entregar o mandar por WhatsApp.</p>
+  <div class="duo">
+    <ol>
+      <li>Bitácora del equipo o de la comisión</li>
+      <li>Plan de cobertura de áreas</li>
+      <li>Rondas de seguridad</li>
+      <li>Objetos perdidos</li>
+      <li>Registro de atenciones de Bienestar</li>
+      <li>Comunicados de dirección</li>
+    </ol>
+    <ol start="7">
+      <li>Estado de las comisiones</li>
+      <li>Eventos del programa</li>
+      <li>Plano de asientos de cada evento</li>
+      <li>Invitados especiales de cada evento</li>
+      <li>Rendimiento del staff</li>
+      <li>Avisos entre equipos (desde el Inicio)</li>
+    </ol>
+  </div>
+  <p class="nota">Además está la guía del staff en PDF, que explica todo el sistema.</p>
+</section>
+<section>
+  <h2><span class="n">06</span>Todo se puede cambiar sin programar</h2>
+  <p class="lead">Si algo cambia el día del evento —un salón, un horario, un hotel, un autobús, una comisión nueva— no hay que llamar a nadie: se edita en <b>«Datos del evento»</b> y todo el mundo lo ve al momento.</p>
+  <p>Son 25 listas: programa, sedes, comisiones (también se agregan nuevas), salones y asistentes, turnos, staff, puntos de seguridad, rondas, hoteles de hospedaje, autobuses, salidas a pie, eventos, invitados, capacidad de los salones, montaje y problemas de los eventos, checklists, lista «Tu rol», material que se puede pedir, kit y listas de Bienestar, listas de objetos perdidos, plantillas de comunicados, mensajes rápidos del chat y responsables.</p>
+  <p class="nota">Cada equipo edita lo suyo y Coordinación general puede editar todo.</p>
+</section>
+<section>
+  <h2><span class="n">07</span>Cómo medimos el trabajo</h2>
+  <p>Coordinación general tiene una pantalla de <b>Rendimiento</b>: quién está conectado, cuánto tiempo trabajó, qué hizo y a qué hora, si llegó a tiempo a su puesto y qué tan rápido responde a los comunicados y a los urgentes.</p>
+  <div class="cifras">
+    <div class="cifra"><b>40 %</b><small>Tiempo activo en la página</small></div>
+    <div class="cifra"><b>35 %</b><small>Tareas: checklists o lo que marcó en el sistema</small></div>
+    <div class="cifra"><b>25 %</b><small>Comunicados leídos y rapidez con los urgentes</small></div>
+  </div>
+  <p>Cada persona tiene una puntuación de 0 a 100 que sirve de guía, y Coordinación la evalúa con estrellas y un comentario que solo ve Coordinación. Así reconocemos al que trabaja bien y apoyamos al que lo necesita.</p>
+  <p><b>En resumen:</b> Todo el staff conectado, informado y coordinado desde el teléfono, con datos que se cambian al instante y documentos listos para entregar.</p>
+</section>
+
+
+</body>
+</html>
