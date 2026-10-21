@@ -60,7 +60,8 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'traslado' && window.BUSES_LISTO) pintarBuses();
-  document.title = `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
+  // instalada como app la ventana ya dice «MINUME XVII · equipo»: el título solo dice la sección
+  document.title = matchMedia('(display-mode: standalone)').matches ? (SECCION[id] ? SECCION[id][1] : 'Inicio') : `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
 }
 function modoApp() {
   const u = estado.usuario; document.body.classList.toggle('app', !!u); if (!u) return;

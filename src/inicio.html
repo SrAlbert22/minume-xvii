@@ -5,6 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inicio · MINUME XVII</title>
+<script>/* instalada como app, la ventana ya dice «MINUME XVII · Staff»: el título no lo repite */ if (matchMedia('(display-mode: standalone)').matches) document.title = 'Inicio';</script>
 <!--__APP__-->
 <!--__REPORTES__-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -344,7 +345,7 @@ const guardarLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); 
 const ENLACES = window.MINUME_ENLACES;
 const EQUIPOS = {
   asistencia: { nombre: 'Subsecretaría de Asistencia', corto: 'Asistencia', letra: 'A', color: '#00b5ff', quienes: 'Asistentes de comisión y su coordinación' },
-  seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y movilizaciones' },
+  seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y autobuses' },
   bienestar: { nombre: 'Bienestar', corto: 'Bienestar', letra: 'B', color: '#00fdef', quienes: 'Bienestar físico y emocional' },
   eventos: { nombre: 'Eventos y Protocolo', corto: 'Eventos', letra: 'E', color: '#ffbeff', quienes: 'Ceremonias, montajes e invitados' },
   coordinacion: { nombre: 'Coordinación general', corto: 'Coordinación', letra: 'C', color: '#0090fb', quienes: 'Ve todo el evento en un solo lugar' }
@@ -505,7 +506,7 @@ function pintarEstado() {
   if (mo === 'pre') {
     const ms = hasta('2026-11-14T19:00:00-04:00'), [a, ua] = fmt(ms);
     $('#eTit').textContent = ms ? `Faltan ${a} ${ua} para el montaje` : 'Hoy empieza el montaje';
-    $('#eLead').textContent = `${saludo}. Cada equipo entra a su propio sistema; los tres comparten los avisos, así que un caso que Asistencia escala le llega al instante a Seguridad o a Bienestar.`;
+    $('#eLead').textContent = `${saludo}. Cada equipo entra a su propio sistema y todos comparten los avisos: un caso que Asistencia escala le llega al instante a Seguridad o a Bienestar.`;
   } else if (mo === 'fin') {
     $('#eTit').textContent = 'MINUME XVII terminó';
     $('#eLead').textContent = 'Cierra tu bitácora y entrega tus reportes. Gracias por tu trabajo.';
@@ -516,12 +517,13 @@ function pintarEstado() {
   }
   const s = hasta('2026-11-15T08:00:00-04:00'), [s1, su1, s2, su2] = fmt(s);
   const abiertos = leerAvisos().filter(a => !CERRADO(a)).length;
-  const prox = proximoViaje(d);
+  const bus = enEvento(d) ? BUSES.find(b => aMin(b.h) >= minutos(d) - 5) : BUSES[0];
+  const nSedes = new Set(Object.values(ASIGNA).map(a => a[0])).size;
   $('#cuentas').innerHTML = [
     [s ? `${s1}<small style="font-size:16px"> ${su1}</small> ${s2}<small style="font-size:16px"> ${su2}</small>` : 'En curso', s ? 'para la primera sesión' : 'sesiones'],
     [String(abiertos), abiertos === 1 ? 'aviso abierto entre equipos' : 'avisos abiertos entre equipos'],
-    [prox ? prox.h : '—', prox ? `próxima salida a pie · ${SEDES[prox.de]} → ${SEDES[prox.a]}` : 'sin movilizaciones pendientes hoy'],
-    [String(COMISIONES.length), 'comisiones en 3 sedes']
+    [bus ? bus.h : '—', bus ? `${enEvento(d) ? 'próximo autobús' : 'primer autobús de cada día'} · ${esc(bus.unidad)}` : enEvento(d) ? 'sin autobuses pendientes hoy' : 'autobuses por confirmar'],
+    [String(COMISIONES.length), `comisiones en ${nSedes} ${nSedes === 1 ? 'hotel' : 'hoteles'}`]
   ].map(([b, t]) => `<div class="cuenta"><b>${b}</b><span>${t}</span></div>`).join('');
   $('#dias').innerHTML = DIAS.map(x => {
     const ini = new Date(x.ini).getTime(), fin = new Date(x.fin).getTime(), t = d.getTime();
@@ -691,7 +693,7 @@ function pintarEquipos(mo) {
     seguridad: [
       [abiertos.filter(a => a.para === 'seguridad' && esSOS(a)).length, 'SOS activos', 'alerta'],
       [abiertos.filter(a => a.para === 'seguridad').length, 'avisos abiertos', ''],
-      [prox ? prox.h : '—', prox ? 'próxima salida' : 'sin salidas hoy', '']
+      (b => [b ? b.h : '—', b ? 'próximo autobús' : 'sin autobuses hoy', ''])(enEvento(d) ? BUSES.find(x => aMin(x.h) >= minutos(d) - 5) : BUSES[0])
     ],
     bienestar: [
       [abiertos.filter(a => a.para === 'bienestar').length, 'casos abiertos', 'alerta'],
