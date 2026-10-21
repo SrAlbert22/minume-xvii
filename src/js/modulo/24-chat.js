@@ -6,8 +6,6 @@ const CANALES_CHAT = {
   seguridad: ['Seguridad y Traslado', 'Seguridad y traslado', '#e53535'], bienestar: ['Bienestar', 'Bienestar físico y emocional', '#00fdef'],
   eventos: ['Eventos y Protocolo', 'Eventos y protocolo', '#ffbeff'], coordinacion: ['Coordinación', 'Coordinadores de cada equipo', '#0090fb'],
 };
-// Mensajes de un toque; los que terminan en «…» se completan antes de enviar
-const RAPIDOS = ['Recibido 👍', 'Voy en camino', 'Listo ✅', 'Necesito apoyo en…', '¿Dónde estás?', 'Llegó el autobús 🚌'];
 const chat = { canal: null, msgs: {}, resumen: {}, cargando: false, cola: leer('chat.cola', []) };
 function misCanalesChat() {
   const u = estado.usuario; if (!u) return [];
@@ -127,7 +125,8 @@ async function vaciarColaChat() {
   vaciando = false; cargarChat(true);
 }
 
-$('#chatRapidos').innerHTML = RAPIDOS.map(t => `<button class="mini" type="button" data-rapido="${esc(t)}">${esc(t)}</button>`).join('');
+const pintarRapidos = () => { $('#chatRapidos').innerHTML = RAPIDOS.map(t => `<button class="mini" type="button" data-rapido="${esc(t)}">${esc(t)}</button>`).join(''); };
+pintarRapidos(); window.pintarRapidos = pintarRapidos;
 $('#chatRapidos').addEventListener('click', e => {
   const b = e.target.closest('[data-rapido]'); if (!b) return; const t = b.dataset.rapido;
   if (t.endsWith('…')) { const i = $('#chatTexto'); i.value = t.slice(0, -1) + ' '; i.focus(); return; }

@@ -1,5 +1,6 @@
 // ---------- Tablero de cada equipo (su propio inicio) ----------
-const TURNOS = { 'AS-4821': [{ de: '7:30', a: '13:00', salon: 'Anacaona 2', tarea: 'Montaje, agua y conteo de delegados' }, { de: '14:00', a: '18:30', salon: 'Anacaona 2', tarea: 'Sesión de la tarde y cierre del salón' }] };
+// Turnos de cada asistente (por su nombre); se editan en «Datos del evento → Turnos de asistentes»
+const TURNOS_ASIS = { 'María Pérez': [{ de: '7:30', a: '13:00', salon: 'Anacaona 2', tarea: 'Montaje, agua y conteo de delegados' }, { de: '14:00', a: '18:30', salon: 'Anacaona 2', tarea: 'Sesión de la tarde y cierre del salón' }] };
 estado.pedidos = leer('pedidos', [{ id: 'q0', ic: '🎤', que: 'Batería para micrófono', salon: 'Anacaona 1', com: 'CSNU', por: 'Laura Peña', t: hoyA(9, 5), est: 'camino', quien: 'Pedro' }]);
 estado.codigoAlerta = leer('codigoAlerta', 'verde'); estado.busEstado = leer('busEstado', {});
 const NECESITO = [['💧', 'Agua'], ['🎤', 'Micrófono o batería'], ['🪑', 'Sillas'], ['📽️', 'Proyector o sonido'], ['🧻', 'Limpieza'], ['✏️', 'Material']];
@@ -29,7 +30,7 @@ function pintarTablero() {
   const delOk = DELEGADOS.filter(d => estado.delAcr[d.id]).length, nv = NIVEL[estado.codigoAlerta];
   let h = '';
   if (u.rol === 'asistencia') {
-    const tur = TURNOS[u.codigo] || [{ de: '8:00', a: '13:00', salon: miSalon() || '—', tarea: 'Apoyo a tu comisión' }], m = new Date().getHours() * 60 + new Date().getMinutes();
+    const tur = TURNOS_ASIS[u.nombre] || [{ de: '8:00', a: '13:00', salon: miSalon() || '—', tarea: 'Apoyo a tu comisión' }], m = new Date().getHours() * 60 + new Date().getMinutes();
     const ahora = tur.find(x => minutos(x.de) <= m && m < minutos(x.a)), tt = ahora || tur.find(x => minutos(x.de) > m) || tur[0];
     const mios = estado.pedidos.filter(q => q.por === u.nombre).slice(-3).reverse(), lista = LISTAS[estado.etapa], hechas = (estado.marcas[estado.etapa] || []).length;
     h = `<div class="rejilla r2"><div class="tarjeta turno"><span class="chip">${ahora ? '● Tu turno ahora' : 'Tu próximo turno'}</span>

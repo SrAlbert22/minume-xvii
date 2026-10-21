@@ -6,6 +6,15 @@ const CFG = k => 'config.' + k;
 const aHora = v => { const m = String(v || '').match(/^(\d{1,2}):(\d{2})/); return m ? `${+m[1]}:${m[2]}` : ''; };
 const aInputHora = v => { const m = String(v || '').match(/^(\d{1,2}):(\d{2})/); return m ? `${m[1].padStart(2, '0')}:${m[2]}` : ''; };
 const SEDE_OPC = () => Object.entries(SEDES).map(([k, s]) => [k, s.nombre]);
+// Listas de textos: una fila por texto. Las agrupadas llevan además a qué lista pertenece cada texto.
+const listaSimple = (arr, titulo, quien, ayuda, campo = 'Texto') => ({ titulo, icono: 'lista', quien, ayuda,
+  campos: [{ k: 't', t: campo, req: 1, ancho: 4 }],
+  leer: () => arr.map(t => ({ t })), aplicar: recs => arr.splice(0, arr.length, ...recs.map(r => String(r.t || '').trim()).filter(Boolean)) });
+const listaGrupos = (obj, grupos, titulo, quien, ayuda, campo = 'Texto') => ({ titulo, icono: 'lista', quien, ayuda,
+  campos: [{ k: 'g', t: 'Lista', tipo: 'opc', opc: () => grupos, req: 1 }, { k: 't', t: campo, req: 1, ancho: 3 }],
+  leer: () => grupos.flatMap(([g]) => (obj[g] || []).map(t => ({ g, t }))),
+  aplicar: recs => { for (const [g] of grupos) { const l = obj[g] || (obj[g] = []); l.splice(0, l.length, ...recs.filter(r => r.g === g).map(r => String(r.t || '').trim()).filter(Boolean)); } } });
+const TIPOS_EV = [['ceremonia', 'Ceremonia'], ['comida', 'Comida'], ['cultura', 'Cultural'], ['registro', 'Registro'], ['foto', 'Foto oficial'], ['reunion', 'Reunión']];
 const DATOS = {
   programa: {
     titulo: 'Programa del evento', icono: 'reloj', quien: ['coordinacion'],
@@ -29,11 +38,15 @@ const DATOS = {
     aplicar: recs => INV_LISTA.splice(0, INV_LISTA.length, ...recs.map(r => ({ ...r, id: r.id || nuevoId('g') }))),
   },
   comisiones: {
-    titulo: 'Comisiones, salones y asistentes', icono: 'bandera', quien: ['coordinacion'], fijo: true,
-    ayuda: 'Dónde sesiona cada comisión y qué asistente la acompaña.',
-    campos: [{ k: 'com', t: 'Comisión', solo: 1 }, { k: 'sede', t: 'Sede', tipo: 'opc', opc: SEDE_OPC, req: 1 }, { k: 'salon', t: 'Salón', req: 1 }, { k: 'asistente', t: 'Asistente asignado', ancho: 2 }],
-    leer: () => COMISIONES.map(([c]) => ({ com: c, sede: (ASIGNA[c] || ['jaragua'])[0], salon: (ASIGNA[c] || ['', ''])[1], asistente: ASISTENTES[c] || '' })),
-    aplicar: recs => recs.forEach(r => { ASIGNA[r.com] = [r.sede, r.salon]; ASISTENTES[r.com] = r.asistente || ''; }),
+    titulo: 'Comisiones, salones y asistentes', icono: 'bandera', quien: ['coordinacion'],
+    ayuda: 'Cada comisión con su nombre, dónde sesiona y qué asistente la acompaña. Puedes agregar comisiones nuevas.',
+    campos: [{ k: 'com', t: 'Siglas', req: 1, mayus: 1, soloViejo: 1 }, { k: 'nombre', t: 'Nombre completo', req: 1, ancho: 2 }, { k: 'sede', t: 'Sede', tipo: 'opc', opc: SEDE_OPC, req: 1 }, { k: 'salon', t: 'Salón', req: 1 }, { k: 'asistente', t: 'Asistente asignado', ancho: 2 }],
+    leer: () => COMISIONES.map(([c, n]) => ({ com: c, nombre: n, sede: (ASIGNA[c] || ['jaragua'])[0], salon: (ASIGNA[c] || ['', ''])[1], asistente: ASISTENTES[c] || '' })),
+    aplicar: recs => {
+      const nombres = Object.fromEntries(COMISIONES);
+      COMISIONES.splice(0, COMISIONES.length, ...recs.map(r => [String(r.com).toUpperCase(), r.nombre || nombres[r.com] || r.com]));
+      recs.forEach(r => { const c = String(r.com).toUpperCase(); ASIGNA[c] = [r.sede, r.salon]; ASISTENTES[c] = r.asistente || ''; });
+    },
   },
   staff: {
     titulo: 'Staff de Seguridad y Traslado', icono: 'gente', quien: ['seguridad', 'traslado', 'coordinacion'],
@@ -80,6 +93,51 @@ const DATOS = {
     leer: () => VIAJES.map(v => ({ ...v })),
     aplicar: recs => VIAJES.splice(0, VIAJES.length, ...recs.map(r => ({ ...r, estado: r.estado || 'A tiempo' })).sort((a, b) => aMinutos(a.h) - aMinutos(b.h))),
   },
+  sedes: {
+    titulo: 'Sedes del evento', icono: 'casa', quien: ['coordinacion'], fijo: true,
+    ayuda: 'El nombre, el nombre corto y la dirección de cada sede. (Para agregar una sede nueva hay que dibujarla en el mapa 3D.)',
+    campos: [{ k: 'id', t: 'Sede', solo: 1 }, { k: 'nombre', t: 'Nombre', req: 1, ancho: 2 }, { k: 'corto', t: 'Nombre corto', req: 1 }, { k: 'zona', t: 'Dirección o zona', ancho: 2 }],
+    leer: () => Object.entries(SEDES).map(([id, x]) => ({ id, nombre: x.nombre, corto: x.corto, zona: x.zona })),
+    aplicar: recs => recs.forEach(r => { if (SEDES[r.id]) Object.assign(SEDES[r.id], { nombre: r.nombre, corto: r.corto, zona: r.zona || '' }); }),
+  },
+  checklists: listaGrupos(LISTAS, [['pre', 'Antes · Pre-MINUME'], ['montaje', 'Abre · Montaje'], ['sesiones', 'Sesión'], ['transiciones', 'Mueve · Transiciones'], ['cierre', 'Cierra · Cierre']],
+    'Checklists de los asistentes', ['coordinacion'], 'Lo que cada asistente marca en cada momento del día (según el Manual del Asistente).', 'Paso del checklist'),
+  confirma: listaSimple(CONFIRMA, 'Lista «Tu rol»', ['coordinacion'], 'Lo que el asistente confirma antes de su primera sesión.'),
+  turnosAsis: {
+    titulo: 'Turnos de los asistentes', icono: 'reloj', quien: ['coordinacion'],
+    ayuda: 'El horario de cada asistente: lo ve en su inicio. Escribe el nombre igual que en su código de acceso.',
+    campos: [{ k: 'nombre', t: 'Asistente', req: 1, ancho: 2 }, { k: 'de', t: 'Desde', tipo: 'hora', req: 1 }, { k: 'a', t: 'Hasta', tipo: 'hora', req: 1 }, { k: 'salon', t: 'Salón' }, { k: 'tarea', t: 'Tarea', ancho: 2 }],
+    leer: () => Object.entries(TURNOS_ASIS).flatMap(([nombre, l]) => l.map(x => ({ nombre, ...x }))),
+    aplicar: recs => { Object.keys(TURNOS_ASIS).forEach(k => delete TURNOS_ASIS[k]); recs.forEach(r => { (TURNOS_ASIS[r.nombre] = TURNOS_ASIS[r.nombre] || []).push({ de: r.de, a: r.a, salon: r.salon || '', tarea: r.tarea || '' }); }); Object.values(TURNOS_ASIS).forEach(l => l.sort((x, y) => aMinutos(x.de) - aMinutos(y.de))); },
+  },
+  necesito: {
+    titulo: 'Material que se puede pedir', icono: 'lista', quien: ['coordinacion'],
+    ayuda: 'Los botones de «Necesito…» de los asistentes (agua, micrófono, sillas…). El ícono es un emoji.',
+    campos: [{ k: 'ic', t: 'Ícono', req: 1 }, { k: 'n', t: 'Material', req: 1, ancho: 3 }],
+    leer: () => NECESITO.map(([ic, n]) => ({ ic, n })), aplicar: recs => NECESITO.splice(0, NECESITO.length, ...recs.map(r => [r.ic || '•', r.n])),
+  },
+  kit: listaSimple(KIT, 'Kit del punto de bienestar', ['bienestar', 'coordinacion'], 'Lo que debe tener el punto de bienestar; el equipo lo marca cada día.'),
+  listasBienestar: listaGrupos({ fisico: AT_MOTIVOS.fisico, emocional: AT_MOTIVOS.emocional, salida: AT_SALIDA, persona: AT_PERSONA },
+    [['fisico', 'Motivo físico'], ['emocional', 'Motivo emocional'], ['salida', 'Cómo terminó la atención'], ['persona', 'Tipo de persona']],
+    'Listas de Bienestar', ['bienestar', 'coordinacion'], 'Las opciones del registro de atenciones.', 'Opción'),
+  listasObjetos: listaGrupos({ cat: OB_CAT, guarda: OB_GUARDA }, [['cat', 'Tipo de objeto'], ['guarda', 'Dónde se guarda']],
+    'Listas de objetos perdidos', ['seguridad', 'coordinacion'], 'Los tipos de objeto y los lugares donde se guardan.', 'Opción'),
+  plantillas: {
+    titulo: 'Plantillas de comunicados', icono: 'lista', quien: ['coordinacion'],
+    ayuda: 'Mensajes listos para mandar en «Comunicados». Usa ___ donde se completa algo.',
+    campos: [{ k: 'n', t: 'Nombre', req: 1 }, { k: 'tipo', t: 'Tipo', tipo: 'opc', opc: () => Object.entries(COM_TIPO).map(([k, [t]]) => [k, t]), req: 1 }, { k: 'x', t: 'Mensaje', req: 1, ancho: 2 }],
+    leer: () => COM_PLANTILLAS.map(([n, tipo, x]) => ({ n, tipo, x })), aplicar: recs => COM_PLANTILLAS.splice(0, COM_PLANTILLAS.length, ...recs.map(r => [r.n, r.tipo || 'info', r.x])),
+  },
+  montaje: listaGrupos(EV_LISTA_MONTAJE, TIPOS_EV, 'Montaje de cada tipo de evento', ['eventos', 'coordinacion'], 'La lista que se marca al montar cada evento, según su tipo.', 'Paso del montaje'),
+  problemasEv: listaSimple(PROBLEMAS_EV, 'Problemas de los eventos', ['eventos', 'coordinacion'], 'Las opciones de «Tengo un problema» en los eventos.', 'Problema'),
+  planos: {
+    titulo: 'Capacidad de los salones de eventos', icono: 'gente', quien: ['eventos', 'coordinacion'], fijo: true,
+    ayuda: 'Las medidas del plano de asientos. Teatro: filas y asientos por bloque separados por comas (12, 24, 12) y presídium. Banquete: filas de mesas, mesas por fila y sillas por mesa.',
+    campos: [{ k: 'k', t: 'Plano', solo: 1 }, { k: 'nombre', t: 'Salón', req: 1, ancho: 2 }, { k: 'filas', t: 'Filas (o filas de mesas)', tipo: 'num', req: 1 }, { k: 'ancho', t: 'Asientos por bloque (o mesas por fila)', req: 1 }, { k: 'extra', t: 'Presídium (o sillas por mesa)', tipo: 'num' }],
+    leer: () => Object.entries(MEDIDAS_PLANOS).map(([k, m]) => ({ k, nombre: m.nombre, filas: m.filas, ancho: m.ancho, extra: m.extra })),
+    aplicar: recs => recs.forEach(r => { const m = MEDIDAS_PLANOS[r.k]; if (!m) return; Object.assign(m, { nombre: r.nombre, filas: +r.filas || m.filas, ancho: String(r.ancho || m.ancho), extra: +r.extra || 0 }); PLANOS[r.k] = armarPlano(m); }),
+  },
+  rapidos: listaSimple(RAPIDOS, 'Mensajes rápidos del chat', ['coordinacion'], 'Los botones de un toque del chat. Si terminan en «…», la persona completa el mensaje antes de enviarlo.', 'Mensaje'),
   hoteles: {
     titulo: 'Hoteles de hospedaje', icono: 'casa', quien: ['traslado', 'seguridad', 'coordinacion'],
     ayuda: 'Dónde duermen los participantes. Agrega aquí los hoteles que falten; el código corto (por ejemplo H4) se usa en las paradas de los autobuses.',
@@ -102,7 +160,7 @@ const DATOS = {
     aplicar: recs => AREAS.splice(0, AREAS.length, ...recs.map(r => [r.k || nuevoId('ar'), r.area, r.persona])),
   },
 };
-const ORDEN_DATOS = ['programa', 'eventos', 'invitados', 'comisiones', 'staff', 'puntos', 'turnos', 'rutas', 'hoteles', 'buses', 'autobuses', 'responsables'];
+const ORDEN_DATOS = ['programa', 'sedes', 'eventos', 'invitados', 'planos', 'montaje', 'problemasEv', 'comisiones', 'turnosAsis', 'checklists', 'confirma', 'necesito', 'staff', 'puntos', 'turnos', 'rutas', 'hoteles', 'buses', 'autobuses', 'kit', 'listasBienestar', 'listasObjetos', 'plantillas', 'rapidos', 'responsables'];
 const EJEMPLO_DATOS = Object.fromEntries(ORDEN_DATOS.map(k => [k, JSON.parse(JSON.stringify(DATOS[k].leer()))]));
 const puedeEditar = k => !!estado.usuario && DATOS[k].quien.includes(estado.usuario.rol);
 // Lo guardado antes del cambio de sedes (Dominican Fiesta, Sede 2 y 3) ya no sirve: se usa el ejemplo nuevo
@@ -110,8 +168,22 @@ const deSedesViejas = r => Array.isArray(r) && r.some(x => x && ['sede', 'de', '
 function aplicarDatosGuardados() {
   for (const k of ORDEN_DATOS) { let r = leerComp(CFG(k), null); if (deSedesViejas(r)) r = null; DATOS[k].aplicar(r || JSON.parse(JSON.stringify(EJEMPLO_DATOS[k]))); }
 }
-aplicarDatosGuardados();
+aplicarDatosGuardados(); repintarListasFijas();
+// Lo que se armó al abrir la página con las listas de ejemplo se vuelve a dibujar con lo guardado
+function repintarListasFijas() {
+  const en = (sel, html) => { const el = $(sel); if (el) el.innerHTML = html; };
+  const op = l => l.map(x => `<option>${esc(x)}</option>`).join('');
+  const pasos = [
+    () => { en('#comis', COMISIONES.map(([c, n]) => `<button class="comi" data-c="${esc(c)}"><b>${esc(c)}</b><small>${esc(n)}</small></button>`).join('')); $$('.comi').forEach(x => x.classList.toggle('on', x.dataset.c === estado.comision)); },
+    () => { en('#obCat', op(OB_CAT)); en('#obGuarda', op(OB_GUARDA)); en('#atPersona', op(AT_PERSONA)); },
+    () => en('#comPlant', COM_PLANTILLAS.map(([n], i) => `<button class="mini" data-pl="${i}">${esc(n)}</button>`).join('')),
+    pintarFormAt, pintarListas, pintarConfirma, pintarKit, pintarAsientos,
+    () => window.pintarRapidos && window.pintarRapidos(),
+  ];
+  for (const p of pasos) try { p(); } catch (e) { console.warn(e); }   // si una parte no está en este sistema, las demás igual se dibujan
+}
 function refrescarTodo() {
+  repintarListasFijas();
   try { pintarNuevas(); pintarCobertura(); pintarTraslado(); pintarDatos(); if (estado.usuario) pintarTablero(); $('#contactos').innerHTML = AREAS.map(([, a, p]) => `<div class="dato"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join(''); if (estado.comision) pintarPanel(); } catch (e) { console.warn(e); }
 }
 
@@ -176,7 +248,7 @@ $('#edPegarOk').addEventListener('click', () => {
 });
 $('#edAgregar').addEventListener('click', () => {
   const d = DATOS[edK], ult = edRecs[edRecs.length - 1] || {}, r = { _nuevo: 1 };
-  d.campos.forEach(c => { if (['dia', 'punto', 'sede', 'ev', 'de', 'a', 'tipo', 'area', 'para'].includes(c.k) && ult[c.k] != null) r[c.k] = ult[c.k]; }); // copia lo más común de la fila anterior
+  d.campos.forEach(c => { if (['dia', 'punto', 'sede', 'ev', 'de', 'a', 'tipo', 'area', 'para', 'g'].includes(c.k) && ult[c.k] != null) r[c.k] = ult[c.k]; }); // copia lo más común de la fila anterior
   edRecs.push(r); $('#edBuscar').value = ''; pintarEditorDatos(); $('#edEstado').textContent = 'Fila nueva al final';
   const filas = $$('#edLista .ed-fila'); const f = filas[filas.length - 1]; if (f) { f.scrollIntoView({ block: 'center' }); const inp = f.querySelector('input:not([readonly]), select'); if (inp) inp.focus(); }
 });
@@ -190,7 +262,8 @@ function validar() {
     if (r._error) malas++;
   });
   if (d.campos.some(c => c.k === 'cod')) { const vistos = {}; edRecs.forEach(r => { const c = String(r.cod || '').toUpperCase(); if (c && vistos[c]) { r._error = `El código ${c} está repetido`; malas++; } vistos[c] = 1; }); }
-  if (d.campos.some(c => c.k === 'id' && c.soloViejo)) { const vistos = {}; edRecs.forEach(r => { const c = String(r.id || '').toUpperCase(); if (c && vistos[c]) { r._error = `El código ${c} está repetido`; malas++; } vistos[c] = 1; }); }
+  const llave = (d.campos.find(c => (c.k === 'id' || c.k === 'com') && c.soloViejo) || {}).k;
+  if (llave) { const vistos = {}; edRecs.forEach(r => { const c = String(r[llave] || '').toUpperCase(); if (c && vistos[c]) { r._error = `El código ${c} está repetido`; malas++; } vistos[c] = 1; }); }
   return malas;
 }
 $('#edGuardar').addEventListener('click', () => {

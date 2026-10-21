@@ -461,7 +461,13 @@ const FOCO = {
 function aplicarConfigInicio() {
   const c = k => leerLS('minume.compartido.config.' + k, null);
   const vieja = l => l.some(x => x && ['sede', 'de', 'a'].some(k => x[k] && !SEDES[x[k]]));
-  const com = c('comisiones'); if (com && !vieja(com)) com.forEach(r => { ASIGNA[r.com] = [r.sede, r.salon]; });
+  const com = c('comisiones');
+  if (com && !vieja(com)) {
+    const nombres = Object.fromEntries(COMISIONES);
+    COMISIONES.splice(0, COMISIONES.length, ...com.map(r => [r.com, r.nombre || nombres[r.com] || r.com]));
+    com.forEach(r => { ASIGNA[r.com] = [r.sede, r.salon]; });
+  }
+  const sed = c('sedes'); if (sed) sed.forEach(r => { if (SEDES[r.id] && r.nombre) SEDES[r.id] = r.nombre; });
   const bus = c('autobuses'); if (bus && !vieja(bus)) VIAJES.splice(0, VIAJES.length, ...bus.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
   const hot = c('hoteles'); if (hot) HOTELES.splice(0, HOTELES.length, ...hot);
   const bs = c('buses'); if (bs && !vieja(bs.map(b => ({ sede: b.sede })))) BUSES.splice(0, BUSES.length, ...bs.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));

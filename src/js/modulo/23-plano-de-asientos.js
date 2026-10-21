@@ -37,14 +37,21 @@ function planoBanquete(nombre, mesasX, mesasY, sillas, capacidad) {
   }
   return { nombre, capacidad, ancho, alto: 8.5 + mesasY * paso, asientos, mesas, escenario: { x: ancho / 2 - 7, y: 0.4, w: 14, h: 2.4, t: 'TARIMA' }, tipo: 'banquete' };
 }
-const PLANOS = {
+// Medidas de cada salón de eventos (se cambian en «Datos del evento → Capacidad de los salones de eventos»)
+const MEDIDAS_PLANOS = {
   // Teatro La Fiesta: 1,152 en teatro · 24 filas (A a X) de 12 + 24 + 12, y presídium de 7
-  teatro: planoTeatro('Teatro La Fiesta · Renaissance Jaragua', 24, [12, 24, 12], 7, 1152),
-  // Malecón Terrace: banquete de 500 · 49 mesas redondas de 10 y la mesa principal de 10
-  banquete: planoBanquete('Malecón Terrace · Sheraton', 7, 7, 10, 500),
+  teatro: { tipo: 'teatro', nombre: 'Teatro La Fiesta · Renaissance Jaragua', filas: 24, ancho: '12, 24, 12', extra: 7 },
+  // Malecón Terrace: banquete de 500 · 49 mesas redondas de 10 (7 x 7) y la mesa principal de 10
+  banquete: { tipo: 'banquete', nombre: 'Malecón Terrace · Sheraton', filas: 7, ancho: '7', extra: 10 },
   // Anacaona (salón completo, 40 x 18 m): 800 en teatro · 20 filas (A a T) de 20 + 20, y presídium de 5
-  anacaona: planoTeatro('Anacaona · Renaissance Jaragua', 20, [20, 20], 5, 800),
+  anacaona: { tipo: 'teatro', nombre: 'Anacaona · Renaissance Jaragua', filas: 20, ancho: '20, 20', extra: 5 },
 };
+const bloquesDe = t => String(t).split(/[,+ ]+/).map(Number).filter(n => n > 0);
+function armarPlano(m) {
+  if (m.tipo === 'banquete') { const x = Math.max(1, +m.ancho || 1), y = Math.max(1, +m.filas || 1), s = Math.max(1, +m.extra || 10); return planoBanquete(m.nombre, x, y, s, x * y * s + s); }
+  const b = bloquesDe(m.ancho), f = Math.max(1, +m.filas || 1); return planoTeatro(m.nombre, f, b.length ? b : [10], Math.max(0, +m.extra || 0), f * b.reduce((a, n) => a + n, 0));
+}
+const PLANOS = Object.fromEntries(Object.entries(MEDIDAS_PLANOS).map(([k, m]) => [k, armarPlano(m)]));
 const planoDe = e => /Teatro La Fiesta/i.test(e.lugar) ? PLANOS.teatro : /Malec[oó]n Terrace/i.test(e.lugar) ? PLANOS.banquete : /Anacaona/i.test(e.lugar) ? PLANOS.anacaona : null;
 const EST_AS = { libre: ['Libre', '#2fd38c'], ocupado: ['Asignado', '#45c8ff'], sentado: ['Ya se sentó', '#2f7bff'], reservado: ['Reservado', '#ffd23f'], bloqueado: ['No disponible', '#5b6685'] };
 
