@@ -23,13 +23,13 @@ VERCEL = {'projectId': 'prj_dPyGbtm0VXXcpsgpDQXKcljhDQCd', 'orgId': 'team_8yZKZP
 
 #            carpeta        archivo para enviar        nombre                    corto           color      letra
 SISTEMAS = {
-    'asistencia':   ('Asistencia',            'Subsecretaría de Asistencia', 'Asistencia',   '#45c8ff', 'A'),
-    'seguridad':    ('Seguridad-y-Traslado',  'Seguridad y Traslado',        'Seguridad',    '#ff4d5e', 'S'),
-    'bienestar':    ('Bienestar',             'Bienestar',                   'Bienestar',    '#2fd38c', 'B'),
-    'eventos':      ('Eventos-y-Protocolo',   'Eventos y Protocolo',         'Eventos',      '#f472b6', 'E'),
-    'coordinacion': ('Coordinacion',          'Coordinación general',        'Coordinación', '#ffd23f', 'C'),
+    'asistencia':   ('Asistencia',            'Subsecretaría de Asistencia', 'Asistencia',   '#00b5ff', 'A'),
+    'seguridad':    ('Seguridad-y-Traslado',  'Seguridad y Traslado',        'Seguridad',    '#e53535', 'S'),
+    'bienestar':    ('Bienestar',             'Bienestar',                   'Bienestar',    '#00fdef', 'B'),
+    'eventos':      ('Eventos-y-Protocolo',   'Eventos y Protocolo',         'Eventos',      '#ffbeff', 'E'),
+    'coordinacion': ('Coordinacion',          'Coordinación general',        'Coordinación', '#0090fb', 'C'),
 }
-ICONOS = {'inicio': ('#45c8ff', 'M')} | {c: (v[3], v[4]) for c, v in SISTEMAS.items()}
+ICONOS = {'inicio': ('#00b5ff', 'M')} | {c: (v[3], v[4]) for c, v in SISTEMAS.items()}
 
 # Cabeceras de seguridad para Vercel (la política de contenido solo deja cargar lo que la página usa)
 CSP = '; '.join([
@@ -61,16 +61,27 @@ CABECERAS = [
 
 
 def icono(ruta, tam, color, letra):
-    im = Image.new('RGB', (tam, tam), '#050a1a')
+    """Icono de la app con la línea gráfica: degradado azul de MINUME, el símbolo y una franja con el color del equipo."""
+    im = Image.new('RGB', (tam, tam))
     d = ImageDraw.Draw(im)
-    m = int(tam * .16)
-    d.rounded_rectangle([m, m, tam - m, tam - m], radius=int(tam * .2), fill=color)
-    try:
-        f = ImageFont.truetype('C:/Windows/Fonts/arialbd.ttf', int(tam * .44))
-    except OSError:
-        f = ImageFont.load_default()
-    d.text((tam / 2, tam / 2 + tam * .01), letra, font=f, fill='#04121d', anchor='mm')
+    for y in range(tam):                       # degradado #0a0464 → #0043c5
+        t = y / tam
+        d.line([(0, y), (tam, y)], fill=(int(10 - 10 * t), int(4 + 63 * t), int(100 + 97 * t)))
+    sim = Image.open(SRC / 'marca' / 'simbolo-blanco.png').convert('RGBA')
+    alto = int(tam * .46); sim = sim.resize((int(sim.width * alto / sim.height), alto), Image.LANCZOS)
+    im.paste(sim, ((tam - sim.width) // 2, int(tam * .2)), sim)
+    if letra != 'M':                           # franja del equipo abajo
+        d.rounded_rectangle([int(tam * .3), int(tam * .76), int(tam * .7), int(tam * .81)], radius=int(tam * .03), fill=color)
     im.save(ruta)
+
+
+def incrustar(html):
+    """Los logos y elementos de marca/ van dentro de la página (así abren sin internet y en un solo archivo)."""
+    def dato(m):
+        f = SRC / 'marca' / m.group(1)
+        tipo = 'image/svg+xml' if f.suffix == '.svg' else 'image/png'
+        return 'data:%s;base64,%s' % (tipo, base64.b64encode(f.read_bytes()).decode())
+    return re.sub(r'marca/([\w.-]+\.(?:svg|png))', dato, html)
 
 
 def manifest(nombre, corto, icono_base, inicio):
@@ -96,7 +107,7 @@ def escribir(ruta, texto):
 
 
 def main():
-    base = ensamblar()
+    base = incrustar(ensamblar())
     glb = SRC / 'plantel.glb'
     glb64 = base64.b64encode(glb.read_bytes()).decode()
     for d in (DIST, ENVIAR):          # se vacían (no se borran) por si alguna terminal está parada dentro
@@ -123,7 +134,7 @@ def main():
         escribir(ENVIAR / f'MINUME-{archivo}.html', suelto)
 
     # El Inicio usa los mismos bloques de sincronización y reportes que los sistemas
-    plantilla = (SRC / 'inicio.html').read_text(encoding='utf-8')
+    plantilla = incrustar((SRC / 'inicio.html').read_text(encoding='utf-8'))
     bloques = [re.search(r'<script>\n/\*' + n + r'-INICIO\*/.*?/\*' + n + r'-FIN\*/\n</script>', base, re.S).group(0) for n in ('SYNC', 'REPORTES')]
     motor = f'<script>{CONFIG_JS}</script>\n' + '\n'.join(bloques)
     for ruta, enlace, app in ((DIST / 'index.html', lambda c, a: f'{c}/index.html', True), (ENVIAR / 'Inicio-MINUME.html', lambda c, a: f'MINUME-{a}.html', False)):

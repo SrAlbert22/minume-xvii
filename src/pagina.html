@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 @@css estilos/01-base.css
 @@css estilos/02-portada.css
@@ -30,14 +30,16 @@
 @@css estilos/16-exportar-y-editor.css
 @@css estilos/17-tableros.css
 @@css estilos/18-telefono-y-tableta.css
+@@css estilos/19-marca-y-navegacion.css
 </style>
 </head>
 <body>
+<div class="deco" aria-hidden="true"><img class="d1" src="marca/anillo-pixel.svg" alt=""><img class="d2" src="marca/destello-rosa.svg" alt=""><img class="d3" src="marca/estrella-roja.svg" alt=""><img class="d4" src="marca/tablero-azul.svg" alt=""></div>
 <div class="aviso-demo">DEMO · Propuesta de Albert Silvestre para la página de Asistencia de MINUME XVII · No es la página oficial · Sedes, salones y horarios de ejemplo</div>
 
 <div class="entrada" id="entrada"><div class="ent-caja">
   <aside class="ent-marca">
-    <div class="ent-top"><div class="logo">M</div><div><b>MINUME XVII</b><small id="entSis">Sistema del staff</small></div></div>
+    <div class="ent-top"><div><img class="ent-logo" src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones"><small id="entSis">Sistema del staff</small></div></div>
     <h2 class="ent-titulo" id="entTitulo">Bienvenido al staff</h2>
     <p id="entTxt">Entra con tu código personal: la página sabe quién eres y qué te toca.</p>
     <ul class="ent-puntos">
@@ -46,6 +48,8 @@
       <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Avisos, comunicados y SOS al instante</li>
     </ul>
     <div class="ent-pie">14 al 16 de noviembre · Renaissance Jaragua y Sheraton · Santo Domingo</div>
+    <img class="ent-estrellas" src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas">
+    <img class="ent-institucional" src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD">
   </aside>
   <div class="ent-form" id="entForm">
     <a class="ent-volver" id="entVolver" href="#" hidden>← Volver al Inicio de MINUME</a>
@@ -68,8 +72,8 @@
 
 <header class="cab">
   <div class="cab-fila">
-    <div class="logo">M</div>
-    <div><b>MINUME XVII</b><small>Subsecretaría de Asistencia</small></div>
+    <img class="logo-marca" src="marca/minume-blanco.svg" alt="MINUME XVII">
+    <div><small>Subsecretaría de Asistencia</small></div>
     <div class="mio" id="miChip" hidden></div>
     <button class="vivo-pill" id="vivoPill" title="Estás compartiendo tu ubicación"><span class="punto-vivo"></span><span id="vivoTxt">En vivo</span></button>
     <span class="red-pill" id="redPill" hidden>Sin internet<span class="largo"> · todo se guarda</span></span>
@@ -145,7 +149,7 @@
 @@html secciones/29-que-mejora.html
 </main>
 
-<footer>Hecho por Albert Silvestre · Maqueta 3D propia con datos de © OpenStreetMap · Asignación de salones y horarios de ejemplo</footer>
+<footer><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD" style="height:34px;display:block;margin:0 auto 12px;opacity:.85">Hecho por Albert Silvestre · Maqueta 3D propia con datos de © OpenStreetMap · Asignación de salones y horarios de ejemplo</footer>
 
 <div class="sos-velo" id="sosVelo"><div class="tarjeta">
   <b class="cond" style="font-size:30px;color:#ff8a95">🚨 Avisar a Seguridad</b>
@@ -171,6 +175,7 @@
   <span class="alarma-eti" id="alEti">SOS · EMERGENCIA</span><h2 id="alTit"></h2><p id="alTxt"></p>
   <div class="alarma-acc"><button class="boton rojo" id="alVoy">Voy en camino</button><button class="boton sec" id="alMapa">Ver en el mapa</button><button class="boton sec" id="alCerrar">Silenciar y cerrar</button></div>
 </div></div>
+<nav class="barra-abajo" id="barraAbajo" aria-label="Accesos rápidos"></nav>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -210,6 +215,7 @@
 @@js js/modulo/24-codigos-de-acceso.js
 @@js js/modulo/25-reportes.js
 @@js js/modulo/26-arranque.js
+@@js js/modulo/27-navegacion-facil.js
 </script>
 </body>
 </html>

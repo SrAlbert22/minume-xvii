@@ -23,10 +23,10 @@
   .as-a.sel { stroke: #fff; stroke-width: .22; }
   .as-a.hallado { stroke: #f472b6; stroke-width: .3; }
   .as-tarima { fill: rgba(244, 114, 182, .18); stroke: #f472b6; stroke-width: .08; }
-  .as-tarima-t { fill: #f9a8d4; font: 700 .7px Inter, sans-serif; text-anchor: middle; letter-spacing: .05px; }
+  .as-tarima-t { fill: #f9a8d4; font: 700 .7px Barlow, sans-serif; text-anchor: middle; letter-spacing: .05px; }
   .as-mesa { fill: rgba(255, 255, 255, .08); stroke: rgba(255, 255, 255, .25); stroke-width: .06; }
-  .as-mesa-t { fill: var(--suave); font: 700 .8px Inter, sans-serif; text-anchor: middle; }
-  .as-fila { fill: var(--suave); font: 700 .55px Inter, sans-serif; text-anchor: middle; }
+  .as-mesa-t { fill: var(--suave); font: 700 .8px Barlow, sans-serif; text-anchor: middle; }
+  .as-fila { fill: var(--suave); font: 700 .55px Barlow, sans-serif; text-anchor: middle; }
   .as-3d { position: relative; height: min(72vh, 640px); border: 1px solid var(--borde); border-radius: var(--radio); overflow: hidden; background: #0a1228; }
   .as-3d[hidden], .as-plano[hidden], .as-zoom[hidden] { display: none; }
   #as3d.on { background: var(--azul); border-color: var(--azul); color: #fff; }

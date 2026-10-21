@@ -7,11 +7,11 @@ const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAl
 const SISTEMA = window.MINUME_SISTEMA || 'todo';
 const SISTEMAS = {
   todo: { nombre: 'Subsecretaría de Asistencia', roles: ['asistencia', 'acreditacion', 'seguridad', 'traslado', 'coordinacion'], letra: 'M' },
-  asistencia: { nombre: 'Subsecretaría de Asistencia', roles: ['asistencia', 'coordinacion'], letra: 'A', color: '#45c8ff', prefijos: ['AS', 'CO'] },
-  seguridad: { nombre: 'Seguridad y Traslado', roles: ['seguridad', 'traslado'], letra: 'S', color: '#ff4d5e', prefijos: ['SE', 'TR'] },
-  bienestar: { nombre: 'Bienestar', roles: ['bienestar'], letra: 'B', color: '#2fd38c', prefijos: ['BI'] },
-  eventos: { nombre: 'Eventos y Protocolo', roles: ['eventos'], letra: 'E', color: '#f472b6', prefijos: ['EP'] },
-  coordinacion: { nombre: 'Coordinación general', roles: ['coordinacion'], letra: 'C', color: '#ffd23f', prefijos: ['CG'] },
+  asistencia: { nombre: 'Subsecretaría de Asistencia', roles: ['asistencia', 'coordinacion'], letra: 'A', color: '#00b5ff', prefijos: ['AS', 'CO'] },
+  seguridad: { nombre: 'Seguridad y Traslado', roles: ['seguridad', 'traslado'], letra: 'S', color: '#e53535', prefijos: ['SE', 'TR'] },
+  bienestar: { nombre: 'Bienestar', roles: ['bienestar'], letra: 'B', color: '#00fdef', prefijos: ['BI'] },
+  eventos: { nombre: 'Eventos y Protocolo', roles: ['eventos'], letra: 'E', color: '#ffbeff', prefijos: ['EP'] },
+  coordinacion: { nombre: 'Coordinación general', roles: ['coordinacion'], letra: 'C', color: '#0090fb', prefijos: ['CG'] },
 };
 const SIS = SISTEMAS[SISTEMA] || SISTEMAS.todo;
 const PREF = SISTEMA === 'todo' ? 'minumeDemo.' : `minume.${SISTEMA}.`; // cada sistema guarda su sesión aparte

@@ -18,14 +18,14 @@
   .filtros { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
   .filtros button { border: 1px solid var(--borde); background: rgba(255, 255, 255, .03); color: var(--suave); padding: 6px 11px; border-radius: 99px; cursor: pointer; font-size: 12px; font-weight: 600; }
   .filtros button.on { background: var(--azul); color: #fff; border-color: var(--azul); }
-  .marca-vivo { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 800 12px Inter; color: #04121d; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(0, 0, 0, .5); }
+  .marca-vivo { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 800 12px Barlow; color: #04121d; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(0, 0, 0, .5); }
   .marca-vivo.bus { border-radius: 10px; font-size: 17px; }
   .marca-vivo.yo { animation: latido 1.6s infinite; }
-  .marca-sede { background: #12163a; color: #fff; border: 2px solid var(--cian); border-radius: 12px; padding: 4px 8px; font: 700 12px Inter; white-space: nowrap; box-shadow: 0 4px 14px rgba(0, 0, 0, .5); transform: translate(-50%, -50%); display: inline-block; }
+  .marca-sede { background: #12163a; color: #fff; border: 2px solid var(--cian); border-radius: 12px; padding: 4px 8px; font: 700 12px Barlow; white-space: nowrap; box-shadow: 0 4px 14px rgba(0, 0, 0, .5); transform: translate(-50%, -50%); display: inline-block; }
   .mapa-caja { position: relative; min-width: 0; }
   .vivo-grid > * { min-width: 0; }
   #mapaVivo { width: 100%; }
-  .maplibregl-popup-content { background: #0f1d44; color: #fff; border-radius: 12px; font: 13px Inter, sans-serif; padding: 9px 12px; border: 1px solid var(--borde); }
+  .maplibregl-popup-content { background: #0f1d44; color: #fff; border-radius: 12px; font: 13px Barlow, sans-serif; padding: 9px 12px; border: 1px solid var(--borde); }
   .maplibregl-popup-tip { border-top-color: #0f1d44 !important; border-bottom-color: #0f1d44 !important; }
   .maplibregl-ctrl-attrib { font-size: 10px; }
   .mapa-oscuro { filter: invert(1) hue-rotate(200deg) brightness(.85) contrast(.9) saturate(.6); } /* mapa claro de OpenStreetMap pasado a oscuro */

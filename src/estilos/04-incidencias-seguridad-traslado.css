@@ -17,7 +17,7 @@
   .viaje { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px; border: 1px solid var(--borde); border-radius: 18px; background: rgba(255, 255, 255, .02); margin-bottom: 10px; }
   .viaje.mio { border-color: var(--naranja); background: rgba(255, 154, 60, .08); }
   .viaje .hora { font: 800 30px 'Barlow Condensed'; line-height: 1; text-align: center; min-width: 70px; }
-  .viaje .hora small { display: block; font: 600 11px Inter; color: var(--suave); }
+  .viaje .hora small { display: block; font: 600 11px Barlow; color: var(--suave); }
   .viaje .ruta b { display: block; font-size: 15px; }
   .viaje .ruta span { color: var(--suave); font-size: 13px; }
   .linea-ruta { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 12.5px; color: #d7def5; flex-wrap: wrap; }

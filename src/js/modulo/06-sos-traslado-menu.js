@@ -60,6 +60,7 @@ $('#bEnviar').onclick = () => toast('Demo: en la versión real se guarda en la b
 // ---------- Menú de secciones (resalta la sección correcta; salta las ocultas) ----------
 let enlaces = $$('#rail a'), secciones = enlaces.map(a => $(a.getAttribute('href')));
 function espia() {
+  if (document.body.classList.contains('app')) return; // con la navegación fácil se resalta la sección abierta
   const borde = $('.cab').getBoundingClientRect().bottom + 40; // dónde termina la cabecera pegada, de verdad
   let actual = 0; secciones.forEach((s, i) => { if (!s.classList.contains('sin-permiso') && s.getBoundingClientRect().top <= borde) actual = i; });
   enlaces.forEach((a, i) => a.classList.toggle('on', i === actual));

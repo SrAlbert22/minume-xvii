@@ -1,13 +1,16 @@
   /* MINUME XVII · estilos de los sistemas del staff · Albert Silvestre */
+  /* Línea gráfica de MINUME XVII: azules de #0a0464 a #00fdef, rosa #ffbeff y rojo #e53535; Barlow, Barlow Condensed y Libre Baskerville */
   :root {
-    --fondo: #050a1a; --panel: rgba(16, 28, 66, .72); --panel2: #0c1736; --borde: rgba(120, 160, 255, .16);
-    --texto: #e9eeff; --suave: #9aa8cc; --azul: #2f7bff; --azul2: #1c4fd6; --cian: #45c8ff; --rojo: #ff4d5e; --verde: #2fd38c; --amarillo: #ffd23f; --naranja: #ff9a3c;
-    --radio: 22px;
+    --m-noche: #0a0464; --m-marino: #002193; --m-rey: #0043c5; --m-azul: #0090fb; --m-celeste: #00b5ff; --m-turquesa: #00fdef; --m-rosa: #ffbeff; --m-rojo: #e53535;
+    --fondo: #06033f; --panel: rgba(12, 22, 120, .42); --panel2: #0b1170; --borde: rgba(120, 170, 255, .2);
+    --texto: #f1f4ff; --suave: #b3c0ee; --azul: #0090fb; --azul2: #0043c5; --cian: #00b5ff; --rojo: #e53535; --verde: #19d3a2; --amarillo: #ffd23f; --naranja: #ff9a3c;
+    --radio: 20px; --f-tit: 'Barlow Condensed', sans-serif; --f-txt: 'Barlow', system-ui, sans-serif; --f-ed: 'Libre Baskerville', Georgia, serif;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 130px; }
-  body { margin: 0; color: var(--texto); font-family: 'Inter', system-ui, sans-serif; background: radial-gradient(1100px 700px at 15% -10%, #142a62 0%, transparent 60%), radial-gradient(900px 600px at 100% 10%, #1b1450 0%, transparent 55%), var(--fondo); background-attachment: fixed; }
-  h1, h2, h3, .cond { font-family: 'Barlow Condensed', sans-serif; }
+  body { margin: 0; color: var(--texto); font-family: var(--f-txt); font-size: 16px; background: radial-gradient(1100px 700px at 10% -10%, #0043c5 0%, transparent 55%), radial-gradient(900px 700px at 105% 15%, #002193 0%, transparent 55%), linear-gradient(180deg, #0a0464, var(--fondo) 60%); background-attachment: fixed; }
+  h1, h2, h3, .cond { font-family: var(--f-tit); letter-spacing: -.01em; }
+  .editorial { font-family: var(--f-ed); font-weight: 400; }
   a { color: var(--cian); }
   button { font: inherit; }
   .aviso-demo { background: var(--amarillo); color: #1d1500; font-weight: 700; font-size: 12.5px; text-align: center; padding: 7px 12px; }
