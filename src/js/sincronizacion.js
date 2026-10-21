@@ -87,6 +87,7 @@
       cliente = cliente || window.supabase.createClient(C.url, C.key, { auth: { persistSession: false, autoRefreshToken: false } });
       canal = cliente.channel('minume-compartido', { config: { broadcast: { self: false } } })
         .on('broadcast', { event: 'cambio' }, m => { const k = m.payload && m.payload.clave; if (k && listo) bajar([k]).catch(() => {}); })
+        .on('broadcast', { event: 'chat' }, m => { try { window.dispatchEvent(new CustomEvent('minume-chat', { detail: m.payload || {} })); } catch {} })
         .subscribe(s => estado(s === 'SUBSCRIBED' ? 'conectado' : s === 'CLOSED' || s === 'CHANNEL_ERROR' ? 'reconectando' : 'conectando'));
     } catch { setInterval(() => listo && bajar(null).catch(() => {}), 30000); }   // sin la librería, revisa cada 30 s
   }

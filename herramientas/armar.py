@@ -115,10 +115,10 @@ ACTUALIZAR_JS = """if ('serviceWorker' in navigator && location.protocol !== 'fi
     if (document.hidden) return location.reload();
     if (document.getElementById('versionNueva')) return;
     const d = document.createElement('div'); d.id = 'versionNueva'; d.setAttribute('role', 'status');
-    d.style.cssText = 'position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:14px;padding:12px 12px 12px 18px;border-radius:16px;background:linear-gradient(135deg,#0043c5,#002193);border:1px solid #00b5ff;color:#fff;font:600 15px Barlow,system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.45);max-width:calc(100vw - 32px)';
+    d.style.cssText = 'position:fixed;left:16px;right:16px;margin:0 auto;width:fit-content;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:9999;display:flex;align-items:center;gap:14px;padding:12px 12px 12px 18px;border-radius:16px;background:linear-gradient(135deg,#0043c5,#002193);border:1px solid #00b5ff;color:#fff;font:600 15px Barlow,system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.45);max-width:560px';
     d.innerHTML = '<span>Hay una versión nueva de MINUME</span>';
     const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Actualizar';
-    b.style.cssText = 'border:0;border-radius:12px;padding:10px 16px;background:#00b5ff;color:#06033f;font:800 15px Barlow,system-ui,sans-serif;cursor:pointer';
+    b.style.cssText = 'flex:none;border:0;border-radius:12px;padding:10px 16px;background:#00b5ff;color:#06033f;font:800 15px Barlow,system-ui,sans-serif;cursor:pointer';
     b.onclick = () => location.reload(); d.append(b); document.body.append(d);
   });
 });"""

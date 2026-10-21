@@ -77,19 +77,19 @@ const HERO = {
 const HERO_SIS = { coordinacion: { coordinacion: ['Coordinación general', 'COORDINACIÓN GENERAL', 'Todo el evento en un solo lugar: comunicados, comisiones, cobertura de seguridad, rondas, bienestar, objetos perdidos y avisos.'] }, asistencia: { coordinacion: ['Coordinación', 'COORDINACIÓN DE ASISTENCIA A COMISIONES', 'Las incidencias que reportan los asistentes, los pedidos de los salones y el avance de cada comisión.'] } };
 // Cada equipo ve sus secciones en su propio orden; las demás no existen para él
 const ORDEN = {
-  asistencia: ['inicio', 'comunicados', 'comisiones-vivo', 'empieza', 'mi-comision', 'listas', 'sesion', 'incidencias', 'bitacora', 'programa', 'objetos', 'bolsillo', 'mapa', 'ubicacion', 'cumplimiento', 'mejoras'],
-  acreditacion: ['inicio', 'comunicados', 'delegados', 'mapa', 'ubicacion', 'programa', 'bitacora', 'mejoras'],
-  seguridad: ['inicio', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'incidencias', 'traslado', 'objetos', 'programa', 'bitacora', 'mejoras'],
-  traslado: ['inicio', 'comunicados', 'traslado', 'cobertura', 'mapa', 'ubicacion', 'programa', 'objetos', 'bitacora', 'mejoras'],
-  coordinacion: ['inicio', 'datos', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'delegados', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora', 'listas', 'sesion', 'mi-comision', 'empieza', 'bolsillo', 'cumplimiento', 'mejoras'],
-  eventos: ['inicio', 'comunicados', 'eventos', 'invitados', 'asientos', 'programa', 'objetos', 'mapa', 'bitacora'],
-  bienestar: ['inicio', 'comunicados', 'casos', 'atenciones', 'protocolos', 'punto', 'programa', 'objetos', 'mapa', 'ubicacion', 'bitacora'],
+  asistencia: ['inicio', 'chat', 'comunicados', 'comisiones-vivo', 'empieza', 'mi-comision', 'listas', 'sesion', 'incidencias', 'bitacora', 'programa', 'objetos', 'bolsillo', 'mapa', 'ubicacion', 'cumplimiento', 'mejoras'],
+  acreditacion: ['inicio', 'chat', 'comunicados', 'delegados', 'mapa', 'ubicacion', 'programa', 'bitacora', 'mejoras'],
+  seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'incidencias', 'traslado', 'objetos', 'programa', 'bitacora', 'mejoras'],
+  traslado: ['inicio', 'chat', 'comunicados', 'traslado', 'cobertura', 'mapa', 'ubicacion', 'programa', 'objetos', 'bitacora', 'mejoras'],
+  coordinacion: ['inicio', 'chat', 'datos', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'delegados', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora', 'listas', 'sesion', 'mi-comision', 'empieza', 'bolsillo', 'cumplimiento', 'mejoras'],
+  eventos: ['inicio', 'chat', 'comunicados', 'eventos', 'invitados', 'asientos', 'programa', 'objetos', 'mapa', 'bitacora'],
+  bienestar: ['inicio', 'chat', 'comunicados', 'casos', 'atenciones', 'protocolos', 'punto', 'programa', 'objetos', 'mapa', 'ubicacion', 'bitacora'],
 };
 // En los sistemas separados, cada equipo ve solo lo suyo (nada de delegados ni checklists de otros)
 const ORDEN_SIS = {
-  asistencia: { coordinacion: ['inicio', 'comunicados', 'comisiones-vivo', 'incidencias', 'bitacora', 'listas', 'sesion', 'mi-comision', 'empieza', 'bolsillo', 'cumplimiento', 'programa', 'objetos', 'mapa', 'ubicacion', 'mejoras'] },
-  seguridad: { seguridad: ['inicio', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'], traslado: ['inicio', 'comunicados', 'traslado', 'cobertura', 'mapa', 'ubicacion', 'programa', 'objetos', 'bitacora'] },
-  coordinacion: { coordinacion: ['inicio', 'datos', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora'] },
+  asistencia: { coordinacion: ['inicio', 'chat', 'comunicados', 'comisiones-vivo', 'incidencias', 'bitacora', 'listas', 'sesion', 'mi-comision', 'empieza', 'bolsillo', 'cumplimiento', 'programa', 'objetos', 'mapa', 'ubicacion', 'mejoras'] },
+  seguridad: { seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'], traslado: ['inicio', 'chat', 'comunicados', 'traslado', 'cobertura', 'mapa', 'ubicacion', 'programa', 'objetos', 'bitacora'] },
+  coordinacion: { coordinacion: ['inicio', 'chat', 'datos', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora'] },
 };
 function reordenar(rol) {
   const main = $('main'), rail = $('#rail'), orden = (ORDEN_SIS[SISTEMA] || {})[rol] || ORDEN[rol];

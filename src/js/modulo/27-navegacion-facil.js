@@ -10,6 +10,7 @@ const ICO = {
   calendario: 'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4', qr: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2', mapa: 'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',
   pin: 'M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', alerta: 'M12 3l10 18H2zM12 10v5M12 18h.01',
   caminar: 'M13 4a1.5 1.5 0 1 0 0 .01M10 21l2-6 3 3v3M8 12l2-4 4 1 2 4M10 8l-2 8', aviso: 'M12 8v5M12 16h.01M4 20h16L12 4z',
+  chat: 'M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12zM8.5 12h.01M12 12h.01M15.5 12h.01',
   bus: 'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 11h14M5 17h14v2H5zM8 19v2M16 19v2M8 14h.01M16 14h.01',
   libro: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 5v16', check: 'M4 12l5 5L20 6', reloj: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
   grupo: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 11a3 3 0 1 0 0-6M3 20a6 6 0 0 1 12 0M15 14a6 6 0 0 1 6 6', tarjeta: 'M3 6h18v12H3zM3 10h18M7 15h4',
@@ -19,7 +20,7 @@ const ico = (k, t = 26) => `<svg viewBox="0 0 24 24" width="${t}" height="${t}" 
 // sección: [ícono, nombre corto, para qué sirve, en una línea]
 const SECCION = {
   inicio: ['casa', 'Inicio', 'Tu tablero'], datos: ['ajustes', 'Datos del evento', 'Horarios, salones, staff y códigos'],
-  comunicados: ['megafono', 'Comunicados', 'Avisos para todo el staff'], 'comisiones-vivo': ['lista', 'Comisiones', 'Cómo va cada comisión'],
+  comunicados: ['megafono', 'Comunicados', 'Avisos para todo el staff'], chat: ['chat', 'Chat', 'Mensajes con tu equipo y el staff'], 'comisiones-vivo': ['lista', 'Comisiones', 'Cómo va cada comisión'],
   eventos: ['estrella', 'Eventos de hoy', 'Avanza cada evento con un botón'], invitados: ['persona', 'Invitados', 'Quién llegó y dónde se sienta'],
   asientos: ['asiento', 'Asientos', 'Plano de asientos de cada evento'], cobertura: ['escudo', 'Cobertura', 'Quién cubre cada punto y cuándo'],
   rondas: ['ruta', 'Rondas', 'Recorridos de seguridad'], atenciones: ['corazon', 'Atenciones', 'Registro de atenciones'],
@@ -61,6 +62,7 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'traslado' && window.BUSES_LISTO) pintarBuses();
+  if (window.CHAT_LISTO) { if (id === 'chat') { ajustarChatAlto(); cargarChat(true); const l = chat.msgs[chat.canal]; if (l && l.length) marcarVistoChat(chat.canal, l[l.length - 1].id); } pintarInsigniasChat(); }
   // instalada como app la ventana ya dice «MINUME XVII · equipo»: el título solo dice la sección
   document.title = matchMedia('(display-mode: standalone)').matches ? (SECCION[id] ? SECCION[id][1] : 'Inicio') : `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
 }
@@ -72,12 +74,14 @@ function modoApp() {
   let caja = $('#accesos');
   if (!caja) { caja = document.createElement('div'); caja.id = 'accesos'; caja.className = 'accesos'; $('#inicio .hero').after(caja); }
   caja.innerHTML = `<h2 class="accesos-t">¿Qué quieres hacer?</h2><div class="accesos-g">${ids.map(id => { const [i, n, d] = SECCION[id]; return `<button type="button" class="acceso${id === PRINCIPAL[u.rol] ? ' principal' : ''}" data-ir="${id}"><span class="acceso-ic">${ico(i)}</span><b>${n}</b><small>${d}</small></button>`; }).join('')}</div>`;
-  // barra de abajo: Inicio · lo principal del equipo · Mapa · Comunicados
-  const abajo = ['inicio', PRINCIPAL[u.rol], 'mapa', 'comunicados'].filter((id, k, l) => id && l.indexOf(id) === k && (id === 'inicio' || ids.includes(id)));
-  const corto = { inicio: 'Inicio', mapa: 'Mapa', comunicados: 'Avisos', 'comisiones-vivo': 'Comisiones', datos: 'Datos', eventos: 'Eventos', listas: 'Mis listas' };
+  // barra de abajo: Inicio · lo principal del equipo · Chat · Mapa · Comunicados
+  const abajo = ['inicio', PRINCIPAL[u.rol], 'chat', 'mapa', 'comunicados'].filter((id, k, l) => id && l.indexOf(id) === k && (id === 'inicio' || ids.includes(id)));
+  const corto = { chat: 'Chat', inicio: 'Inicio', mapa: 'Mapa', comunicados: 'Avisos', 'comisiones-vivo': 'Comisiones', datos: 'Datos', eventos: 'Eventos', listas: 'Mis listas' };
+  $('#barraAbajo').style.gridTemplateColumns = `repeat(${abajo.length}, minmax(0, 1fr))`;
   $('#barraAbajo').innerHTML = abajo.map(id => `<button type="button" data-ir="${id}">${ico(SECCION[id][0], 22)}<span>${corto[id] || SECCION[id][1]}</span></button>`).join('');
   // «Volver» arriba de cada sección
   for (const s of seccionesDe()) if (s.id !== 'inicio' && !s.querySelector(':scope > .volver')) s.insertAdjacentHTML('afterbegin', `<button type="button" class="volver" data-ir="inicio">← Volver al inicio</button>`);
+  if (window.CHAT_LISTO) pintarChat();
   const h = seccionDeUrl();
   abrirSeccion(SECCION[h] && ids.includes(h) ? h : 'inicio', { historia: false });
 }
