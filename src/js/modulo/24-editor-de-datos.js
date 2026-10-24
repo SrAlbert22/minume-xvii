@@ -59,7 +59,7 @@ const DATOS = {
     titulo: 'Puntos que se deben cubrir', icono: 'mapa', quien: ['seguridad', 'coordinacion'],
     ayuda: 'Los lugares que siempre deben tener a alguien: puertas, pasillos y el camino entre las sedes.',
     campos: [{ k: 'id', t: 'Código', req: 1, mayus: 1, soloViejo: 1 }, { k: 'n', t: 'Nombre del punto', req: 1, ancho: 2 }, { k: 'sede', t: 'Sede', tipo: 'opc', opc: SEDE_OPC, req: 1 }, { k: 'tipo', t: 'Tipo', tipo: 'opc', opc: () => ['Puerta', 'Interior', 'Pasillo', 'Movilización', 'Nocturno', 'Perímetro'].map(x => [x, x]) }],
-    // lugar, x y y: dónde va el punto en el mapa (se colocan tocando el «Mapa de puntos» de Cobertura)
+    // lugar: el sitio del mapa 3D al que lleva «Cómo llegar» desde Cobertura
     leer: () => COB_PUNTOS.map(p => ({ id: p.id, n: p.n, sede: p.sede, tipo: p.tipo, ...(p.lugar ? { lugar: p.lugar } : {}), ...(p.x != null ? { x: p.x, y: p.y } : {}) })),
     aplicar: recs => { const viejos = Object.fromEntries(COB_PUNTOS.map(p => [p.id, p])); COB_PUNTOS.splice(0, COB_PUNTOS.length, ...recs.map(r => { const v = viejos[r.id] || {}; const o = { ...v, id: String(r.id).toUpperCase(), n: r.n, sede: r.sede, tipo: r.tipo || 'Puerta', turnos: v.turnos || [] }; if (r.lugar) o.lugar = r.lugar; if (r.x != null && r.x !== '') { o.x = +r.x; o.y = +r.y; } return o; })); },
   },
