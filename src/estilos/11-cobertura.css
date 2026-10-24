@@ -55,16 +55,3 @@
   .cob-sin { color: #ffcf6b; font-size: 12.5px; }
   .cob-agregar { width: auto; min-width: 180px; padding: 5px 10px; font-size: 12.5px; border-radius: 99px; }
 
-  /* Mapa de puntos (estilo del mapa del V CND) */
-  .cob-plano-caja { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; margin-top: 10px; align-items: start; }
-  .cob-plano-caja:has(.pl-info[hidden]) { grid-template-columns: 1fr; }
-  .cob-plano { border-radius: 18px; overflow: hidden; background: #f4f2ec; border: 3px solid rgba(255, 255, 255, .85); box-shadow: 0 10px 30px rgba(0, 0, 0, .3); }
-  .cob-plano svg { width: 100%; height: auto; max-height: 640px; display: block; margin: 0 auto; touch-action: manipulation; }
-  .cob-plano svg.moviendo { cursor: crosshair; outline: 3px dashed var(--amarillo); outline-offset: -3px; }
-  .pl-punto { cursor: pointer; } .pl-punto:hover circle, .pl-punto:focus circle { r: 4.5; } .pl-punto:focus { outline: none; }
-  .pl-info { display: grid; gap: 6px; padding: 14px; border-radius: 16px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .04); }
-  .pl-info-cab { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } .pl-info-cab > div { flex: 1; min-width: 140px; }
-  .pl-info-cab small { display: block; color: var(--suave); font-size: 12.5px; }
-  .pl-cod { background: #0a2a6b; color: #fff; border-radius: 99px; padding: 4px 10px; font: 800 16px var(--f-tit); border: 2px solid #fff; }
-  .pl-acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  @media (max-width: 900px) { .cob-plano-caja { grid-template-columns: 1fr; } }

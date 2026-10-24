@@ -187,7 +187,7 @@ function repintarListasFijas() {
 }
 function refrescarTodo() {
   repintarListasFijas();
-  try { pintarNuevas(); pintarCobertura(); repintarPlano(); pintarTraslado(); pintarDatos(); if (estado.usuario) pintarTablero(); $('#contactos').innerHTML = AREAS.map(([, a, p]) => `<div class="dato"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join(''); if (estado.comision) pintarPanel(); } catch (e) { console.warn(e); }
+  try { pintarNuevas(); pintarCobertura(); pintarTraslado(); pintarDatos(); if (estado.usuario) pintarTablero(); $('#contactos').innerHTML = AREAS.map(([, a, p]) => `<div class="dato"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join(''); if (estado.comision) pintarPanel(); } catch (e) { console.warn(e); }
 }
 
 // ---------- Ventana de edición ----------
