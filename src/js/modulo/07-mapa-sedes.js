@@ -286,7 +286,7 @@ function iniciarMapa() {
     return mapa.iniciar(VISTAS[estado.sede] || VISTAS.todas);
   }).then(() => {
     $('#mapaCarga').hidden = true; $('#mapaAviso').hidden = true; pintarLugares(); dibujarPines();
-    if (!capas.tresd) { mapa.modo2d(true); mapa.verTechos(false); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }   // si eligieron 2D antes de que cargara
+    if (!capas.tresd && !usaEsquema()) { mapa.modo2d(true); mapa.verTechos(false); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }   // si eligieron 2D antes de que cargara
     if (rutaActual) dibujarRuta(rutaActual, false);
     mapa.alTocar = alTocarMapa;
     return mapa;
@@ -481,6 +481,7 @@ function elegirSede(s, volar) {
   estado.sede = VISTAS[s] ? s : 'todas';
   $$('#sedes button').forEach(b => b.classList.toggle('on', b.dataset.s === estado.sede));
   if (mapa && mapa.listo) mapa.volar(VISTAS[estado.sede], 1600);
+  pintarEsquema();
   if (volar && miSalon()) mostrarLugar(lugarDeSalon(miSalon(), ASIGNA[estado.comision][0]).id);
   pintarLugares();
 }
@@ -495,8 +496,9 @@ const miSalon = () => estado.comision && ASIGNA[estado.comision] ? ASIGNA[estado
 const BOTON_CAPA = { seg: '#cSeg', vivo: '#cVivo', admin: '#cAdmin', tresd: '#c3d', salones: '#cSalones' };
 function activarCapa(c) {
   capas[c] = !capas[c]; $(BOTON_CAPA[c]).classList.toggle('on', capas[c]);
-  if (c === 'tresd') { $('#c3d').innerHTML = capas.tresd ? '🗺️ Ver en 2D' : '🧊 Ver en 3D'; $('#c3d').classList.remove('on'); if (!capas.tresd && !capas.salones) { capas.salones = true; $('#cSalones').classList.add('on'); if (mapa) mapa.verTechos(false); } }
-  if (c === 'tresd' && mapa && mapa.listo) { mapa.modo2d(!capas.tresd); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }
+  if (c === 'tresd' && usaEsquema()) { $('#c3d').innerHTML = capas.tresd ? '🗺️ Ver en 2D' : '🧊 Ver en 3D'; $('#c3d').classList.remove('on'); mostrarEsquema(!capas.tresd); }
+  else if (c === 'tresd') { $('#c3d').innerHTML = capas.tresd ? '🗺️ Ver en 2D' : '🧊 Ver en 3D'; $('#c3d').classList.remove('on'); if (!capas.tresd && !capas.salones) { capas.salones = true; $('#cSalones').classList.add('on'); if (mapa) mapa.verTechos(false); } }
+  if (c === 'tresd' && !usaEsquema() && mapa && mapa.listo) { mapa.modo2d(!capas.tresd); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }
   if (c === 'salones' && mapa) mapa.verTechos(!capas.salones);
   if (c === 'vivo') pintarVivoMapa();
   if (c === 'admin') toast(capas.admin ? 'Toca el mapa para poner un punto · toca un punto para cambiarlo' : 'Listo, ya no estás editando el mapa');
@@ -539,7 +541,7 @@ $('#leyenda').onclick = e => {
   catOculta.has(k) ? catOculta.delete(k) : catOculta.add(k); dibujarPines();
 };
 function dibujarPines() {
-  pintarLeyenda();
+  pintarLeyenda(); pintarEsquema();
   if (!mapa || !mapa.listo) return;
   mapa.quitarSi(id => id.startsWith('p:'));
   for (const q of estado.puntos.filter(x => verCat(x.cat) && x.ll)) {

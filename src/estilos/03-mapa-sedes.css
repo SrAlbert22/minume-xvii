@@ -74,3 +74,14 @@
   /* sin rumbo todavía (recién encendido el GPS): solo el punto, sin flecha */
   .yo-mapa.sin-rumbo i::after { display: none; }
   .yo-mapa i { transition: rotate .35s ease; }
+
+  /* Mapa 2D de Seguridad y Traslado (estilo del mapa del V CND) */
+  .mapa2d { position: absolute; inset: 0; z-index: 2; background: #cfe8a8; padding: 52px 8px 8px; overflow: auto; }
+  .mapa2d svg { width: 100%; height: 100%; display: block; border-radius: 14px; }
+  .mapa2d svg.editando { cursor: crosshair; }
+  .lienzo-caja.esquema { background: #cfe8a8; }
+  .lienzo-caja.esquema .visor3d, .lienzo-caja.esquema .capa-marcas, .lienzo-caja.esquema .capa-msg { display: none !important; }
+  .lienzo-caja.esquema .ficha { z-index: 3; }
+  .esq-punto, .esq-pin { cursor: pointer; } .esq-punto:focus, .esq-pin:focus { outline: none; }
+  .esq-punto.sel circle, .esq-pin.sel circle { stroke: #ffd23f; }
+  @media (max-width: 640px) { .mapa2d { padding-top: 92px; } }

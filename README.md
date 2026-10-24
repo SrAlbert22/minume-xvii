@@ -46,6 +46,7 @@ Para armar:
 
 ```bash
 python herramientas/datos_mapa.py
+python herramientas/plano_2d.py
 python herramientas/armar.py
 ```
 
