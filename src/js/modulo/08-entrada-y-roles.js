@@ -68,7 +68,7 @@ function aplicarRol() {
   $('.hero .chip').textContent = `${txt} · MINUME XVII`; $('.hero h1').textContent = H[0]; $('.hero .sub').textContent = H[1]; $('.hero .lead').textContent = H[2];
   $('#miPanel').hidden = true; $('#flujo').style.display = '';
   reordenar(u.rol);
-  if (window.pintarNivel) window.pintarNivel();
+  if ($('#cAdmin')) $('#cAdmin').hidden = !esDir();
   if (window.NAV_LISTA) modoApp();
   if (!capasListas) { capasListas = true; ({ seguridad: ['vivo'], traslado: ['vivo'], coordinacion: ['vivo'] }[u.rol] || []).forEach(c => { if (!capas[c]) activarCapa(c); }); if (u.rol === 'acreditacion') mostrarLugar('j-lobby', 'Acreditación · Lobby del Jaragua'); }
   pintarCompartir(); setTimeout(iniciarMapaVivo, 150); setTimeout(pedirPermisosAlEntrar, 900); espia(); pintarGafete(); pintarLlegadas(); pintarBienvenida(); pintarTablero(); pintarDelegados(); pintarCasos(); pintarCobertura(); pintarNuevas();

@@ -186,7 +186,8 @@ function crearVisor(caja, { capaHTML }) {
   const vv = new THREE.Vector3();
   function moverMarcas() {
     const w = caja.clientWidth, h = caja.clientHeight;
-    capaHTML.classList.toggle('lejos', camara.position.distanceTo(control.target) > 260);
+    const visto = camara.position.distanceTo(control.target) * Math.tan(camara.fov * Math.PI / 360) / Math.tan(19 * Math.PI / 180);
+    capaHTML.classList.toggle('lejos', visto > (v.dosD ? 480 : 260));   // en 2D los nombres se ven casi siempre: es para saber dónde queda cada cosa
     for (const m of v.marcas.values()) {
       vv.copy(m.p).project(camara);
       const ok = vv.z < 1 && Math.abs(vv.x) < 1.15 && Math.abs(vv.y) < 1.15;
@@ -217,9 +218,10 @@ function crearVisor(caja, { capaHTML }) {
     v.vuelo = { t0: performance.now(), dur: 700, p0: camara.position.clone(), p1: camara.position.clone().add(d), c0: control.target.clone(), c1: control.target.clone().add(d) }; pedir();
   };
   v.volar = (vista, dur = 1400) => {
-    const c = V3(vista.centro[0], vista.centro[1]), d = vista.dist * (v.cenital ? 1.05 : 1);
-    const alto = v.cenital ? 0.999 : vista.alto, r = d * Math.sqrt(1 - alto * alto);
-    const p = c.clone().add(new THREE.Vector3(Math.sin(vista.rumbo) * r, d * alto, Math.cos(vista.rumbo) * r));
+    // En 2D: recto hacia abajo, con el norte arriba y la lente cerrada (casi sin perspectiva), por eso va más lejos
+    const c = V3(vista.centro[0], vista.centro[1]), d = vista.dist * (v.dosD ? 2.9 : v.cenital ? 1.05 : 1);
+    const alto = v.dosD || v.cenital ? 0.9999 : vista.alto, r = d * Math.sqrt(1 - alto * alto), rumbo = v.dosD ? 0 : vista.rumbo;
+    const p = c.clone().add(new THREE.Vector3(Math.sin(rumbo) * r, d * alto, Math.cos(rumbo) * r));
     v.vuelo = { t0: performance.now(), dur, p0: camara.position.clone(), p1: p, c0: control.target.clone(), c1: c }; pedir();
   };
   v.ruta = puntos => {
@@ -236,6 +238,19 @@ function crearVisor(caja, { capaHTML }) {
   };
   v.quitar = id => { const m = v.marcas.get(id); if (m) { m.el.remove(); v.marcas.delete(id); } };
   v.quitarSi = filtro => { for (const id of [...v.marcas.keys()]) if (filtro(id)) v.quitar(id); };
+  // Vista 2D desde arriba (pedido de la dirección de Seguridad y Traslado: ver dónde queda cada cosa para asignar puntos y pasillos)
+  v.modo2d = si => {
+    v.dosD = si;
+    control.enableRotate = !si;
+    control.minPolarAngle = si ? 0 : 0; control.maxPolarAngle = si ? 0.0001 : Math.PI * 0.46;
+    control.screenSpacePanning = si;
+    control.mouseButtons = si ? { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN } : { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
+    control.touches = si ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN } : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+    control.minDistance = si ? 60 : 25; control.maxDistance = si ? 2600 : 900;
+    camara.fov = si ? 14 : 38; camara.far = si ? 6000 : 3000; camara.updateProjectionMatrix();
+    escena.fog.near = si ? 4000 : 700; escena.fog.far = si ? 9000 : 1500;
+    caja.classList.toggle('vista-2d', si); pedir();
+  };
   v.verTechos = si => { v.techos = si; if (v.modelo) v.modelo.children.forEach(m => { if (m.userData.techo) m.visible = si; }); pedir(); };
   v.aro = (id, xy, radio, color) => {
     let a = extras.getObjectByName(id);
@@ -271,6 +286,7 @@ function iniciarMapa() {
     return mapa.iniciar(VISTAS[estado.sede] || VISTAS.todas);
   }).then(() => {
     $('#mapaCarga').hidden = true; $('#mapaAviso').hidden = true; pintarLugares(); dibujarPines();
+    if (!capas.tresd) { mapa.modo2d(true); mapa.verTechos(false); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }   // si eligieron 2D antes de que cargara
     if (rutaActual) dibujarRuta(rutaActual, false);
     mapa.alTocar = alTocarMapa;
     return mapa;
@@ -292,7 +308,7 @@ function pintarLugares() {
     const coms = Object.entries(ASIGNA).filter(([, a]) => lugarDeSalon(a[1], a[0]).id === l.id).map(([c]) => c);
     el.innerHTML = `<i>${ICONO_TIPO[l.tipo] || '·'}</i><span>${esc(l.n)}${coms.length ? ` <small>${coms.join(', ')}</small>` : ''}</span>`;
     el.onclick = () => { $('#rDestino').value = l.id; fichaLugar(l, coms); };
-    const alto = l.tipo === 'salon' && l.sede === 'sheraton' ? (capas.salones ? 2 : 10) : l.tipo === 'lobby' ? 9 : 4;
+    const alto = !capas.tresd ? 1 : l.tipo === 'salon' && l.sede === 'sheraton' ? (capas.salones ? 2 : 10) : l.tipo === 'lobby' ? 9 : 4;
     mapa.marca('l:' + l.id, l.xy, el, alto);
   }
 }
@@ -479,7 +495,8 @@ const miSalon = () => estado.comision && ASIGNA[estado.comision] ? ASIGNA[estado
 const BOTON_CAPA = { seg: '#cSeg', vivo: '#cVivo', admin: '#cAdmin', tresd: '#c3d', salones: '#cSalones' };
 function activarCapa(c) {
   capas[c] = !capas[c]; $(BOTON_CAPA[c]).classList.toggle('on', capas[c]);
-  if (c === 'tresd' && mapa && mapa.listo) { mapa.cenital = !capas.tresd; mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }
+  if (c === 'tresd') { $('#c3d').innerHTML = capas.tresd ? '🗺️ Ver en 2D' : '🧊 Ver en 3D'; $('#c3d').classList.remove('on'); if (!capas.tresd && !capas.salones) { capas.salones = true; $('#cSalones').classList.add('on'); if (mapa) mapa.verTechos(false); } }
+  if (c === 'tresd' && mapa && mapa.listo) { mapa.modo2d(!capas.tresd); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }
   if (c === 'salones' && mapa) mapa.verTechos(!capas.salones);
   if (c === 'vivo') pintarVivoMapa();
   if (c === 'admin') toast(capas.admin ? 'Toca el mapa para poner un punto · toca un punto para cambiarlo' : 'Listo, ya no estás editando el mapa');
@@ -492,6 +509,7 @@ const CATS = {
   acreditacion: ['Acreditación', '🪪', '#a974ff'], movilidad: ['Movilización', '🚶', '#ff9a3c'], eventos: ['Eventos', '🎤', '#2f7bff'],
   seguridad: ['Seguridad', '🛡️', '#ff4d5e', 'seg'], salida: ['Salida de emergencia', '🟩', '#2fd38c', 'seg'], salud: ['Primeros auxilios', '⛑️', '#ff4d5e', 'seg'],
   encuentro: ['Punto de encuentro', '🟢', '#2fd38c', 'seg'], info: ['Información', 'ℹ️', '#45c8ff'], banos: ['Baños', '🚻', '#45c8ff'],
+  pasillo: ['Pasillo', '🚧', '#ffb547'], puesto: ['Puesto del staff', '👮', '#e53535'],
   comida: ['Comida', '🍽️', '#ffd23f'], agua: ['Agua', '💧', '#45c8ff'], prensa: ['Prensa', '📰', '#9aa8cc'], otro: ['Otro', '📍', '#9aa8cc'],
 };
 const cerca = (id, dx, dy) => aLL([LUGAR[id].xy[0] + dx, LUGAR[id].xy[1] + dy]);
@@ -502,7 +520,12 @@ const PUNTOS_INICIALES = [
   ['Punto de encuentro · Jaragua', 'encuentro', LUGAR['encuentro-jaragua'].ll], ['Punto de encuentro · Sheraton', 'encuentro', LUGAR['encuentro-sheraton'].ll],
   ['Salida hacia el Sheraton', 'movilidad', LUGAR['j-este'].ll], ['Comida · Malecón Terrace', 'comida', cerca('malecon-terrace', 6, -6)],
 ].map(([n, cat, ll], i) => ({ id: 'p' + i, n, cat, ll }));
-estado.puntos = leer('puntos-plantel', null) || PUNTOS_INICIALES.map(p => ({ ...p }));
+// Se guardan en la base («config.mapa»): todos los ven y solo la coordinación o la subdirección los cambian
+// (leerComp está más abajo en la página; al cargar se lee directo)
+const mapaGuardado = () => { try { return JSON.parse(localStorage.getItem('minume.compartido.config.mapa') || 'null'); } catch { return null; } };
+estado.puntos = mapaGuardado() || leer('puntos-plantel', null) || PUNTOS_INICIALES.map(p => ({ ...p }));
+const guardarPuntosMapa = () => guardarComp('config.mapa', estado.puntos);
+addEventListener('storage', e => { if (e.key === CLAVE_COMP('config.mapa')) { const l = mapaGuardado(); if (l && !editando && !moviendo) { estado.puntos = l; dibujarPines(); } } });
 const catOculta = new Set();
 const verCat = c => !catOculta.has(c) && (!CATS[c][3] || capas[CATS[c][3]]);
 let editando = null, moviendo = null, nuevo = null, catElegida = 'acreditacion';
@@ -544,15 +567,15 @@ $('#pGuardar').onclick = () => {
   const n = $('#pNombre').value.trim() || CATS[catElegida][0];
   if (editando) { const q = estado.puntos.find(x => x.id === editando); q.n = n; q.cat = catElegida; toast('Punto actualizado'); }
   else if (nuevo) { estado.puntos.push({ id: 'u' + Date.now(), n, cat: catElegida, ll: nuevo }); toast(`"${n}" agregado al mapa`); }
-  guardar('puntos-plantel', estado.puntos); cerrarEditor();
+  guardarPuntosMapa(); cerrarEditor();
 };
-$('#pBorrar').onclick = () => { estado.puntos = estado.puntos.filter(x => x.id !== editando); guardar('puntos-plantel', estado.puntos); toast('Punto borrado'); cerrarEditor(); };
+$('#pBorrar').onclick = () => { estado.puntos = estado.puntos.filter(x => x.id !== editando); guardarPuntosMapa(); toast('Punto borrado'); cerrarEditor(); };
 $('#pMover').onclick = () => { moviendo = editando; $('#modal').classList.remove('on'); toast('Toca en el mapa el nuevo lugar del punto'); };
 $('#pCancelar').onclick = () => { moviendo = null; cerrarEditor(); };
 function alTocarMapa(xy) {
   if (!capas.admin) return;
   const ll = aLL(xy).map(n => +n.toFixed(7));
-  if (moviendo) { const q = estado.puntos.find(x => x.id === moviendo); if (q) q.ll = ll; moviendo = null; editando = null; guardar('puntos-plantel', estado.puntos); dibujarPines(); toast('Punto movido'); return; }
+  if (moviendo) { const q = estado.puntos.find(x => x.id === moviendo); if (q) q.ll = ll; moviendo = null; editando = null; guardarPuntosMapa(); dibujarPines(); toast('Punto movido'); return; }
   nuevo = ll; abrirEditor(null);
 }
 
