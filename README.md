@@ -56,7 +56,7 @@ python herramientas/armar.py
 - Cabeceras en `dist/vercel.json`: Content-Security-Policy (solo se cargan los dominios que la página usa), HSTS, `X-Frame-Options: DENY`, `nosniff` y `Permissions-Policy` (ubicación y cámara solo para la misma página).
 - La llave de Supabase que va en `armar.py` es la pública (anon). Lo que protege los datos son las reglas de la base (`supabase/esquema.sql`): las tablas no se leen directo (RLS sin políticas) y todo pasa por funciones que piden la sesión.
 - Acceso con código personal: se verifica en el servidor (`minume_entrar`, con límite de intentos) y da un token de 30 días. Los códigos se guardan cifrados con bcrypt; Coordinación general los crea y anula desde «Datos del evento».
-- Dos niveles por código: voluntario (ve solo lo suyo) y dirección (ve todo su sistema, asigna turnos y refuerzos, edita datos y ve los Reportes por día de su equipo). Coordinación general ve todo y pone el nivel de cada código.
+- Niveles por código, como en la organización: voluntario (ve solo lo suyo), coordinación y subdirección (administran su equipo: ven todo su sistema, asignan turnos y refuerzos, editan datos y ven los Reportes por día). Coordinación general (Secretaría General) ve todo y pone el nivel de cada código. La base lo hace cumplir: los datos del evento solo los escribe la administración, la bitácora de cada equipo solo ese equipo y los códigos de prueba no administran códigos.
 - Las atenciones de Bienestar solo las leen Bienestar y Coordinación general. El chat solo deja leer y escribir en los canales de cada persona.
 - Antes del evento: anular los códigos de prueba y no guardar datos de salud reales mientras sigan activos.
 

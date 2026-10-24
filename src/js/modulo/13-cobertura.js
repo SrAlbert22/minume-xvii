@@ -178,6 +178,8 @@ function pintarCobertura() {
     : COB_PUNTOS.find(p => p.id === cobPlan).turnos.map((t, ti) => ({ p: COB_PUNTOS.find(p => p.id === cobPlan), t, quien: personasDelTurno(cobPlan, t, ti) }));
   $('#cobPlan').innerHTML = bloques.length ? bloques.map(({ p, t, quien }) => `<div class="cob-bloque${min >= t[0] && min < t[1] ? ' ahora' : min >= t[1] ? ' paso' : ''}"><b>${cobHora(t[0])} – ${cobHora(t[1])}</b><div>${cobPlan === 'mio' ? `<strong>${p.id} · ${esc(p.n)}</strong> · ` : ''}${esc(t[2])}<small>${quien}</small></div></div>`).join('') : '<p class="cob-sub">No tienes turnos asignados hoy.</p>';
 }
+// (el plano de puntos se vuelve a dibujar con los datos guardados; está en 13-plano-de-puntos.js)
+const repintarPlano = () => { try { pintarPlano(); } catch {} };
 // Quién va en cada turno: coordinación y seguridad agregan o quitan personas de la lista del staff
 const editaTurnos = () => typeof puedeEditar === 'function' && puedeEditar('turnos');
 function personasDelTurno(pid, t, ti) {

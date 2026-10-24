@@ -514,3 +514,110 @@ $function$;
 
 revoke execute on function public.minume_codigo_crear(text, text, text, text, text, text, text), public.minume_codigo_nivel(text, bigint, text) from public;
 grant execute on function public.minume_codigo_crear(text, text, text, text, text, text, text), public.minume_codigo_nivel(text, bigint, text) to anon, authenticated;
+
+-- =====================================================================
+-- 2026-10-24 (tarde) · Niveles con los nombres de la organización y seguridad en el servidor
+-- Secretaría General (Coordinación general) → Subdirección (subsecretarios) → Coordinación → voluntarios.
+-- Coordinación y subdirección administran su equipo. Los datos del evento (config.*) solo los escribe la administración,
+-- la bitácora de cada equipo solo ese equipo, y los códigos de prueba (publicados en la guía) no administran códigos.
+-- (Estas definiciones reemplazan las de arriba con el mismo nombre.)
+-- =====================================================================
+alter table public.minume_codigos drop constraint if exists minume_codigos_nivel_check;
+update public.minume_codigos set nivel = case when prefijo = 'CO' then 'coordinacion' else 'subdirector' end where nivel = 'direccion';
+alter table public.minume_codigos add constraint minume_codigos_nivel_check check (nivel in ('voluntario', 'coordinacion', 'subdirector'));
+
+create or replace function public.minume_es_admin(c public.minume_codigos) returns boolean
+language sql immutable set search_path = public as $$ select c.sistema = 'coordinacion' or c.rol = 'coordinacion' or c.nivel in ('coordinacion', 'subdirector') $$;
+create or replace function public.minume_es_prueba(c public.minume_codigos) returns boolean
+language sql immutable set search_path = public as $$ select c.ref like 'demo-%' or c.creado_por = 'Prueba' $$;
+revoke execute on function public.minume_es_admin(public.minume_codigos), public.minume_es_prueba(public.minume_codigos) from public, anon, authenticated;
+
+create or replace function public.minume_guardar(p_token text, p_clave text, p_valor jsonb)
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token); v jsonb; s text;
+begin
+  if p_clave !~ '^minume\.compartido\.[a-z0-9._-]{1,80}$' then raise exception 'Clave no permitida'; end if;
+  if not public.minume_puede_leer(c.rol, c.sistema, p_clave) then raise exception 'Sin permiso para esta información' using errcode = '42501'; end if;
+  if p_clave like 'minume.compartido.config.%' and not public.minume_es_admin(c) then raise exception 'Solo la coordinación o la subdirección editan los datos del evento' using errcode = '42501'; end if;
+  s := substring(p_clave from '^minume\.compartido\.(?:diario|archivo\.reporte)\.([a-z]+)\.');
+  if s is not null and s <> c.sistema and c.sistema <> 'coordinacion' then raise exception 'Esa bitácora es de otro equipo' using errcode = '42501'; end if;
+  if p_clave like 'minume.compartido.archivo.reporte.%' and not public.minume_es_admin(c) then raise exception 'Solo la administración guarda reportes' using errcode = '42501'; end if;
+  if p_valor is null then raise exception 'Valor vacío'; end if;
+  if pg_column_size(p_valor) > 800000 then raise exception 'Demasiado grande'; end if;
+  insert into public.minume_compartido as m (clave, valor, por, actualizado)
+  values (p_clave, p_valor, left(c.nombre, 80), now())
+  on conflict (clave) do update
+    set valor = case when p_clave like 'minume.compartido.config.%' then excluded.valor else public.minume_fusion(m.valor, excluded.valor) end,
+        por = excluded.por, actualizado = now()
+  returning valor into v;
+  perform realtime.send(jsonb_build_object('clave', p_clave), 'cambio', 'minume-compartido', false);
+  return v;
+end $function$;
+
+create or replace function public.minume_codigos_lista(p_token text)
+ returns jsonb language plpgsql stable security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general administra los códigos' using errcode = '42501'; end if;
+  if public.minume_es_prueba(c) then raise exception 'Con un código de prueba no se administran códigos. Entra con tu código personal.' using errcode = '42501'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object('id', k.id, 'ref', k.ref, 'prefijo', k.prefijo, 'nombre', k.nombre, 'rol', k.rol, 'sistema', k.sistema,
+    'area', k.area, 'comision', k.comision, 'acr', k.acr, 'activo', k.activo, 'creado', k.creado, 'creado_por', k.creado_por, 'usado', k.usado, 'nivel', k.nivel, 'yo', k.id = c.id)
+    order by k.activo desc, k.prefijo, k.nombre) from public.minume_codigos k), '[]'::jsonb);
+end $function$;
+
+create or replace function public.minume_codigo_crear(p_token text, p_prefijo text, p_nombre text, p_area text default null, p_comision text default null, p_acr text default null, p_nivel text default 'voluntario')
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token); t record; cod text; n public.minume_codigos; nv text;
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general crea códigos' using errcode = '42501'; end if;
+  if public.minume_es_prueba(c) then raise exception 'Con un código de prueba no se crean códigos. Entra con tu código personal.' using errcode = '42501'; end if;
+  select * into t from public.minume_tipo(upper(p_prefijo));
+  if t.rol is null then raise exception 'Tipo de código no válido'; end if;
+  if length(trim(coalesce(p_nombre, ''))) = 0 then raise exception 'Falta el nombre'; end if;
+  nv := case when p_nivel in ('voluntario', 'coordinacion', 'subdirector') then p_nivel when p_nivel = 'direccion' then 'subdirector' else 'voluntario' end;
+  if upper(p_prefijo) = 'CO' and nv = 'voluntario' then nv := 'coordinacion'; end if;
+  if upper(p_prefijo) = 'CG' then nv := 'subdirector'; end if;
+  cod := public.minume_generar_codigo(upper(p_prefijo));
+  insert into public.minume_codigos (prefijo, hash, nombre, rol, sistema, area, comision, acr, creado_por, nivel)
+  values (upper(p_prefijo), crypt(cod, gen_salt('bf', 8)), left(trim(p_nombre), 80), t.rol, t.sistema,
+          case when t.rol = 'bienestar' then coalesce(nullif(p_area, ''), 'fisico') end,
+          case when t.rol = 'asistencia' then nullif(left(trim(coalesce(p_comision, '')), 20), '') end,
+          nullif(left(trim(coalesce(p_acr, '')), 20), ''), c.nombre, nv)
+  returning * into n;
+  return jsonb_build_object('codigo', cod, 'id', n.id, 'nombre', n.nombre, 'rol', n.rol, 'sistema', n.sistema, 'nivel', n.nivel);
+end $function$;
+
+create or replace function public.minume_codigo_nivel(p_token text, p_id bigint, p_nivel text)
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token); k public.minume_codigos;
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general cambia el nivel' using errcode = '42501'; end if;
+  if public.minume_es_prueba(c) then raise exception 'Con un código de prueba no se cambian niveles. Entra con tu código personal.' using errcode = '42501'; end if;
+  if p_nivel not in ('voluntario', 'coordinacion', 'subdirector') then raise exception 'Nivel no válido'; end if;
+  if p_id = c.id then raise exception 'No puedes cambiar tu propio nivel'; end if;
+  select * into k from public.minume_codigos where id = p_id; if not found then raise exception 'Ese código no existe'; end if;
+  if k.prefijo = 'CG' then raise exception 'Coordinación general no cambia de nivel'; end if;
+  if k.prefijo = 'CO' and p_nivel = 'voluntario' then raise exception 'Ese código siempre es de coordinación o subdirección'; end if;
+  update public.minume_codigos set nivel = p_nivel where id = p_id;
+  return jsonb_build_object('id', p_id, 'nivel', p_nivel);
+end $function$;
+
+create or replace function public.minume_codigo_activo(p_token text, p_id bigint, p_activo boolean)
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general anula códigos' using errcode = '42501'; end if;
+  if public.minume_es_prueba(c) then raise exception 'Con un código de prueba no se anulan códigos. Entra con tu código personal.' using errcode = '42501'; end if;
+  if p_id = c.id and not p_activo then raise exception 'No puedes anular tu propio código'; end if;
+  update public.minume_codigos set activo = p_activo where id = p_id;
+  if not found then raise exception 'Ese código no existe'; end if;
+  if not p_activo then delete from public.minume_sesiones where codigo_id = p_id; end if;
+  return jsonb_build_object('id', p_id, 'activo', p_activo);
+end $function$;
+
+create or replace function public.minume_chat_canales(c public.minume_codigos)
+ returns text[] language sql immutable set search_path to 'public' as $function$
+  select case when c.sistema = 'coordinacion' then array['general','asistencia','seguridad','bienestar','eventos','coordinacion']
+              when c.rol = 'coordinacion' or c.nivel in ('coordinacion', 'subdirector') then array['general', c.sistema, 'coordinacion']
+              else array['general', c.sistema] end
+$function$;
