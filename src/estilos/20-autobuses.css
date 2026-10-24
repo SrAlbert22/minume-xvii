@@ -49,3 +49,30 @@
     .bus-cifra b { font-size: 28px; }
     .bus-parada .boton { flex: 1 1 auto; }
   }
+
+  /* ---------- Regionales: pase de lista ---------- */
+  .reg-todas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .reg-card { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: start; text-align: left; padding: 12px; border-radius: 16px; border: 1px solid var(--borde); border-left: 4px solid var(--borde); background: rgba(255, 255, 255, .03); color: #fff; cursor: pointer; font: inherit; }
+  .reg-card .chip { grid-column: 1 / -1; justify-self: start; }
+  .reg-card.completa { border-left-color: var(--verde); } .reg-card.faltan, .reg-card.parcial { border-left-color: var(--amarillo); } .reg-card.sin { border-left-color: var(--m-rojo); }
+  .reg-card.on { outline: 2px solid var(--equipo); outline-offset: 1px; }
+  .reg-num { font: 800 30px/1 var(--f-tit); min-width: 40px; text-align: center; color: var(--suave); }
+  .reg-info { display: grid; gap: 4px; min-width: 0; } .reg-info b { font-size: 15px; } .reg-info small { color: var(--suave); font-size: 12.5px; }
+  .reg-barra { display: block; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, .08); overflow: hidden; }
+  .reg-barra i { display: block; height: 100%; background: linear-gradient(90deg, var(--m-celeste), var(--verde)); border-radius: inherit; transition: width .3s; }
+  .reg-barra.grande { height: 10px; margin: 8px 0 12px; }
+  .reg-det-cab { display: flex; gap: 10px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+  .reg-cuenta { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .reg-cuenta b { font: 800 40px/1 var(--f-tit); } .reg-cuenta span { color: var(--suave); }
+  .reg-buscar { width: 100%; margin-bottom: 10px; }
+  .reg-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+  .reg-fila { display: flex; align-items: center; gap: 6px; border: 1px solid var(--borde); border-radius: 14px; padding-right: 6px; background: rgba(255, 255, 255, .03); }
+  .reg-fila.on { border-color: rgba(25, 211, 162, .45); background: rgba(25, 211, 162, .08); }
+  .reg-del { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 10px; background: none; border: 0; color: #fff; text-align: left; font: inherit; cursor: pointer; }
+  .reg-del:disabled { cursor: default; }
+  .reg-del b { display: block; font-size: 15px; } .reg-del small { color: var(--suave); font-size: 12.5px; }
+  .reg-check { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--suave); display: grid; place-items: center; font-weight: 800; color: #04121d; }
+  .reg-fila.on .reg-check { background: var(--verde); border-color: var(--verde); }
+  .reg-agregar { margin-top: 12px; } .reg-agregar summary { cursor: pointer; font-weight: 700; color: var(--equipo); }
+  .reg-agregar-f { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 6px; } .reg-agregar-f input, .reg-agregar-f select { flex: 1 1 180px; width: auto; }
+  @media (max-width: 640px) { .reg-lista, .reg-todas { grid-template-columns: 1fr; } }

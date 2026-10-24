@@ -25,6 +25,7 @@ function pintarModoObjeto() {
   $('#obDondeL').textContent = enc ? '¿Dónde lo encontraste?' : '¿Dónde cree que lo perdió?';
   $('#obSoloEnc').hidden = !enc; $('#obSoloBus').hidden = enc;
   $('#obGuardar').textContent = enc ? 'Registrar objeto encontrado' : 'Registrar búsqueda';
+  $('#obAyuda').textContent = enc ? 'Anota qué es, dónde estaba y dónde lo dejas guardado. Si alguien lo está buscando, la página le avisa.' : 'Anota qué perdió la persona y su nombre. Abajo, en «Guardados», revisa si ya apareció algo parecido.';
 }
 function pintarObjetos() {
   const sec = $('#objetos'); if (!sec || !estado.usuario) return;

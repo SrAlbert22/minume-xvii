@@ -8,3 +8,11 @@
   .check-linea input { width: 18px; height: 18px; accent-color: var(--verde); }
   .tiles.t3 { grid-template-columns: repeat(3, 1fr); }
   @media (max-width: 900px) { .tiles.t3 { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Los dos botones de Objetos perdidos, más claros */
+  .ob-modos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ob-modos button { display: grid; gap: 2px; justify-items: start; text-align: left; padding: 12px; border-radius: 16px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .04); color: #fff; font: inherit; cursor: pointer; }
+  .ob-modos button span { font-size: 22px; } .ob-modos button b { font-size: 15px; } .ob-modos button small { color: var(--suave); font-size: 12.5px; }
+  .ob-modos button.on { border-color: var(--equipo); background: color-mix(in srgb, var(--equipo) 16%, transparent); }
+  .ob-ayuda { color: var(--suave); font-size: 13px; margin: 8px 0 4px; }
+  @media (max-width: 420px) { .ob-modos { grid-template-columns: 1fr; } }

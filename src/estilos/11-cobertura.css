@@ -1,4 +1,6 @@
   /* Cobertura de áreas */
+  .cob-radio { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .cob-radio .mini.on { border-color: var(--verde); color: var(--verde); }
   .cob-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
   .cob-sub { color: var(--suave); font-size: 14px; margin: 6px 0 0; line-height: 1.5; }
   .cob-mio-t { font: 800 30px/1.05 'Barlow Condensed'; margin: 10px 0 2px; }

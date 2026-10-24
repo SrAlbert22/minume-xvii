@@ -2,11 +2,11 @@
 window.toastMinume = toast;
 const colorEquipo = () => SIS.color || (getComputedStyle(document.documentElement).getPropertyValue('--equipo') || '').trim() || '#0090fb';
 const baseReporte = (titulo, archivo, extra) => ({ titulo, archivo: `${archivo}-${hoyDR()}`, equipo: SIS.nombre, color: colorEquipo(), letra: SIS.letra || 'M', autor: estado.usuario ? estado.usuario.nombre : '', nota: 'Datos de ejemplo · MINUME XVII', ...extra });
-const tonoEstado = v => { v = String(v); return /Resuelto|Cubierto|En orden|Completa|Entregado|Apareció|Llegó|En su lugar|Terminó|En sesión|Sí, hay|Todos lo/.test(v) ? 'verde' : /Pendiente|Falta|Montando|Por empezar|Atrasada|Novedad|La buscan|Guardado|En el punto|Por llegar|receso/i.test(v) ? 'amarillo' : /Escalado|Sin nadie|Detenida|No pasó|problema|9-1-1|No vendrá/i.test(v) ? 'rojo' : null; };
+const tonoEstado = v => { v = String(v); return /Resuelto|Cubierto|En orden|Completa|Entregado|Apareció|Llegó|En su lugar|Terminó|En sesión|Sí, hay|Todos lo/.test(v) ? 'verde' : /Pendiente|Falta|Montando|Por empezar|Atrasada|Novedad|Incidencia|La buscan|Guardado|En el punto|Por llegar|receso/i.test(v) ? 'amarillo' : /Escalado|Sin nadie|Detenida|No pasó|problema|9-1-1|No vendrá/i.test(v) ? 'rojo' : null; };
 const REPORTES = {
   rendimiento() { const r = window.reporteRendimiento(); return baseReporte(r.titulo, 'rendimiento', { subtitulo: r.subtitulo, resumen: r.resumen, columnas: r.columnas, filas: r.filas }); },
   bitacora() {
-    const b = estado.bitacora;
+    const b = bitDelDia().map(x => x.b);
     return baseReporte(SISTEMA === 'asistencia' && estado.comision ? `Bitácora de comisión · ${estado.comision}` : 'Bitácora del equipo', 'bitacora', {
       resumen: [[b.length, 'registros'], [b.filter(x => x.estatus === 'pendiente').length, 'pendientes'], [b.filter(x => x.estatus === 'escalado').length, 'escalados'], [b.filter(x => (x.estatus || 'resuelto') === 'resuelto').length, 'resueltos']],
       columnas: [{ t: 'Hora', w: 11, pdf: 18 }, { t: 'Comisión', w: 11, pdf: 18 }, { t: 'Tipo', w: 22 }, { t: 'Situación', w: 46 }, { t: 'Impacto', w: 11, pdf: 18 }, { t: 'Acción', w: 30 }, { t: 'Área contactada', w: 24 }, { t: 'Estatus', w: 13, pdf: 22 }],
@@ -26,11 +26,11 @@ const REPORTES = {
   },
   rondas() {
     const l = leerRondas(), hoy = l.filter(x => diaDR(x.ini) === hoyDR()), filas = [];
-    for (const x of l.slice().sort((a, b) => a.ini - b.ini)) { const r = RUTAS.find(y => y.id === x.ruta); r.puntos.forEach((p, i) => { const m = x.marcas[i]; filas.push([r.n, x.por, `${horaDR(x.ini)}${x.fin ? ' a ' + horaDR(x.fin) : ' (en curso)'}`, p, m ? horaDR(m.t) : '', m ? (m.ok ? 'En orden' : 'Novedad') : 'No pasó', m ? m.nota : '']); }); }
+    for (const x of l.slice().sort((a, b) => a.ini - b.ini)) { const r = RUTAS.find(y => y.id === x.ruta); r.puntos.forEach((p, i) => { const m = x.marcas[i]; filas.push([r.n, x.por, `${horaDR(x.ini)}${x.fin ? ' a ' + horaDR(x.fin) : ' (en curso)'}`, p, m ? horaDR(m.t) : '', m ? (m.ok ? 'En orden' : 'Incidencia') : 'No pasó', m ? m.nota : '', m && m.gps ? textoGps(m.gps).replace('📍 ', '') : '']); }); }
     const est = RUTAS.map(r => estadoRuta(r, l));
     return baseReporte('Rondas de seguridad', 'rondas', {
-      resumen: [[hoy.length, 'rondas hoy'], [est.filter(e => e.k === 'atrasada').length, 'rutas atrasadas'], [hoy.reduce((s, x) => s + Object.values(x.marcas).filter(m => !m.ok).length, 0), 'novedades'], [hoy.filter(x => x.fin && Object.keys(x.marcas).length < RUTAS.find(r => r.id === x.ruta).puntos.length).length, 'rondas con puntos saltados']],
-      columnas: [{ t: 'Ruta', w: 28 }, { t: 'Hizo la ronda', w: 18 }, { t: 'Horario', w: 20, pdf: 30 }, { t: 'Punto', w: 22 }, { t: 'Hora', w: 10, pdf: 16 }, { t: 'Resultado', w: 12, pdf: 20 }, { t: 'Novedad', w: 40 }],
+      resumen: [[hoy.length, 'rondas hoy'], [est.filter(e => e.k === 'atrasada').length, 'rutas atrasadas'], [hoy.reduce((s, x) => s + Object.values(x.marcas).filter(m => !m.ok).length, 0), 'incidencias'], [hoy.filter(x => x.fin && Object.keys(x.marcas).length < RUTAS.find(r => r.id === x.ruta).puntos.length).length, 'rondas con puntos saltados']],
+      columnas: [{ t: 'Ruta', w: 28 }, { t: 'Hizo la ronda', w: 18 }, { t: 'Horario', w: 20, pdf: 30 }, { t: 'Punto', w: 22 }, { t: 'Hora', w: 10, pdf: 16 }, { t: 'Resultado', w: 12, pdf: 20 }, { t: 'Incidencia', w: 36 }, { t: 'Comprobación GPS', w: 30 }],
       filas, estadoCol: 5, estado: tonoEstado,
     });
   },

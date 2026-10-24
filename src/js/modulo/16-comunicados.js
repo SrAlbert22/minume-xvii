@@ -35,20 +35,25 @@ $('#bannerCom').addEventListener('click', e => {
   const b = e.target.closest('[data-leido]'); if (b) { marcarLeido(b.dataset.leido); toast('Marcado como leído'); return; }
   if (e.target.closest('[data-ver-com]')) $('#comunicados').scrollIntoView();
 });
+// Mandan comunicados: Coordinación general (a todos o a un equipo) y la dirección de cada equipo (solo a su equipo).
+// Cada jefe ve solo los comunicados de su subsecretaría; el panorama general es de Coordinación general.
+const puedeComunicar = () => esDir();
 function pintarComunicados() {
   const sec = $('#comunicados'); if (!sec || !estado.usuario) return;
-  $('#comRedactar').hidden = !esCoord(); $('#comExp').hidden = !esCoord();
+  $('#comRedactar').hidden = !puedeComunicar(); $('#comExp').hidden = !puedeComunicar();
+  const sel = $('#comPara');
+  if (SISTEMA !== 'coordinacion' && SISTEMA !== 'todo' && sel && (sel.options.length !== 1 || sel.value !== SISTEMA)) sel.innerHTML = `<option value="${SISTEMA}">${esc(COM_PARA[SISTEMA] || SIS.nombre)}</option>`;
   const yo = yoCod();
-  const l = leerComs().filter(m => esCoord() || comParaMi(m)).sort((a, b) => b.t - a.t).slice(0, 30);
+  const l = leerComs().filter(m => comParaMi(m)).sort((a, b) => b.t - a.t).slice(0, 30);
   $('#comLista').innerHTML = l.length ? l.map(m => {
     const [tt, cl] = COM_TIPO[m.tipo] || COM_TIPO.info, le = m.leidos || {}, mio = m.deCod === yo;
     let pie;
-    if (esCoord()) {
+    if (puedeComunicar()) {
       const r = rosterCom(m.para), ya = r.filter(p => le[p.c]), faltan = r.filter(p => !le[p.c]);
       pie = `<div class="com-leido"><div class="cv-barra"><i style="width:${r.length ? ya.length / r.length * 100 : 0}%;background:var(--verde)"></i></div><b>Leído por ${ya.length} de ${r.length}</b>${faltan.length ? `<small>Falta: ${faltan.map(p => esc(p.n)).join(', ')}</small>` : '<small style="color:var(--verde)">Todos lo leyeron</small>'}</div>`;
     } else pie = mio ? '<small class="com-meta">Lo enviaste tú</small>' : le[yo] ? `<small class="com-meta" style="color:var(--verde)">✓ Leído a las ${horaDR(le[yo].t)}</small>` : `<button class="boton" data-leido="${m.id}">Leído</button>`;
     return `<div class="tarjeta com-item ${cl}"><div class="com-cab"><span class="chip ${cl}">${tt}</span><span class="chip">Para: ${COM_PARA[m.para] || m.para}</span><small class="com-meta">${esc(m.de)} · ${diaDR(m.t) === hoyDR() ? horaDR(m.t) : diaDR(m.t) + ' ' + horaDR(m.t)}</small></div><p class="com-texto">${esc(m.texto)}</p>${pie}</div>`;
-  }).join('') : `<div class="tarjeta"><b>No hay comunicados todavía</b><p class="cob-sub">${esCoord() ? 'Escribe el primero arriba o usa una plantilla.' : 'Cuando dirección envíe algo, te aparece aquí y arriba de la pantalla.'}</p></div>`;
+  }).join('') : `<div class="tarjeta"><b>No hay comunicados todavía</b><p class="cob-sub">${puedeComunicar() ? 'Escribe el primero arriba o usa una plantilla.' : 'Cuando dirección envíe algo, te aparece aquí y arriba de la pantalla.'}</p></div>`;
 }
 $('#comPlant').innerHTML = COM_PLANTILLAS.map(([n], i) => `<button class="mini" data-pl="${i}">${n}</button>`).join('');
 $('#comPlant').onclick = e => { const b = e.target.closest('[data-pl]'); if (!b) return; const [, t, x] = COM_PLANTILLAS[+b.dataset.pl]; $('#comTexto').value = x; $('#comTipo').value = t; $('#comTexto').focus(); };

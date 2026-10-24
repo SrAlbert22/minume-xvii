@@ -5,7 +5,9 @@
     <div class="tiles" id="obTiles"></div>
     <div class="rejilla r2" style="margin-top:14px">
       <div class="tarjeta">
-        <div class="pestanas" id="obModo"><button data-m="encontrado" class="on">Encontré algo</button><button data-m="buscado">Alguien perdió algo</button></div>
+        <span class="eti" style="display:block;margin-bottom:6px">¿Qué pasó?</span>
+        <div class="ob-modos" id="obModo"><button data-m="encontrado" class="on" type="button"><span>🎒</span><b>Yo encontré algo</b><small>Lo tengo en la mano y lo voy a guardar</small></button><button data-m="buscado" type="button"><span>🔎</span><b>Alguien perdió algo</b><small>Un delegado o alguien del staff me pregunta por algo suyo</small></button></div>
+        <p class="ob-ayuda" id="obAyuda"></p>
         <label for="obQue" id="obQueL">¿Qué encontraste?</label>
         <input id="obQue" placeholder="Ejemplo: celular negro con funda azul">
         <div class="rejilla r2" style="gap:10px">
@@ -13,9 +15,9 @@
           <div><label for="obCom">Comisión (si se sabe)</label><select id="obCom"></select></div>
         </div>
         <label for="obDonde" id="obDondeL">¿Dónde lo encontraste?</label>
-        <input id="obDonde" list="obLugares" placeholder="Salón, pasillo, autobús…"><datalist id="obLugares"></datalist>
+        <input id="obDonde" list="obLugares" placeholder="Salón, pasillo, lobby…"><datalist id="obLugares"></datalist>
         <div id="obSoloEnc"><label for="obGuarda">¿Dónde queda guardado?</label><select id="obGuarda"></select></div>
-        <div id="obSoloBus" hidden><label for="obQuien">¿Quién lo busca?</label><input id="obQuien" placeholder="Nombre de la persona"></div>
+        <div id="obSoloBus" hidden><label for="obQuien">¿Quién lo busca? (el dueño)</label><input id="obQuien" placeholder="Nombre de la persona que lo perdió"></div>
         <button class="boton" id="obGuardar" style="margin-top:12px">Registrar</button>
       </div>
       <div class="tarjeta">

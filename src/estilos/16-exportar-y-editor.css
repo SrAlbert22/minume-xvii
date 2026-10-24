@@ -49,6 +49,7 @@
   .cod-nuevo { display: grid; gap: 6px; padding: 14px; border-radius: 14px; border: 1px dashed var(--verde); background: rgba(47, 211, 140, .08); margin-bottom: 12px; }
   .cod-grande { font: 800 34px 'Barlow Condensed'; letter-spacing: 3px; color: var(--verde); }
   .cod-nuevo small { color: var(--suave); }
+  .cod-acc { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
   .cod-herr { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
   .cod-herr input { flex: 1; }
   .cod-lista { display: grid; gap: 6px; max-height: 360px; overflow: auto; }

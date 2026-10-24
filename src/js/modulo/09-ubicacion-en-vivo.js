@@ -6,6 +6,12 @@ function empezarCompartir(m) {
   let hasta;
   if (m === 'cierre') { const d = new Date(); d.setHours(19, 0, 0, 0); if (d < new Date()) d.setDate(d.getDate() + 1); hasta = +d; } else hasta = Date.now() + m * 60000;
   estado.compartir = { hasta }; guardar('compartir', estado.compartir);
+  iniciarGps();
+  pintarCompartir(); toast('📡 Estás compartiendo tu ubicación en vivo');
+}
+// Escucha el GPS del teléfono (también al volver a abrir la página si la persona seguía compartiendo)
+function iniciarGps() {
+  if (reloj_gps !== null) return;
   if (navigator.geolocation && isSecureContext) {
     const lecturas = [];
     reloj_gps = navigator.geolocation.watchPosition(p => {
@@ -15,7 +21,37 @@ function empezarCompartir(m) {
       miPos = [la / w, lo / w]; miPos.real = true; miPos.acc = Math.round(Math.min(...lecturas.map(l => l[2])));
     }, () => { miPos = null; if (!avisoGps) { avisoGps = true; toast('No diste permiso de ubicación: en la demo usamos una posición de ejemplo'); } }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   }
-  pintarCompartir(); toast('📡 Estás compartiendo tu ubicación en vivo');
+}
+if (compartiendo()) iniciarGps();
+
+// ---------- Al entrar: pedir la ubicación y las alertas de una vez ----------
+// Pedido en la reunión del 21 de octubre: que nadie tenga que ir a Cobertura o a «En vivo» para hacerlo.
+// Sale una vez al día (o cuando falta alguno de los dos), como el permiso que pide el teléfono.
+function pedirPermisosAlEntrar() {
+  if (!estado.usuario || $('#permisos')) return;
+  const conUbicacion = !!$('#ubicacion') && !$('#ubicacion').classList.contains('sin-permiso');
+  const faltaUbic = conUbicacion && !compartiendo(), faltaAlertas = !alertasOn();
+  let hoy; try { hoy = hoyDR(); } catch { hoy = ''; }
+  if ((!faltaUbic && !faltaAlertas) || leer('permisosDia', '') === hoy) return;
+  const v = document.createElement('div'); v.id = 'permisos'; v.className = 'permisos'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-labelledby', 'permTit');
+  const pintar = () => {
+    const u = conUbicacion && compartiendo(), a = alertasOn();
+    v.innerHTML = `<div class="permisos-caja"><span class="chip">Antes de empezar</span><h3 id="permTit">Dos cosas para tu turno</h3>
+      <p>Así el equipo te encuentra si hace falta y los SOS suenan en tu teléfono. Lo puedes apagar cuando quieras.</p>
+      ${conUbicacion ? `<button type="button" class="perm-op${u ? ' hecho' : ''}" data-perm="ubic"><span class="perm-ic">📡</span><span><b>${u ? 'Compartiendo tu ubicación' : 'Compartir mi ubicación'}</b><small>${u ? 'Se apaga sola al cierre del día. Solo la ve el staff autorizado.' : 'Hasta el cierre de hoy. Solo la ve el staff autorizado.'}</small></span><span class="perm-ok">${u ? '✓' : 'Activar'}</span></button>` : ''}
+      <button type="button" class="perm-op${a ? ' hecho' : ''}" data-perm="alertas"><span class="perm-ic">🔔</span><span><b>${a ? 'Alertas activas' : 'Activar las alertas'}</b><small>Los SOS y los comunicados urgentes van a sonar en este teléfono.</small></span><span class="perm-ok">${a ? '✓' : 'Activar'}</span></button>
+      <div class="permisos-pie"><button type="button" class="boton" data-perm="listo">${(u || !conUbicacion) && a ? 'Listo, empezar' : 'Ahora no'}</button></div></div>`;
+  };
+  pintar();
+  v.addEventListener('click', e => {
+    const b = e.target.closest('[data-perm]'); if (!b) return;
+    if (b.dataset.perm === 'ubic' && !compartiendo()) empezarCompartir('cierre');
+    else if (b.dataset.perm === 'alertas' && !alertasOn()) activarAlertas();
+    else if (b.dataset.perm === 'listo') { guardar('permisosDia', hoy); v.remove(); return; }
+    pintar();
+  });
+  document.body.appendChild(v);
+  setTimeout(() => { const b = v.querySelector('.perm-op:not(.hecho)') || v.querySelector('.boton'); if (b) b.focus(); }, 50);
 }
 function dejarCompartir() { if (reloj_gps !== null && navigator.geolocation) navigator.geolocation.clearWatch(reloj_gps); reloj_gps = null; estado.compartir = null; guardar('compartir', null); pintarCompartir(); }
 $('#duraciones').onclick = e => { const b = e.target.closest('button'); if (b) empezarCompartir(b.dataset.m === 'cierre' ? 'cierre' : +b.dataset.m); };

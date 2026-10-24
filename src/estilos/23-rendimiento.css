@@ -40,3 +40,20 @@
     .rd-listas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .rd-filtros .exp-btns { margin-left: 0; }
   }
+
+  /* ---------- Reportes por día ---------- */
+  .rep-dias { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+  .rep-dia { flex: none; display: grid; gap: 2px; min-width: 120px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .04); color: #fff; text-align: left; cursor: pointer; font: inherit; position: relative; }
+  .rep-dia small { color: var(--suave); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+  .rep-dia b { font: 800 22px/1.1 var(--f-tit); text-transform: capitalize; }
+  .rep-dia i { position: absolute; top: 8px; right: 10px; font-style: normal; font-size: 11px; color: var(--verde); font-weight: 700; }
+  .rep-dia.on { border-color: var(--equipo); background: color-mix(in srgb, var(--equipo) 16%, transparent); }
+  .rep-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .rep-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 8px; } .rep-filtros input, .rep-filtros select { flex: 1 1 200px; width: auto; }
+  .rep-areas { flex-wrap: wrap; }
+  .rep-lista { display: grid; gap: 6px; margin-top: 8px; max-height: 70vh; overflow: auto; }
+  .rep-fila { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: start; padding: 9px 10px; border-radius: 12px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .02); }
+  .rep-fila small { display: block; color: var(--suave); font-size: 12.5px; margin-top: 2px; }
+  .rep-hora { font: 700 15px var(--f-tit); color: var(--suave); }
+  .rep-quien { color: var(--equipo); font-weight: 600; }
+  @media (max-width: 640px) { .rep-fila { grid-template-columns: 52px 1fr; } .rep-fila .chip { grid-column: 2; justify-self: start; } }

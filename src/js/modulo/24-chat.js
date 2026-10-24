@@ -11,7 +11,7 @@ function misCanalesChat() {
   const u = estado.usuario; if (!u) return [];
   const sis = SIS_DE_CODIGO(u.codigo) || SISTEMA;
   if (sis === 'coordinacion') return Object.keys(CANALES_CHAT);
-  return ['general', sis, ...(u.rol === 'coordinacion' ? ['coordinacion'] : [])].filter((k, i, l) => CANALES_CHAT[k] && l.indexOf(k) === i);
+  return ['general', sis, ...(esDir() ? ['coordinacion'] : [])].filter((k, i, l) => CANALES_CHAT[k] && l.indexOf(k) === i);
 }
 // Cada persona tiene su color (siempre el mismo) y su círculo con iniciales, para saber de un vistazo quién escribió
 const COLORES_PERSONA = ['#00b5ff', '#ff7a8a', '#00fdef', '#ffbeff', '#ffd23f', '#7cf29a', '#ff9a3c', '#b69cff', '#5fd0ff', '#ff6fd8', '#c8f05a', '#ffb4a2'];

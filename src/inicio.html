@@ -262,8 +262,8 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
     </div>
     <div class="caja">
       <div class="cab-caja">
-        <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M5 16V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10M5 11h14M5 16h14v2H5zM8 18v2M16 18v2"/></svg>
-        <h3>Autobuses de participantes</h3>
+        <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 11a3 3 0 0 0 0-6M21 20a6 6 0 0 0-4-5.6"/></svg>
+        <h3>Regionales</h3>
       </div>
       <div id="buses"></div>
       <h4 class="sub-viajes">A pie entre las sedes</h4>
@@ -352,7 +352,7 @@ const guardarLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); 
 const ENLACES = window.MINUME_ENLACES;
 const EQUIPOS = {
   asistencia: { nombre: 'Subsecretaría de Asistencia', corto: 'Asistencia', letra: 'A', color: '#00b5ff', quienes: 'Asistentes de comisión y su coordinación' },
-  seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y autobuses' },
+  seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y regionales' },
   bienestar: { nombre: 'Bienestar', corto: 'Bienestar', letra: 'B', color: '#00fdef', quienes: 'Bienestar físico y emocional' },
   eventos: { nombre: 'Eventos y Protocolo', corto: 'Eventos', letra: 'E', color: '#ffbeff', quienes: 'Ceremonias, montajes e invitados' },
   coordinacion: { nombre: 'Coordinación general', corto: 'Coordinación', letra: 'C', color: '#0090fb', quienes: 'Ve todo el evento en un solo lugar' }
@@ -373,7 +373,7 @@ const ATAJOS = {
     ['cobertura', 'cobertura', 'Cobertura de áreas', 'Quién está en cada punto'],
     ['rondas', 'lista', 'Rondas', 'Marcar cada punto'],
     ['seguridad', 'escudo', 'Avisos y SOS', 'Responder y despachar'],
-    ['traslado', 'bus', 'Autobuses', 'Participantes a su hotel'],
+    ['traslado', 'gente', 'Regionales', 'Pase de lista de cada regional'],
     ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
     ['mapa', 'mapa', 'Mapa 3D', 'Salones y puntos']
   ],
@@ -427,15 +427,8 @@ const VIAJES = [
   { h: '13:45', de: 'malecon', a: 'sheraton', nota: 'Regreso a sesiones', estado: 'A tiempo' },
   { h: '18:30', de: 'sheraton', a: 'jaragua', nota: 'Cierre de jornada en el Jaragua', estado: 'A tiempo' }
 ];
-// Hoteles de hospedaje y autobuses de participantes (lo mismo que en Seguridad y Traslado; ahí se editan)
-const HOTELES = [
-  { id: 'HJ', n: 'Renaissance Jaragua', pax: 0, apie: true }, { id: 'HS', n: 'Sheraton Santo Domingo', pax: 0, apie: true },
-  { id: 'H3', n: 'Hotel por confirmar', pax: 45, apie: false }
-];
-const BUSES = [
-  { id: 'B1-ida', h: '7:00', tipo: 'Ida', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', pax: 45 },
-  { id: 'B1-regreso', h: '18:45', tipo: 'Regreso', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', pax: 45 }
-];
+// Regionales: no hay autobuses. Aquí solo se cuenta cuántas regionales ya pasaron lista (el detalle lo ve la dirección en Seguridad y Traslado)
+let NUM_REGIONALES = 18;
 const RESPONSABLES = [
   ['Coordinación de Asistencia', 'Beatriz Pérez'], ['Subsecretario de Asistencia', 'Baldwin Ureña'], ['Gestión de Voluntarios', 'Adrian Triunfer'],
   ['Bienestar', 'Laura Melián'], ['Seguridad / Traslado', 'Brahyant Pérez'], ['Eventos / Protocolo', 'Daniela Sirit'], ['Soporte SGL', 'Kervin Diaz']
@@ -469,8 +462,7 @@ function aplicarConfigInicio() {
   }
   const sed = c('sedes'); if (sed) sed.forEach(r => { if (SEDES[r.id] && r.nombre) SEDES[r.id] = r.nombre; });
   const bus = c('autobuses'); if (bus && !vieja(bus)) VIAJES.splice(0, VIAJES.length, ...bus.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
-  const hot = c('hoteles'); if (hot) HOTELES.splice(0, HOTELES.length, ...hot);
-  const bs = c('buses'); if (bs && !vieja(bs.map(b => ({ sede: b.sede })))) BUSES.splice(0, BUSES.length, ...bs.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
+  const rg = c('regionales'); if (rg && rg.length) NUM_REGIONALES = rg.length;
   const res = c('responsables'); if (res) RESPONSABLES.splice(0, RESPONSABLES.length, ...res.map(r => [r.area, r.persona]));
   $('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join('');
 }
@@ -484,9 +476,9 @@ $('#sim').addEventListener('click', () => {
   pintarTodo();
 });
 const DIAS = [
-  { f: '2026-11-14', t: 'Vie 14', d: 'Montaje y acreditación', ini: '2026-11-14T15:00:00-04:00', fin: '2026-11-14T23:00:00-04:00' },
-  { f: '2026-11-15', t: 'Sáb 15', d: 'Sesiones', ini: '2026-11-15T07:00:00-04:00', fin: '2026-11-15T20:00:00-04:00' },
-  { f: '2026-11-16', t: 'Dom 16', d: 'Sesiones y clausura', ini: '2026-11-16T07:00:00-04:00', fin: '2026-11-16T20:00:00-04:00' }
+  { f: '2026-11-14', t: 'Sáb 14', d: 'Montaje y acreditación', ini: '2026-11-14T15:00:00-04:00', fin: '2026-11-14T23:00:00-04:00' },
+  { f: '2026-11-15', t: 'Dom 15', d: 'Sesiones', ini: '2026-11-15T07:00:00-04:00', fin: '2026-11-15T20:00:00-04:00' },
+  { f: '2026-11-16', t: 'Lun 16', d: 'Sesiones y clausura', ini: '2026-11-16T07:00:00-04:00', fin: '2026-11-16T20:00:00-04:00' }
 ];
 // Todo se calcula en hora de República Dominicana, aunque el teléfono tenga otra zona horaria
 const TZ = 'America/Santo_Domingo';
@@ -530,12 +522,12 @@ function pintarEstado() {
   }
   const s = hasta('2026-11-15T08:00:00-04:00'), [s1, su1, s2, su2] = fmt(s);
   const abiertos = leerAvisos().filter(a => !CERRADO(a)).length;
-  const bus = enEvento(d) ? BUSES.find(b => aMin(b.h) >= minutos(d) - 5) : BUSES[0];
+  const rgs = regionalesHoy(d);
   const nSedes = new Set(Object.values(ASIGNA).map(a => a[0])).size;
   $('#cuentas').innerHTML = [
     [s ? `${s1}<small style="font-size:16px"> ${su1}</small> ${s2}<small style="font-size:16px"> ${su2}</small>` : 'En curso', s ? 'para la primera sesión' : 'sesiones'],
     [String(abiertos), abiertos === 1 ? 'aviso abierto entre equipos' : 'avisos abiertos entre equipos'],
-    [bus ? bus.h : '—', bus ? `${enEvento(d) ? 'próximo autobús' : 'primer autobús de cada día'} · ${esc(bus.unidad)}` : enEvento(d) ? 'sin autobuses pendientes hoy' : 'autobuses por confirmar'],
+    [`${rgs.listas}<small style="font-size:16px">/${NUM_REGIONALES}</small>`, `regionales con lista confirmada · ${rgs.momento}`],
     [String(COMISIONES.length), `comisiones en ${nSedes} ${nSedes === 1 ? 'hotel' : 'hoteles'}`]
   ].map(([b, t]) => `<div class="cuenta"><b>${b}</b><span>${t}</span></div>`).join('');
   $('#dias').innerHTML = DIAS.map(x => {
@@ -656,18 +648,16 @@ $('#bPrueba').addEventListener('click', () => {
 
 /* ---------- Traslados ---------- */
 function proximoViaje(d) { if (!enEvento(d)) return null; const m = minutos(d); return VIAJES.find(v => aMin(v.h) >= m - 5) || null; }
+// Cuántas regionales ya confirmaron el pase de lista (mañana: bajar al lobby; noche: regreso). Sin nombres: eso lo ve la dirección.
+function regionalesHoy(d) {
+  const pase = (leerLS('minume.compartido.regpase', {}) || {})[fechaLocal(d)] || {}, momento = minutos(d) < 15 * 60 ? 'manana' : 'noche';
+  const regs = Object.values(pase).map(r => r[momento]).filter(Boolean);
+  return { listas: regs.filter(x => x.ok && x.ok.t).length, empezadas: regs.filter(x => Object.values(x.m || {}).some(m => m.t)).length, faltan: regs.filter(x => x.ok && x.ok.t && x.ok.n < x.ok.total).length, momento: momento === 'manana' ? 'mañana' : 'noche' };
+}
 function pintarBuses() {
-  const d = ahora(), ev = enEvento(d), m = minutos(d), vv = leerLS('minume.compartido.buses', null), vivo = vv && vv.dia === fechaLocal(d) && vv.v ? vv.v : {};
-  const hotel = c => HOTELES.find(h => h.id.toLowerCase() === String(c).trim().toLowerCase()) || { id: String(c).trim().toUpperCase(), n: String(c).trim() };
-  $('#buses').innerHTML = BUSES.length ? BUSES.map(b => {
-    const s = vivo[b.id] || {}, ps = String(b.paradas || '').split(',').filter(x => x.trim()).map(hotel), ida = b.tipo === 'Ida';
-    const hechas = ps.filter(p => s.p && s.p[p.id] && s.p[p.id].t), bajaron = hechas.reduce((a, p) => a + (+s.p[p.id].n || 0), 0);
-    const fin = ida ? !!(s.sede && s.sede.t) : ps.length && hechas.length === ps.length;
-    const est = fin ? `<span class="chip verde">${ida ? 'En la sede' : `En su hotel · ${bajaron}`}</span>` : s.salio || hechas.length ? '<span class="chip amar">En camino</span>'
-      : ev && m > aMin(b.h) + 10 ? `<span class="chip rojo">Retrasado ${m - aMin(b.h)} min</span>` : '<span class="chip">Programado</span>';
-    const ruta = ida ? `${ps.map(p => p.n).join(', ')} → ${SEDES[b.sede] || b.sede}` : `${SEDES[b.sede] || b.sede} → ${ps.map(p => p.n).join(', ')}`;
-    return `<div class="viaje"><span class="h">${b.h}</span><div><b>${esc(b.unidad)} · ${ida ? 'Ida' : 'Regreso'}</b><small>${esc(ruta)}${b.pax ? ` · ${b.pax} participantes` : ''}</small></div>${est}</div>`;
-  }).join('') : '<p style="margin:0;color:var(--suave);font-size:13px">Todavía no hay autobuses. Traslado los agrega en su sistema.</p>';
+  const r = regionalesHoy(ahora()), pct = Math.round(r.listas * 100 / Math.max(1, NUM_REGIONALES));
+  $('#buses').innerHTML = `<p style="margin:0 0 10px;color:var(--suave);font-size:13px">No hay autobuses: cada regional llega con su encargado y cada mañana y cada noche pasa lista en su sistema.</p>
+    <div class="viaje"><span class="h">${r.listas}/${NUM_REGIONALES}</span><div><b>Regionales con lista confirmada</b><small>Pase de lista de la ${r.momento}${r.empezadas > r.listas ? ` · ${r.empezadas - r.listas} pasando lista ahora` : ''}${r.faltan ? ` · ${r.faltan} confirmaron con gente que falta` : ''}</small></div><span class="chip ${pct === 100 ? 'verde' : r.listas ? 'amar' : ''}">${pct}%</span></div>`;
 }
 function pintarViajes() {
   pintarBuses();
@@ -706,7 +696,7 @@ function pintarEquipos(mo) {
     seguridad: [
       [abiertos.filter(a => a.para === 'seguridad' && esSOS(a)).length, 'SOS activos', 'alerta'],
       [abiertos.filter(a => a.para === 'seguridad').length, 'avisos abiertos', ''],
-      (b => [b ? b.h : '—', b ? 'próximo autobús' : 'sin autobuses hoy', ''])(enEvento(d) ? BUSES.find(x => aMin(x.h) >= minutos(d) - 5) : BUSES[0])
+      (r => [`${r.listas}/${NUM_REGIONALES}`, `regionales listas · ${r.momento}`, r.listas === NUM_REGIONALES ? 'ok' : ''])(regionalesHoy(d))
     ],
     bienestar: [
       [abiertos.filter(a => a.para === 'bienestar').length, 'casos abiertos', 'alerta'],

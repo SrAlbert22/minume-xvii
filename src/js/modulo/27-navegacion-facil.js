@@ -14,7 +14,7 @@ const ICO = {
   bus: 'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 11h14M5 17h14v2H5zM8 19v2M16 19v2M8 14h.01M16 14h.01',
   libro: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 5v16', check: 'M4 12l5 5L20 6', reloj: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
   grupo: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 11a3 3 0 1 0 0-6M3 20a6 6 0 0 1 12 0M15 14a6 6 0 0 1 6 6', tarjeta: 'M3 6h18v12H3zM3 10h18M7 15h4',
-  grafico: 'M4 20V10M10 20V4M16 20v-8M22 20H2', cruz: 'M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z', ajustes: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M8 10v4M16 16v4',
+  grafico: 'M4 20V10M10 20V4M16 20v-8M22 20H2', reporte: 'M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5', cruz: 'M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z', ajustes: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M8 10v4M16 16v4',
 };
 const ico = (k, t = 26) => `<svg viewBox="0 0 24 24" width="${t}" height="${t}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICO[k] || ICO.estrella}"/></svg>`;
 // sección: [ícono, nombre corto, para qué sirve, en una línea]
@@ -27,8 +27,8 @@ const SECCION = {
   objetos: ['bolso', 'Objetos perdidos', 'Lo encontrado y lo que se busca'], programa: ['calendario', 'Programa', 'Qué pasa hoy y a qué hora'],
   delegados: ['qr', 'Delegados', 'Acreditación de delegados'], mapa: ['mapa', 'Mapa y rutas', 'Cómo llegar a cada salón'],
   ubicacion: ['pin', 'Equipo en vivo', 'Dónde está el equipo'], seguridad: ['alerta', 'Seguridad', 'Código del evento y protocolo'],
-  traslado: ['bus', 'Autobuses', 'Participantes a su hotel y salidas a pie'], incidencias: ['aviso', 'Reportar algo', 'Una incidencia, en un minuto'],
-  bitacora: ['libro', 'Bitácora', 'Lo importante del día'], listas: ['check', 'Mis listas', 'Lo que te toca ahora'],
+  traslado: ['grupo', 'Regionales', 'Pase de lista y salidas a pie'], incidencias: ['aviso', 'Reportar algo', 'Una incidencia, en un minuto'],
+  bitacora: ['libro', 'Bitácora', 'Lo importante del día'], reportes: ['reporte', 'Reportes', 'Todo lo que pasó, día por día'], listas: ['check', 'Mis listas', 'Lo que te toca ahora'],
   sesion: ['reloj', 'Durante la sesión', 'Sesión y transiciones'], 'mi-comision': ['grupo', 'Mi comisión', 'La ficha de tu comisión'],
   empieza: ['persona', 'Mi rol', 'Qué hace un asistente'], bolsillo: ['tarjeta', 'Guía de bolsillo', 'Contactos y respuestas rápidas'],
   cumplimiento: ['grafico', 'Cumplimiento', 'Avance de las comisiones'], casos: ['corazon', 'Casos', 'Casos de bienestar en vivo'],
@@ -61,8 +61,9 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   const url = urlSeccion(id), ahora = location.pathname + location.search + location.hash;
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
-  if (id === 'traslado' && window.BUSES_LISTO) pintarBuses();
+  if (id === 'traslado' && window.REGIONALES_LISTO) pintarRegionales();
   if (id === 'rendimiento' && window.RENDIMIENTO_LISTO) cargarRendimiento();
+  if (id === 'reportes' && window.REPORTES_DIA_LISTO) pintarReportes();
   if (window.CHAT_LISTO) { if (id === 'chat') { ajustarChatAlto(); cargarChat(true); const l = chat.msgs[chat.canal]; if (l && l.length) marcarVistoChat(chat.canal, l[l.length - 1].id); } pintarInsigniasChat(); }
   // instalada como app la ventana ya dice «MINUME XVII · equipo»: el título solo dice la sección
   document.title = matchMedia('(display-mode: standalone)').matches ? (SECCION[id] ? SECCION[id][1] : 'Inicio') : `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
@@ -124,3 +125,5 @@ Element.prototype.scrollIntoView = function (...a) {
 // listo: desde aquí el inicio de sesión ya arma la navegación
 window.NAV_LISTA = true;
 modoApp();
+// En el teléfono las explicaciones se ven en dos líneas; al tocarlas se abren completas
+document.addEventListener('click', e => { const l = e.target.closest('main > section > .lead'); if (l && matchMedia('(max-width: 640px)').matches) l.classList.toggle('abierto'); });

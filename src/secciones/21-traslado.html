@@ -1,16 +1,14 @@
   <!-- 06 · Traslado (NUEVO) -->
   <section id="traslado" data-roles="traslado seguridad coordinacion">
-    <div class="titulo-sec"><span class="n">06</span><h2>Autobuses y traslados</h2></div>
-    <p class="lead">Los autobuses llevan a los participantes de su hotel a la sede y de vuelta. Aquí se cuenta quién abordó, se marca cuando sale y cuando llega a cada hotel, para confirmar que todos llegaron.</p>
-    <div class="ed-botones" style="margin-bottom:14px"><button class="boton sec ed-abrir" type="button" data-editar="buses" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar autobuses</button><button class="boton sec ed-abrir" type="button" data-editar="hoteles" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar hoteles</button></div>
-    <div class="bus-cifras" id="busCifras"></div>
-    <div class="tarjeta" style="margin-top:14px">
-      <div class="bus-cab"><b class="cond" style="font-size:24px">Autobuses de hoy</b><span class="chip" id="busHoy"></span></div>
-      <div id="busLista" class="bus-lista"></div>
-    </div>
-    <div class="tarjeta" style="margin-top:14px">
-      <div class="bus-cab"><b class="cond" style="font-size:24px">¿Llegaron a su hotel?</b><small>Se marca solo cuando el autobús llega a cada parada</small></div>
-      <div id="hotLista" class="hot-lista"></div>
+    <div class="titulo-sec"><span class="n">06</span><h2>Regionales y traslados</h2><span class="chip amarillo">NUEVO</span></div>
+    <p class="lead">No hay autobuses: cada regional llega con su encargado y después todo es a pie. Cada mañana y cada noche el encargado pasa lista: toca a cada delegado cuando baja al lobby y al final confirma «regional completa». La dirección ve las 18 regionales de un vistazo.</p>
+    <div class="ed-botones" style="margin-bottom:14px"><button class="boton sec ed-abrir" type="button" data-editar="regionales" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Regionales y encargados</button><button class="boton sec ed-abrir" type="button" data-editar="delegadosReg" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Delegados por regional</button></div>
+    <div class="pestanas" id="regMomento" style="margin-bottom:12px"><button type="button" data-m="manana">☀️ Mañana · bajar al lobby</button><button type="button" data-m="noche">🌙 Noche · regreso</button></div>
+    <div class="bus-cifras" id="regCifras" hidden></div>
+    <div class="tarjeta reg-detalle" id="regDetalle" style="margin-top:14px"></div>
+    <div class="tarjeta" id="regTodasCaja" style="margin-top:14px" hidden>
+      <div class="bus-cab"><b class="cond" style="font-size:24px">Las 18 regionales</b><small>Solo la dirección ve esta lista · toca una para ver quién falta</small></div>
+      <div class="reg-todas" id="regTodas"></div>
     </div>
     <h3 class="bus-sub">A pie entre las sedes</h3>
     <p style="color:var(--suave);margin:-4px 0 12px">El Jaragua, el Sheraton y el Malecón Terrace quedan a pocos minutos caminando. Estas son las salidas de los grupos entre sedes.</p>
@@ -30,6 +28,6 @@
     <div class="tarjeta" style="margin-top:14px">
       <b class="cond" style="font-size:24px">Salidas a pie del día</b>
       <div id="tLista" style="margin-top:10px"></div>
-      <p style="color:var(--suave);font-size:12.5px;margin:8px 0 0">Coordinación cambia el estado de cada salida ("A tiempo", "Retrasado", "Salió") y todos lo ven al instante.</p>
+      <p style="color:var(--suave);font-size:12.5px;margin:8px 0 0">La dirección cambia el estado de cada salida ("A tiempo", "Retrasado", "Salió") y todos lo ven al instante.</p>
     </div>
   </section>

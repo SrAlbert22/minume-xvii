@@ -25,19 +25,35 @@ function estadoRuta(r, l) {
   return pasaron > r.cada ? { k: 'atrasada', t: `Atrasada ${pasaron - r.cada} min`, cl: 'rojo', ult } : { k: 'dia', t: `Al día · próxima en ${r.cada - pasaron} min`, cl: 'verde', ult };
 }
 let rnNovedad = null, rnConfirmar = false;
+// Comprobación por GPS al marcar cada punto (sin QR): se guarda cerca de qué lugar del mapa estaba la persona y a cuántos metros.
+// Si el teléfono no da la ubicación, la marca queda igual pero dice «sin GPS» y la dirección lo ve.
+function gpsRonda(listo) {
+  const medir = (ll, acc) => {
+    let mejor = null; for (const l of MAPA.lugares) { if (l.tipo === 'referencia' || !l.ll) continue; const d = distM(ll, l.ll); if (!mejor || d < mejor.d) mejor = { d, l }; }
+    if (!mejor) return listo({ no: 'sin mapa' });
+    listo({ d: Math.round(mejor.d), lugar: mejor.l.n, sede: mejor.l.sede, prec: Math.round(acc || 0), ok: mejor.d <= Math.max(60, (acc || 0) + 30) });
+  };
+  if (miPos && miPos.real) return medir(miPos, miPos.acc);
+  if (!navigator.geolocation || !isSecureContext) return listo({ no: 'sin GPS' });
+  navigator.geolocation.getCurrentPosition(p => medir([p.coords.latitude, p.coords.longitude], p.coords.accuracy), e => listo({ no: e && e.code === 1 ? 'sin permiso de ubicación' : 'sin señal de GPS' }), { enableHighAccuracy: true, timeout: 9000, maximumAge: 30000 });
+}
+const textoGps = g => !g ? '' : g.no ? `📍 ${g.no}` : g.ok ? `📍 comprobado · cerca de ${g.lugar} (${g.d} m)` : `📍 lejos: a ${g.d} m de ${g.lugar}`;
+function marcarConGps(idRonda, i) {
+  gpsRonda(g => { const l = leerRondas(), x = l.find(y => y.id === idRonda); if (!x || !x.marcas[i]) return; x.marcas[i].gps = g; guardarComp('rondas', l); pintarRondas(); if (!g.no && !g.ok) toast(`Tu GPS te ubica a ${g.d} m de ${g.lugar}: la dirección lo verá`); });
+}
 const miRonda = l => l.find(x => !x.fin && x.porCod === yoCod());
 function pintarRondas() {
   const sec = $('#rondas'); if (!sec || !estado.usuario || !['seguridad', 'coordinacion'].includes(estado.usuario.rol)) return;
   if (escribiendo(sec)) return;
   const l = leerRondas(), hoy = l.filter(x => diaDR(x.ini) === hoyDR()), est = RUTAS.map(r => ({ r, e: estadoRuta(r, l) }));
   const novedades = hoy.reduce((s, x) => s + Object.values(x.marcas).filter(m => !m.ok).length, 0), atras = est.filter(x => x.e.k === 'atrasada').length;
-  $('#rnTiles').innerHTML = tile(est.filter(x => x.e.k === 'dia' || x.e.k === 'curso').length + '/' + est.filter(x => x.e.k !== 'fuera').length, 'rutas al día', '#2fd38c', '') + tile(atras, atras === 1 ? 'ruta atrasada' : 'rutas atrasadas', '#ff4d5e', '', atras > 0) + tile(novedades, 'novedades hoy', '#ffd23f', '', novedades > 0) + tile(hoy.length, 'rondas hechas hoy', '#45c8ff', '');
+  $('#rnTiles').innerHTML = tile(est.filter(x => x.e.k === 'dia' || x.e.k === 'curso').length + '/' + est.filter(x => x.e.k !== 'fuera').length, 'rutas al día', '#2fd38c', '') + tile(atras, atras === 1 ? 'ruta atrasada' : 'rutas atrasadas', '#ff4d5e', '', atras > 0) + tile(novedades, 'incidencias hoy', '#ffd23f', '', novedades > 0) + tile(hoy.length, 'rondas hechas hoy', '#45c8ff', '');
   const act = miRonda(l);
   if (act) {
     const r = RUTAS.find(x => x.id === act.ruta), hechos = Object.keys(act.marcas).length, faltan = r.puntos.length - hechos;
     $('#rnActiva').innerHTML = `<div class="tarjeta rn-activa"><div class="cob-cab" style="margin-bottom:6px"><span class="chip verde">Tu ronda en curso</span><b class="cond" style="font-size:26px">${r.n}</b><small class="cob-sub" style="margin:0 0 0 auto">Empezaste ${haceMin(act.ini)} · ${hechos} de ${r.puntos.length} puntos</small></div>
-      ${r.puntos.map((p, i) => { const mk = act.marcas[i]; return `<div class="rn-punto ${mk ? (mk.ok ? 'ok' : 'nov') : ''}"><span class="rn-num">${i + 1}</span><div><b>${p}</b>${mk ? `<small>${mk.ok ? 'En orden' : 'Novedad: ' + esc(mk.nota)} · ${horaDR(mk.t)}</small>` : ''}${rnNovedad === i ? `<div class="rn-nov"><input id="rnNovTxt" placeholder="Qué encontraste"><button class="mini on" data-rn="nov-ok" data-i="${i}">Guardar</button><button class="mini" data-rn="nov-no">Cancelar</button></div>` : ''}</div>
-        ${mk ? `<button class="mini" data-rn="deshacer" data-i="${i}">Cambiar</button>` : `<span class="rn-acc"><button class="mini on" data-rn="ok" data-i="${i}">En orden</button><button class="mini" data-rn="nov" data-i="${i}">Novedad</button></span>`}</div>`; }).join('')}
+      ${r.puntos.map((p, i) => { const mk = act.marcas[i]; return `<div class="rn-punto ${mk ? (mk.ok ? 'ok' : 'nov') : ''}"><span class="rn-num">${i + 1}</span><div><b>${p}</b>${mk ? `<small>${mk.ok ? 'En orden' : 'Incidencia: ' + esc(mk.nota)} · ${horaDR(mk.t)}${mk.gps ? ' · ' + textoGps(mk.gps) : ' · 📍 midiendo…'}</small>` : ''}${rnNovedad === i ? `<div class="rn-nov"><input id="rnNovTxt" placeholder="Qué encontraste"><button class="mini on" data-rn="nov-ok" data-i="${i}">Guardar</button><button class="mini" data-rn="nov-no">Cancelar</button></div>` : ''}</div>
+        ${mk ? `<button class="mini" data-rn="deshacer" data-i="${i}">Cambiar</button>` : `<span class="rn-acc"><button class="mini on" data-rn="ok" data-i="${i}">En orden</button><button class="mini" data-rn="nov" data-i="${i}">Incidencia</button></span>`}</div>`; }).join('')}
       ${rnConfirmar && faltan ? `<div class="cob-asignar" style="margin-top:12px"><span>Te ${faltan === 1 ? 'falta 1 punto' : `faltan ${faltan} puntos`}. Si los saltas, dirección lo verá.</span><button class="mini on" data-rn="fin-si">Terminar igual</button><button class="mini" data-rn="fin-no">Seguir la ronda</button></div>` : `<button class="boton" data-rn="fin" style="margin-top:12px">Terminar ronda</button>`}</div>`;
   } else $('#rnActiva').innerHTML = '';
   const puede = estado.usuario.rol === 'seguridad';
@@ -47,11 +63,12 @@ function pintarRondas() {
       <small class="cob-sub" style="margin:0">Cada ${r.cada} min · ${r.puntos.length} puntos: ${r.puntos.join(', ')}</small>
       ${u ? `<div class="dato" style="margin-top:8px"><span>Última</span><b>${esc(u.por)} · ${u.fin ? 'terminó ' + haceMin(u.fin) : 'empezó ' + haceMin(u.ini)}</b></div>
         <div class="dato"><span>Puntos</span><b style="color:${saltos ? 'var(--amarillo)' : 'var(--verde)'}">${Object.keys(u.marcas).length} de ${r.puntos.length}${saltos ? ` · saltó: ${r.puntos.filter((_, i) => !u.marcas[i]).join(', ')}` : ''}</b></div>
-        ${nov.length ? `<div class="dato"><span>Novedad</span><b style="color:var(--amarillo)">${nov.map(m => esc(m.nota)).join(' · ')}</b></div>` : ''}` : ''}
+        ${(() => { const ms = Object.values(u.marcas), g = ms.filter(m => m.gps && m.gps.ok).length; return ms.length ? `<div class="dato"><span>GPS</span><b style="color:${g === ms.length ? 'var(--verde)' : 'var(--amarillo)'}">${g} de ${ms.length} puntos comprobados</b></div>` : ''; })()}
+        ${nov.length ? `<div class="dato"><span>Incidencia</span><b style="color:var(--amarillo)">${nov.map(m => esc(m.nota)).join(' · ')}</b></div>` : ''}` : ''}
       ${puede && !act && e.k !== 'curso' ? `<button class="boton sec" data-rn="empezar" data-r="${r.id}" style="margin-top:10px">Empezar esta ronda</button>` : ''}</div>`;
   }).join('');
   const h = hoy.slice().sort((a, b) => b.ini - a.ini);
-  $('#rnHist').innerHTML = h.length ? h.map(x => { const r = RUTAS.find(y => y.id === x.ruta), n = Object.values(x.marcas).filter(m => !m.ok); return `<div class="pedido"><div><b>${r.n} · ${esc(x.por)}</b><small>${horaDR(x.ini)}${x.fin ? ' a ' + horaDR(x.fin) : ' · en curso'} · ${Object.keys(x.marcas).length} de ${r.puntos.length} puntos${n.length ? ' · Novedad: ' + n.map(m => esc(m.nota)).join(' · ') : ''}</small></div>${n.length ? '<span class="chip amarillo">Novedad</span>' : x.fin && Object.keys(x.marcas).length < r.puntos.length ? '<span class="chip amarillo">Saltó puntos</span>' : '<span class="chip verde">Completa</span>'}</div>`; }).join('') : '<p class="cob-sub">Todavía no hay rondas hoy.</p>';
+  $('#rnHist').innerHTML = h.length ? h.map(x => { const r = RUTAS.find(y => y.id === x.ruta), n = Object.values(x.marcas).filter(m => !m.ok); return `<div class="pedido"><div><b>${r.n} · ${esc(x.por)}</b><small>${horaDR(x.ini)}${x.fin ? ' a ' + horaDR(x.fin) : ' · en curso'} · ${Object.keys(x.marcas).length} de ${r.puntos.length} puntos${n.length ? ' · Incidencia: ' + n.map(m => esc(m.nota)).join(' · ') : ''}</small></div>${n.length ? '<span class="chip amarillo">Incidencia</span>' : x.fin && Object.keys(x.marcas).length < r.puntos.length ? '<span class="chip amarillo">Saltó puntos</span>' : '<span class="chip verde">Completa</span>'}</div>`; }).join('') : '<p class="cob-sub">Todavía no hay rondas hoy.</p>';
 }
 $('#rondas').addEventListener('click', e => {
   const b = e.target.closest('[data-rn]'); if (!b) return;
@@ -62,13 +79,13 @@ $('#rondas').addEventListener('click', e => {
     l.push({ id: nuevoId('rd'), ruta: r.id, por: yoNombre(), porCod: yoCod(), ini: ahoraMs(), fin: null, marcas: {} }); guardarComp('rondas', l);
     registrar('🛡️ Ronda', `Empezó la ronda ${r.n}`); toast('Ronda empezada: marca cada punto al pasar'); rnConfirmar = false;
   } else if (!act) return;
-  else if (a === 'ok') { act.marcas[i] = { t: ahoraMs(), ok: true, nota: '' }; guardarComp('rondas', l); }
+  else if (a === 'ok') { act.marcas[i] = { t: ahoraMs(), ok: true, nota: '' }; guardarComp('rondas', l); marcarConGps(act.id, i); }
   else if (a === 'nov') { rnNovedad = i; pintarRondas(); setTimeout(() => $('#rnNovTxt') && $('#rnNovTxt').focus(), 30); return; }
   else if (a === 'nov-no') rnNovedad = null;
   else if (a === 'nov-ok') {
     const t = ($('#rnNovTxt').value || '').trim(); if (!t) return $('#rnNovTxt').focus();
-    const r = RUTAS.find(x => x.id === act.ruta); act.marcas[i] = { t: ahoraMs(), ok: false, nota: t }; guardarComp('rondas', l); rnNovedad = null;
-    registrar('⚠️ Novedad en ronda', `${r.n} · ${r.puntos[i]}: ${t}`); toast('Novedad guardada; dirección ya la ve');
+    const r = RUTAS.find(x => x.id === act.ruta); act.marcas[i] = { t: ahoraMs(), ok: false, nota: t }; guardarComp('rondas', l); rnNovedad = null; marcarConGps(act.id, i);
+    registrar('⚠️ Incidencia en ronda', `${r.n} · ${r.puntos[i]}: ${t}`, { estatus: 'pendiente', area: 'Seguridad' }); toast('Incidencia guardada: la dirección ya la ve');
   } else if (a === 'deshacer') { delete act.marcas[i]; guardarComp('rondas', l); }
   else if (a === 'fin' || a === 'fin-si') {
     const r = RUTAS.find(x => x.id === act.ruta), faltan = r.puntos.length - Object.keys(act.marcas).length;

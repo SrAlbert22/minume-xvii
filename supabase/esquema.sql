@@ -413,3 +413,104 @@ grant execute on function public.minume_entrar(text), public.minume_datos(text, 
 -- insert into public.minume_codigos (prefijo, hash, nombre, rol, sistema, creado_por)
 -- values ('CG', extensions.crypt('CG-XXXXXX', extensions.gen_salt('bf', 8)), 'Tu nombre', 'coordinacion', 'coordinacion', 'inicio');
 -- Con ese código entras a Coordinación general y desde «Datos del evento → Códigos de acceso» creas los de todo el staff.
+
+-- =====================================================================
+-- 2026-10-24 · Nivel de acceso (reunión del 21 de octubre)
+-- «voluntario» ve solo lo suyo; «direccion» (subsecretarios y quien dirige cada equipo) ve todo SU sistema,
+-- asigna personas, turnos y refuerzos y edita datos. Coordinación general (sistema coordinacion) ve todo.
+-- =====================================================================
+alter table public.minume_codigos add column if not exists nivel text not null default 'voluntario' check (nivel in ('voluntario', 'direccion'));
+update public.minume_codigos set nivel = 'direccion' where prefijo in ('CO', 'CG');
+
+create or replace function public.minume_entrar(p_codigo text)
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare v_ip text := public.minume_ip(); c public.minume_codigos; tok text; v timestamptz := now() + interval '30 days';
+begin
+  delete from public.minume_intentos where en < now() - interval '1 day';
+  delete from public.minume_sesiones where vence < now();
+  if (select count(*) from public.minume_intentos where not ok and ip = v_ip and en > now() - interval '15 minutes') >= 8
+     or (select count(*) from public.minume_intentos where not ok and en > now() - interval '15 minutes') >= 300 then
+    return jsonb_build_object('error', 'Demasiados intentos. Espera 15 minutos y vuelve a probar.');
+  end if;
+  p_codigo := upper(trim(coalesce(p_codigo, '')));
+  if p_codigo ~ '^[A-Z]{2}-[A-Z0-9]{4,8}$' then
+    select * into c from public.minume_codigos where activo and prefijo = left(p_codigo, 2) and hash = crypt(p_codigo, hash) limit 1;
+  end if;
+  if c.id is null then
+    insert into public.minume_intentos (ok, ip) values (false, v_ip);
+    return jsonb_build_object('error', 'Ese código no existe o fue anulado. Pídele uno a coordinación.');
+  end if;
+  insert into public.minume_intentos (ok, ip) values (true, v_ip);
+  tok := encode(gen_random_bytes(32), 'hex');
+  insert into public.minume_sesiones (token_hash, codigo_id, vence) values (encode(digest(tok, 'sha256'), 'hex'), c.id, v);
+  update public.minume_codigos set usado = now() where id = c.id;
+  return jsonb_build_object('token', tok, 'vence', v, 'ref', c.ref, 'nombre', c.nombre, 'rol', c.rol, 'sistema', c.sistema,
+    'area', c.area, 'comision', c.comision, 'acr', c.acr, 'prefijo', c.prefijo, 'nivel', c.nivel);
+end $function$;
+
+create or replace function public.minume_datos(p_token text, p_claves text[] default null::text[])
+ returns jsonb language plpgsql stable security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  return jsonb_build_object(
+    'filas', coalesce((select jsonb_agg(jsonb_build_object('clave', m.clave, 'valor', m.valor)) from public.minume_compartido m
+                       where (p_claves is null or m.clave = any(p_claves)) and public.minume_puede_leer(c.rol, c.sistema, m.clave)), '[]'::jsonb),
+    'ocultas', coalesce((select jsonb_agg(k) from unnest(array['minume.compartido.atenciones', 'minume.compartido.evaluaciones']) k
+                       where not public.minume_puede_leer(c.rol, c.sistema, k)), '[]'::jsonb),
+    'personal', case when p_claves is null then coalesce((select jsonb_agg(jsonb_build_object('ref', k.ref, 'nombre', k.nombre, 'rol', k.rol, 'sistema', k.sistema, 'nivel', k.nivel) order by k.nombre)
+                       from public.minume_codigos k where k.activo), '[]'::jsonb) end,
+    'yo', jsonb_build_object('ref', c.ref, 'nombre', c.nombre, 'rol', c.rol, 'sistema', c.sistema, 'area', c.area, 'comision', c.comision, 'acr', c.acr, 'nivel', c.nivel));
+end $function$;
+
+create or replace function public.minume_codigos_lista(p_token text)
+ returns jsonb language plpgsql stable security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general administra los códigos' using errcode = '42501'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object('id', k.id, 'ref', k.ref, 'prefijo', k.prefijo, 'nombre', k.nombre, 'rol', k.rol, 'sistema', k.sistema,
+    'area', k.area, 'comision', k.comision, 'acr', k.acr, 'activo', k.activo, 'creado', k.creado, 'creado_por', k.creado_por, 'usado', k.usado, 'nivel', k.nivel, 'yo', k.id = c.id)
+    order by k.activo desc, k.prefijo, k.nombre) from public.minume_codigos k), '[]'::jsonb);
+end $function$;
+
+drop function if exists public.minume_codigo_crear(text, text, text, text, text, text);
+create or replace function public.minume_codigo_crear(p_token text, p_prefijo text, p_nombre text, p_area text default null, p_comision text default null, p_acr text default null, p_nivel text default 'voluntario')
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token); t record; cod text; n public.minume_codigos;
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general crea códigos' using errcode = '42501'; end if;
+  select * into t from public.minume_tipo(upper(p_prefijo));
+  if t.rol is null then raise exception 'Tipo de código no válido'; end if;
+  if length(trim(coalesce(p_nombre, ''))) = 0 then raise exception 'Falta el nombre'; end if;
+  cod := public.minume_generar_codigo(upper(p_prefijo));
+  insert into public.minume_codigos (prefijo, hash, nombre, rol, sistema, area, comision, acr, creado_por, nivel)
+  values (upper(p_prefijo), crypt(cod, gen_salt('bf', 8)), left(trim(p_nombre), 80), t.rol, t.sistema,
+          case when t.rol = 'bienestar' then coalesce(nullif(p_area, ''), 'fisico') end,
+          case when t.rol = 'asistencia' then nullif(left(trim(coalesce(p_comision, '')), 20), '') end,
+          nullif(left(trim(coalesce(p_acr, '')), 20), ''), c.nombre,
+          case when upper(p_prefijo) in ('CO', 'CG') or p_nivel = 'direccion' then 'direccion' else 'voluntario' end)
+  returning * into n;
+  return jsonb_build_object('codigo', cod, 'id', n.id, 'nombre', n.nombre, 'rol', n.rol, 'sistema', n.sistema, 'nivel', n.nivel);
+end $function$;
+
+create or replace function public.minume_codigo_nivel(p_token text, p_id bigint, p_nivel text)
+ returns jsonb language plpgsql security definer set search_path to 'public', 'extensions' as $function$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  if c.sistema <> 'coordinacion' then raise exception 'Solo Coordinación general cambia el nivel' using errcode = '42501'; end if;
+  if p_nivel not in ('voluntario', 'direccion') then raise exception 'Nivel no válido'; end if;
+  if p_id = c.id then raise exception 'No puedes cambiar tu propio nivel'; end if;
+  update public.minume_codigos set nivel = case when prefijo in ('CO', 'CG') then 'direccion' else p_nivel end where id = p_id;
+  if not found then raise exception 'Ese código no existe'; end if;
+  return jsonb_build_object('id', p_id, 'nivel', p_nivel);
+end $function$;
+
+-- La dirección de cada equipo también entra al canal de coordinadores del chat
+create or replace function public.minume_chat_canales(c public.minume_codigos)
+ returns text[] language sql immutable set search_path to 'public' as $function$
+  select case when c.sistema = 'coordinacion' then array['general','asistencia','seguridad','bienestar','eventos','coordinacion']
+              when c.rol = 'coordinacion' or c.nivel = 'direccion' then array['general', c.sistema, 'coordinacion']
+              else array['general', c.sistema] end
+$function$;
+
+revoke execute on function public.minume_codigo_crear(text, text, text, text, text, text, text), public.minume_codigo_nivel(text, bigint, text) from public;
+grant execute on function public.minume_codigo_crear(text, text, text, text, text, text, text), public.minume_codigo_nivel(text, bigint, text) to anon, authenticated;

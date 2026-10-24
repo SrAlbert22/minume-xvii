@@ -7,7 +7,7 @@ Páginas para el staff de MINUME XVII (14 al 16 de noviembre, Renaissance Jaragu
 | Sistema | Para quién | Lo principal |
 |---|---|---|
 | Asistencia | Asistentes de comisión y coordinación de Asistencia | Su comisión, checklists, pedidos al salón, conteo de delegados |
-| Seguridad y Traslado | Seguridad y movilización | Cobertura de puntos y turnos, rondas, SOS, equipo en vivo, movilizaciones a pie |
+| Seguridad y Traslado | Seguridad y movilización | Cobertura de puntos y turnos, rondas con GPS, regionales con pase de lista, SOS, equipo en vivo, movilizaciones a pie |
 | Bienestar | Bienestar físico y emocional | Casos y atenciones, protocolos, punto de bienestar |
 | Eventos y Protocolo | Eventos | Avance de cada evento e invitados especiales |
 | Coordinación general | Coordinación | Todo lo anterior y los reportes en PDF y Excel |
@@ -56,11 +56,12 @@ python herramientas/armar.py
 - Cabeceras en `dist/vercel.json`: Content-Security-Policy (solo se cargan los dominios que la página usa), HSTS, `X-Frame-Options: DENY`, `nosniff` y `Permissions-Policy` (ubicación y cámara solo para la misma página).
 - La llave de Supabase que va en `armar.py` es la pública (anon). Lo que protege los datos son las reglas de la base (`supabase/esquema.sql`): las tablas no se leen directo (RLS sin políticas) y todo pasa por funciones que piden la sesión.
 - Acceso con código personal: se verifica en el servidor (`minume_entrar`, con límite de intentos) y da un token de 30 días. Los códigos se guardan cifrados con bcrypt; Coordinación general los crea y anula desde «Datos del evento».
+- Dos niveles por código: voluntario (ve solo lo suyo) y dirección (ve todo su sistema, asigna turnos y refuerzos, edita datos y ve los Reportes por día de su equipo). Coordinación general ve todo y pone el nivel de cada código.
 - Las atenciones de Bienestar solo las leen Bienestar y Coordinación general. El chat solo deja leer y escribir en los canales de cada persona.
 - Antes del evento: anular los códigos de prueba y no guardar datos de salud reales mientras sigan activos.
 
 ## Datos de ejemplo
 
-Los nombres del staff, la asignación de comisiones a salones, los turnos, los hoteles, los autobuses y los horarios son de ejemplo. **Todo lo que es dato se cambia desde «Datos del evento»** (25 listas: programa, sedes, eventos, invitados, capacidad de los salones, montaje, comisiones, turnos, checklists, material, staff, puntos, rondas, hoteles, autobuses, listas de Bienestar y de objetos, plantillas de comunicados, mensajes rápidos del chat y responsables). Cada equipo edita lo suyo y Coordinación general, todo. Lo editado se guarda en `minume_compartido` con claves `minume.compartido.config.*`. La lista real del staff se puede pegar en Staff → «Pegar una lista de personas».
+Los nombres del staff, la asignación de comisiones a salones, los turnos, las regionales con sus delegados y los horarios son de ejemplo. **Todo lo que es dato se cambia desde «Datos del evento»** (25 listas: programa, sedes, eventos, invitados, capacidad de los salones, montaje, comisiones, turnos, checklists, material, staff, puntos, rondas, regionales y encargados, delegados por regional, listas de Bienestar y de objetos, plantillas de comunicados, mensajes rápidos del chat y responsables). Cada equipo edita lo suyo y Coordinación general, todo. Lo editado se guarda en `minume_compartido` con claves `minume.compartido.config.*`. La lista real del staff se puede pegar en Staff → «Pegar una lista de personas».
 
 Mapa: maqueta 3D propia hecha en Blender · calles y contornos © colaboradores de OpenStreetMap (ODbL).

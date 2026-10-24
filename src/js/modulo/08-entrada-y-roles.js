@@ -10,7 +10,10 @@ const CODIGOS = {
   'BI-2207': { nombre: 'Sofía Matos', rol: 'bienestar', area: 'fisico', acr: 'ACR-8B1EN' },
   'BI-3318': { nombre: 'Marcos Peña', rol: 'bienestar', area: 'emocional', acr: 'ACR-8B1EN' },
 };
-const ROLES = { asistencia: ['🔷 Asistencia', '#45c8ff'], acreditacion: ['🪪 Acreditación', '#a974ff'], seguridad: ['🛡️ Seguridad', '#ff4d5e'], traslado: ['🚶 Traslado', '#ff9a3c'], coordinacion: ['⭐ Coordinación', '#ffd23f'], bienestar: ['💚 Bienestar', '#2fd38c'], eventos: ['🎤 Eventos y Protocolo', '#f472b6'] };
+const ROLES = { asistencia: ['🔷 Asistencia', '#45c8ff'], acreditacion: ['🪪 Acreditación', '#a974ff'], seguridad: ['🛡️ Seguridad', '#ff4d5e'], traslado: ['🚶 Traslado', '#ff9a3c'], coordinacion: ['⭐ Subsecretaría', '#ffd23f'], bienestar: ['💚 Bienestar', '#2fd38c'], eventos: ['🎤 Eventos y Protocolo', '#f472b6'] };
+// Niveles: el voluntario ve solo lo suyo; la dirección (subsecretarios, quien dirige el equipo y Coordinación general)
+// ve todo su sistema, asigna personas, turnos y refuerzos y edita los datos. El nivel lo pone Coordinación general en cada código.
+const esDir = () => !!estado.usuario && (estado.usuario.rol === 'coordinacion' || estado.usuario.nivel === 'direccion');
 // Cada sistema solo deja entrar a sus equipos y solo muestra sus códigos de prueba
 $$('#entrada .prueba button').forEach(b => { if (!SIS.roles.includes(CODIGOS[b.dataset.c].rol) || (SIS.prefijos && !SIS.prefijos.includes(b.dataset.c.slice(0, 2)))) b.remove(); });
 if (SISTEMA !== 'todo') {
@@ -32,13 +35,14 @@ async function entrar(cod) {
     b.textContent = txt; b.disabled = false;
     if (r.sinRed) { $('#codError').textContent = 'Sin internet. Para entrar la primera vez en este teléfono hace falta conexión.'; return; }
     if (r.error) { $('#codError').textContent = r.error; return; }
-    u = { nombre: r.nombre, rol: r.rol, comision: r.comision || undefined, area: r.area || undefined, acr: r.acr || undefined, ref: r.ref };
+    u = { nombre: r.nombre, rol: r.rol, comision: r.comision || undefined, area: r.area || undefined, acr: r.acr || undefined, ref: r.ref, nivel: r.nivel || 'voluntario' };
   } else u = CODIGOS[c] || null;
   if (!u) { $('#codError').textContent = 'Ese código no existe o ya caducó. Pídele uno a coordinación.'; return; }
   if (!SIS.roles.includes(u.rol)) { if (window.MINUME_SALIR) window.MINUME_SALIR(); $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0].split(' ').slice(1).join(' ')}: entra en su propia página.`; return; }
   estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0);
 }
 // Si la sesión vence o coordinación anula el código, se vuelve a pedir
+addEventListener('minume-yo', e => { const u = estado.usuario, y = e.detail || {}; if (!u || !y.nivel || u.nivel === y.nivel) return; const antes = u.nivel; u.nivel = y.nivel; guardar('usuario', u); aplicarRol(); if (antes) toast(y.nivel === 'direccion' ? 'Ahora tienes el panel de dirección' : 'Tu acceso cambió a voluntario'); });
 addEventListener('minume-sesion-vencida', () => { if (!estado.usuario) return; estado.usuario = null; guardar('usuario', null); aplicarRol(); toast('Tu sesión venció o tu código fue anulado. Vuelve a entrar con tu código.'); });
 function aplicarRol() {
   const u = estado.usuario;
@@ -46,7 +50,8 @@ function aplicarRol() {
   if (!u) return;
   if (!u.acr && CODIGOS[u.codigo]) u.acr = CODIGOS[u.codigo].acr; // sesiones guardadas antes de que existiera el gafete
   const [txt, color] = ROLES[u.rol];
-  $('#rolChip').textContent = u.rol === 'coordinacion' ? txt : `${txt} · ${u.nombre.split(' ')[0]}`; $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
+  document.body.classList.toggle('es-dir', esDir());
+  $('#rolChip').textContent = SISTEMA === 'coordinacion' ? '⭐ Coordinación general' : u.rol === 'coordinacion' ? txt : esDir() ? `${txt} · Dirección` : `${txt} · ${u.nombre.split(' ')[0]}`; $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
   $$('[data-roles]').forEach(el => el.classList.toggle('sin-permiso', !el.dataset.roles.split(' ').includes(u.rol)));
   enlaces.forEach((a, i) => a.classList.toggle('sin-permiso', secciones[i].classList.contains('sin-permiso')));
   if (u.rol === 'asistencia') {
@@ -60,9 +65,10 @@ function aplicarRol() {
   $('.hero .chip').textContent = `${txt} · MINUME XVII`; $('.hero h1').textContent = H[0]; $('.hero .sub').textContent = H[1]; $('.hero .lead').textContent = H[2];
   $('#miPanel').hidden = true; $('#flujo').style.display = '';
   reordenar(u.rol);
+  if (window.pintarNivel) window.pintarNivel();
   if (window.NAV_LISTA) modoApp();
   if (!capasListas) { capasListas = true; ({ seguridad: ['vivo'], traslado: ['vivo'], coordinacion: ['vivo'] }[u.rol] || []).forEach(c => { if (!capas[c]) activarCapa(c); }); if (u.rol === 'acreditacion') mostrarLugar('j-lobby', 'Acreditación · Lobby del Jaragua'); }
-  pintarCompartir(); setTimeout(iniciarMapaVivo, 150); espia(); pintarGafete(); pintarLlegadas(); pintarBienvenida(); pintarTablero(); pintarDelegados(); pintarCasos(); pintarCobertura(); pintarNuevas();
+  pintarCompartir(); setTimeout(iniciarMapaVivo, 150); setTimeout(pedirPermisosAlEntrar, 900); espia(); pintarGafete(); pintarLlegadas(); pintarBienvenida(); pintarTablero(); pintarDelegados(); pintarCasos(); pintarCobertura(); pintarNuevas();
 }
 let capasListas = false;
 const HERO = {
@@ -74,7 +80,7 @@ const HERO = {
   eventos: ['Eventos y Protocolo', 'EVENTOS Y PROTOCOLO', 'Cada ceremonia y actividad del día, paso a paso, los invitados especiales y el plano de asientos de cada evento.'],
   bienestar: ['Bienestar', 'EQUIPO DE BIENESTAR', 'Los casos de bienestar en vivo: quién necesita ayuda, dónde está y quién lo atiende. Con protocolos rápidos y el punto de bienestar en el mapa.'],
 };
-const HERO_SIS = { coordinacion: { coordinacion: ['Coordinación general', 'COORDINACIÓN GENERAL', 'Todo el evento en un solo lugar: comunicados, comisiones, cobertura de seguridad, rondas, bienestar, objetos perdidos y avisos.'] }, asistencia: { coordinacion: ['Coordinación', 'COORDINACIÓN DE ASISTENCIA A COMISIONES', 'Las incidencias que reportan los asistentes, los pedidos de los salones y el avance de cada comisión.'] } };
+const HERO_SIS = { coordinacion: { coordinacion: ['Coordinación general', 'COORDINACIÓN GENERAL', 'Todo el evento en un solo lugar: comunicados, comisiones, cobertura de seguridad, rondas, bienestar, objetos perdidos y avisos.'] }, asistencia: { coordinacion: ['Subsecretaría', 'SUBSECRETARÍA DE ASISTENCIA A COMISIONES', 'Las incidencias que reportan los asistentes, los pedidos de los salones y el avance de cada comisión.'] } };
 // Cada equipo ve sus secciones en su propio orden; las demás no existen para él
 const ORDEN = {
   asistencia: ['inicio', 'chat', 'comunicados', 'comisiones-vivo', 'empieza', 'mi-comision', 'listas', 'sesion', 'incidencias', 'bitacora', 'programa', 'objetos', 'bolsillo', 'mapa', 'ubicacion', 'cumplimiento', 'mejoras'],
@@ -92,7 +98,9 @@ const ORDEN_SIS = {
   coordinacion: { coordinacion: ['inicio', 'chat', 'datos', 'rendimiento', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora'] },
 };
 function reordenar(rol) {
-  const main = $('main'), rail = $('#rail'), orden = (ORDEN_SIS[SISTEMA] || {})[rol] || ORDEN[rol];
+  const main = $('main'), rail = $('#rail'), base = (ORDEN_SIS[SISTEMA] || {})[rol] || ORDEN[rol];
+  // La dirección de cada equipo suma «Reportes» (solo de su equipo); el voluntario no lo ve
+  const orden = esDir() && $('#reportes') && !base.includes('reportes') ? [...base.slice(0, 3), 'reportes', ...base.slice(3)] : base;
   orden.forEach(id => { main.appendChild($('#' + id)); const a = rail.querySelector(`a[href="#${id}"]`); if (a) rail.appendChild(a); });
   $$('main > section').forEach(sec => { if (!orden.includes(sec.id)) sec.classList.add('sin-permiso'); });
   let n = 0;
@@ -103,7 +111,7 @@ function reordenar(rol) {
 $('#bEntrar').onclick = () => entrar($('#codigo').value);
 $('#codigo').addEventListener('keydown', e => { if (e.key === 'Enter' && !$('#bEntrar').disabled) entrar($('#codigo').value); });
 // Entrada: escribe el guion solo, reconoce el equipo por las dos letras y avisa si el código es de otro sistema
-const EQUIPO_PREF = { AS: 'Asistente de comisión', CO: 'Coordinación de Asistencia', SE: 'Seguridad', TR: 'Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
+const EQUIPO_PREF = { AS: 'Asistente de comisión', CO: 'Subsecretaría de Asistencia', SE: 'Seguridad', TR: 'Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
 const SIS_PREF = { AS: 'asistencia', CO: 'asistencia', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', CG: 'coordinacion', AC: 'todo' };
 const INICIO_MINUME = window.MINUME_INICIO || '';
 if (INICIO_MINUME) { $('#entVolver').href = INICIO_MINUME; $('#entVolver').hidden = false; }

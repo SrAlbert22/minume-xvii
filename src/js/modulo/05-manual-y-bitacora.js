@@ -57,18 +57,40 @@ const ETIQ = { resuelto: 'Resuelto', pendiente: 'Pendiente', escalado: 'Escalado
 const EJEMPLOS = [['10:18 a. m.', 'Faltó un placard de la delegación de España.', 'Solución temporal colocada.', 'Coordinación', 'pendiente'],
   ['12:42 p. m.', 'Flujo congestionado en la salida al almuerzo.', 'Apoyo en el pasillo; resuelto en 5 min.', 'Coordinación', 'resuelto'],
   ['4:05 p. m.', 'Delegado presentó malestar.', 'Se activó Bienestar y se facilitó el acceso.', 'Bienestar', 'escalado']];
+// La bitácora no se reinicia al cambiar de día: se archiva. Cada registro guarda su fecha y se ve por día.
+// Además se sube a la base del equipo («diario.<sistema>.<día>») para los Reportes por día de la dirección.
+let bitDia = null;
+// (hoyDR y guardarComp están más abajo en la página: al cargar todavía no existen, por eso van con try)
+const diaBit = () => { try { return hoyDR(); } catch { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo' }).format(new Date()); } };
+estado.bitacora.forEach(b => { if (!b.dia) b.dia = diaBit(); if (!b.id) b.id = 'b' + Math.random().toString(36).slice(2, 10); });
+const claveDiario = dia => `diario.${SISTEMA === 'todo' ? 'demo' : SISTEMA}.${dia}`;
+function subirDiario(b) {
+  let l; try { l = leerComp(claveDiario(b.dia), []); } catch { return; }
+  const i = l.findIndex(x => x.id === b.id);
+  const x = { id: b.id, t: b.t || 0, tipo: b.tipo, texto: b.texto, accion: b.accion || '', area: b.area || '', estatus: b.estatus || 'resuelto', impacto: b.impacto || '', comision: b.comision || '', por: b.por || '' };
+  if (i >= 0) l[i] = x; else l.push(x);
+  guardarComp(claveDiario(b.dia), l.slice(-1500));
+}
+const bitDelDia = () => estado.bitacora.map((b, i) => ({ b, i })).filter(({ b }) => b.dia === (bitDia || diaBit()));
 function pintarBitacora() {
-  const pend = estado.bitacora.filter(b => b.estatus === 'pendiente').length;
+  const dias = [...new Set(estado.bitacora.map(b => b.dia).concat(diaBit()))].sort(), dia = dias.includes(bitDia) ? bitDia : diaBit();
+  const nomDia = d => d === diaBit() ? 'Hoy' : new Date(d + 'T12:00:00-04:00').toLocaleDateString('es-DO', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'America/Santo_Domingo' });
+  if ($('#bDias')) $('#bDias').innerHTML = dias.length > 1 ? dias.map(d => `<button type="button" data-bdia="${d}" class="${d === dia ? 'on' : ''}">${nomDia(d)}</button>`).join('') : '';
+  if ($('#bTitulo')) $('#bTitulo').textContent = dia === diaBit() ? 'Registros de hoy' : `Registros del ${nomDia(dia)}`;
+  const delDia = bitDelDia(), pend = delDia.filter(({ b }) => b.estatus === 'pendiente').length;
   $('#bPend').textContent = `${pend} pendiente${pend === 1 ? '' : 's'}`; $('#bPend').className = 'chip ' + (pend ? 'amarillo' : 'verde');
-  $('#bLista').innerHTML = estado.bitacora.length
-    ? estado.bitacora.map((b, i) => ({ b, i })).reverse().map(({ b, i }) => `<tr><td style="white-space:nowrap">${b.hora}</td><td>${b.impacto ? `<span class="impacto ${b.impacto.toLowerCase()}" title="Impacto ${b.impacto}"></span>` : ''}<b>${esc(b.tipo)}</b> · ${esc(b.texto)}${b.comision ? `<div style="color:var(--suave);font-size:12px">${b.comision}</div>` : ''}</td><td>${esc(b.accion || '—')}</td><td>${esc(b.area || '—')}</td><td><button class="estatus ${b.estatus || 'resuelto'}" data-i="${i}">${ETIQ[b.estatus || 'resuelto']}</button></td></tr>`).join('')
-    : EJEMPLOS.map(([h, s, a, ar, e]) => `<tr class="ejemplo"><td style="white-space:nowrap">${h}</td><td><b>Ejemplo</b> · ${s}</td><td>${a}</td><td>${ar}</td><td><span class="estatus ${e}">${ETIQ[e]}</span></td></tr>`).join('');
+  $('#bLista').innerHTML = delDia.length
+    ? delDia.reverse().map(({ b, i }) => `<tr><td style="white-space:nowrap">${b.hora}</td><td>${b.impacto ? `<span class="impacto ${b.impacto.toLowerCase()}" title="Impacto ${b.impacto}"></span>` : ''}<b>${esc(b.tipo)}</b> · ${esc(b.texto)}${b.comision ? `<div style="color:var(--suave);font-size:12px">${b.comision}</div>` : ''}</td><td>${esc(b.accion || '—')}</td><td>${esc(b.area || '—')}</td><td><button class="estatus ${b.estatus || 'resuelto'}" data-i="${i}">${ETIQ[b.estatus || 'resuelto']}</button></td></tr>`).join('')
+    : dia !== diaBit() ? '<tr><td colspan="5" style="color:var(--suave)">Ese día no hay registros.</td></tr>' : EJEMPLOS.map(([h, s, a, ar, e]) => `<tr class="ejemplo"><td style="white-space:nowrap">${h}</td><td><b>Ejemplo</b> · ${s}</td><td>${a}</td><td>${ar}</td><td><span class="estatus ${e}">${ETIQ[e]}</span></td></tr>`).join('');
   if (listaVista === 'cierre') $('#lExtra').innerHTML = entregaDelDia();
 }
-$('#bLista').onclick = e => { const b = e.target.closest('button.estatus'); if (!b) return; const r = estado.bitacora[+b.dataset.i]; r.estatus = CICLO[r.estatus || 'resuelto']; guardar('bitacora', estado.bitacora); pintarBitacora(); };
+$('#bLista').onclick = e => { const b = e.target.closest('button.estatus'); if (!b) return; const r = estado.bitacora[+b.dataset.i]; r.estatus = CICLO[r.estatus || 'resuelto']; guardar('bitacora', estado.bitacora); subirDiario(r); pintarBitacora(); };
+if ($('#bDias')) $('#bDias').onclick = e => { const b = e.target.closest('[data-bdia]'); if (b) { bitDia = b.dataset.bdia; pintarBitacora(); } };
 function registrar(tipo, texto, extra = {}) {
-  estado.bitacora.push({ tipo, texto, estatus: 'resuelto', ...extra, hora: new Date().toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit' }), comision: estado.comision });
-  guardar('bitacora', estado.bitacora); pintarBitacora();
+  let t; try { t = ahoraMs(); } catch { t = Date.now(); }
+  const b = { id: 'b' + t.toString(36) + Math.random().toString(36).slice(2, 6), tipo, texto, estatus: 'resuelto', ...extra, hora: new Date(t).toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Santo_Domingo' }), comision: estado.comision, t, dia: diaBit(), por: estado.usuario ? estado.usuario.nombre : (estado.nombre || '') };
+  estado.bitacora.push(b);
+  guardar('bitacora', estado.bitacora.slice(-2000)); subirDiario(b); pintarBitacora();
 }
 $('#bReportar').onclick = () => {
   const t = $('#iTexto').value.trim(); if (!t) return $('#iTexto').focus();

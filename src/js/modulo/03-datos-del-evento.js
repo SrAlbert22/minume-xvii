@@ -30,21 +30,24 @@ const VIAJES = [
   { h: '13:45', de: 'malecon', a: 'sheraton', nota: 'Regreso a sesiones', estado: 'A tiempo' },
   { h: '18:30', de: 'sheraton', a: 'jaragua', nota: 'Cierre de jornada en el Jaragua', estado: 'A tiempo' },
 ];
-// Hoteles donde se hospedan los participantes. Todavía faltan hoteles: se agregan en «Datos del evento → Hoteles de hospedaje».
-// «apie»: el hotel es una de las sedes, así que esos participantes llegan caminando y no necesitan autobús.
-const HOTELES = [
-  { id: 'HJ', n: 'Renaissance Jaragua', zona: 'Av. George Washington 367 · Malecón', pax: 0, apie: true },
-  { id: 'HS', n: 'Sheraton Santo Domingo', zona: 'Av. George Washington 365 · Malecón', pax: 0, apie: true },
-  { id: 'H3', n: 'Hotel por confirmar', zona: 'Cámbialo por el hotel real', pax: 45, apie: false },
-];
-// Autobuses de participantes: «Ida» recoge en los hoteles y los lleva a la sede; «Regreso» sale de la sede y los deja en sus hoteles.
-// Ejemplo hasta tener las rutas reales (se cambian en «Datos del evento → Autobuses de participantes»).
-const BUSES = [
-  { id: 'B1-ida', h: '7:00', tipo: 'Ida', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', resp: 'Ana Rosario', pax: 45 },
-  { id: 'B1-regreso', h: '18:45', tipo: 'Regreso', unidad: 'Autobús 1', sede: 'jaragua', paradas: 'H3', resp: 'Ana Rosario', pax: 45 },
-];
+// Regionales: no hay autobuses. El staff llega el 14 y las regionales el 15 con su encargado; después todo es a pie.
+// Cada regional tiene un encargado fijo del staff (su nombre igual que en su código de acceso: así le aparece su regional).
+// EJEMPLO hasta tener la lista oficial: se cambia en «Datos del evento → Regionales y encargados».
+const REGIONALES = [
+  ['R01', 'Barahona'], ['R02', 'San Juan de la Maguana'], ['R03', 'Azua'], ['R04', 'San Cristóbal'], ['R05', 'San Pedro de Macorís'], ['R06', 'La Vega'],
+  ['R07', 'San Francisco de Macorís'], ['R08', 'Santiago'], ['R09', 'Mao'], ['R10', 'Santo Domingo'], ['R11', 'Puerto Plata'], ['R12', 'Higüey'],
+  ['R13', 'Montecristi'], ['R14', 'Nagua'], ['R15', 'Santo Domingo'], ['R16', 'Cotuí'], ['R17', 'Monte Plata'], ['R18', 'Neyba'],
+].map(([id, zona]) => ({ id, n: 'Regional ' + id.slice(1), zona, enc: { R06: 'Ana Rosario', R08: 'Luis Gómez', R10: 'Rosa Almonte', R15: 'Carlos Méndez' }[id] || '' }));
+// Delegados de cada regional (EJEMPLO). La lista oficial se pega en «Datos del evento → Delegados por regional».
+const REG_DELEGADOS = [
+  ['R06', 'Valeria Núñez', 'CSNU'], ['R06', 'Josué Tavárez', 'AMS'], ['R06', 'Camila Abreu', 'PNUD'], ['R06', 'Elián Guzmán', 'CIJ'], ['R06', 'Daniela Polanco', 'OMT'],
+  ['R06', 'Samuel Ventura', 'COP31'], ['R06', 'Ariana Fermín', 'UNESCO-JD'], ['R06', 'Gabriel Lantigua', 'ONUDC'], ['R06', 'Isabella Paulino', 'CDT'], ['R06', 'Mateo Rosario', 'OMA'],
+  ['R08', 'Sofía Almánzar', 'CSNU'], ['R08', 'Diego Espinal', 'AMS'], ['R08', 'Paula Cabrera', 'CIME'], ['R08', 'Andrés Tejada', 'UNCTAD'], ['R08', 'Lucía Batista', 'CRPD'],
+  ['R08', 'Emmanuel Reyes', 'ONUDI'], ['R08', 'Nicole Durán', 'FS-CDH'], ['R08', 'Adrián Peralta', 'CIJ'],
+  ['R10', 'Alanna Mejía', 'PNUD'], ['R10', 'Bryan Castillo', 'OMT'], ['R10', 'Génesis Ortiz', 'AMS'], ['R10', 'Joel Marte', 'CSNU'], ['R10', 'Melany Sosa', 'COP31'], ['R10', 'Ángel Santana', 'UNESCO-JD'],
+].map(([reg, n, com], i) => ({ id: 'D' + String(i + 1).padStart(3, '0'), reg, n, com }));
 // Chat: mensajes de un toque; los que terminan en «…» se completan antes de enviar
-const RAPIDOS = ['Recibido 👍', 'Voy en camino', 'Listo ✅', 'Necesito apoyo en…', '¿Dónde estás?', 'Llegó el autobús 🚌'];
+const RAPIDOS = ['Recibido 👍', 'Voy en camino', 'Listo ✅', 'Necesito apoyo en…', '¿Dónde estás?', 'Llegó la regional 🧑‍🤝‍🧑'];
 const LISTAS = {
   pre: ['Conozco el nombre, la modalidad y la estructura básica de mi comisión', 'Sé quiénes integran la mesa directiva y cuál es el canal de comunicación acordado', 'Tengo el listado oficial de participantes y la representación de cada delegado', 'Conozco los canales oficiales de la comisión y si los delegados están integrados', 'Conozco el horario de sesiones, talleres, comidas, eventos generales y transiciones', 'Conozco las necesidades de mi comisión: materiales, audiovisuales, invitados o circulación', 'Di seguimiento a las reuniones o talleres con la mesa directiva que se me pidieron', 'Di seguimiento a la asistencia de delegados en actividades preparatorias', 'Envié la información para los placards antes de impresión', 'Reporté las novedades en listados: nombres, comisión, representación u otras diferencias'],
   montaje: ['Identifiqué el salón correcto y confirmé que puedo acceder a tiempo', 'Verifiqué placards de delegados (por letra de apertura) y de mesa directiva', 'Confirmé malletes y demás materiales definidos para la comisión', 'Revisé micrófonos, proyector, banners y otros recursos audiovisuales', 'Observé mesas, sillas, entradas, salidas y zonas de circulación', 'Reporté cualquier faltante y di seguimiento hasta conocer su estatus', 'Tengo a mano el contacto de Beatriz y sé cómo reportar una incidencia', 'La comisión está lista antes de que entren los delegados'],

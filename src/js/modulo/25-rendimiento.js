@@ -44,8 +44,8 @@ function accionesDelDia(dia) {
   Object.entries(leerComp('invitados', {})).forEach(([id, x]) => { if (x.est) add(x.por, `Marcó a ${invs[id] || 'un invitado'}`, x.t); });
   const asientos = {}; Object.values(leerComp('asientos', {})).forEach(x => { if (x.por && x.t && diaDR(x.t) === dia) asientos[x.por] = (asientos[x.por] || 0) + 1; });
   Object.entries(asientos).forEach(([n, k]) => add(n, `Marcó ${k} ${k === 1 ? 'asiento' : 'asientos'}`, ahoraMs()));
-  const b = leerComp('buses', null);
-  if (b && b.dia === dia) Object.entries(b.v || {}).forEach(([id, x]) => { const u = BUSES.find(y => y.id === id); add(x.por, `Marcó el ${u ? u.unidad + ' (' + u.tipo.toLowerCase() + ')' : 'autobús'}`, x.t); });
+  const pase = leerComp('regpase', {})[dia] || {};
+  Object.entries(pase).forEach(([id, moms]) => Object.values(moms).forEach(s => { Object.values(s.m || {}).forEach(x => { if (x.t && x.por) add(x.por, `Pasó lista en la Regional ${id.slice(1)}`, x.t); }); if (s.ok && s.ok.t) add(s.ok.por, `Confirmó la Regional ${id.slice(1)}`, s.ok.t); }));
   leerAvisos().forEach(a => { if (a.quien && a.tCambio) add(a.quien.replace(/\s*\(.*$/, ''), `Atendió un aviso: ${a.tipo}`, a.tCambio, { resp: (a.tCambio - (a.t || a.tCambio)) / 1000 }); });
   leerComs().forEach(m => Object.values(m.leidos || {}).forEach(r => add(r.n, 'Leyó un comunicado', r.t, { com: m.id, resp: (r.t - m.t) / 1000 })));
   const c = leerComp('cobertura', null);

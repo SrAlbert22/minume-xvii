@@ -138,19 +138,20 @@ const DATOS = {
     aplicar: recs => recs.forEach(r => { const m = MEDIDAS_PLANOS[r.k]; if (!m) return; Object.assign(m, { nombre: r.nombre, filas: +r.filas || m.filas, ancho: String(r.ancho || m.ancho), extra: +r.extra || 0 }); PLANOS[r.k] = armarPlano(m); }),
   },
   rapidos: listaSimple(RAPIDOS, 'Mensajes rápidos del chat', ['coordinacion'], 'Los botones de un toque del chat. Si terminan en «…», la persona completa el mensaje antes de enviarlo.', 'Mensaje'),
-  hoteles: {
-    titulo: 'Hoteles de hospedaje', icono: 'casa', quien: ['traslado', 'seguridad', 'coordinacion'],
-    ayuda: 'Dónde duermen los participantes. Agrega aquí los hoteles que falten; el código corto (por ejemplo H4) se usa en las paradas de los autobuses.',
-    campos: [{ k: 'id', t: 'Código', req: 1, mayus: 1, soloViejo: 1 }, { k: 'n', t: 'Hotel', req: 1, ancho: 2 }, { k: 'zona', t: 'Dirección o zona', ancho: 2 }, { k: 'pax', t: 'Participantes hospedados', tipo: 'num' }, { k: 'apie', t: 'Está en una sede (llegan a pie)', tipo: 'si' }],
-    leer: () => HOTELES.map(h => ({ ...h })),
-    aplicar: recs => HOTELES.splice(0, HOTELES.length, ...recs.map(r => ({ id: String(r.id || nuevoId('H')).toUpperCase(), n: r.n, zona: r.zona || '', pax: +r.pax || 0, apie: !!r.apie }))),
+  regionales: {
+    titulo: 'Regionales y encargados', icono: 'gente', quien: ['traslado', 'seguridad', 'coordinacion'],
+    ayuda: 'Las regionales con su encargado fijo del staff. Escribe el nombre del encargado igual que en su código de acceso: así le aparece su regional.',
+    campos: [{ k: 'id', t: 'Código', req: 1, mayus: 1, soloViejo: 1 }, { k: 'n', t: 'Regional', req: 1, ancho: 2 }, { k: 'zona', t: 'Ciudad o zona', ancho: 2 }, { k: 'enc', t: 'Encargado', ancho: 2 }],
+    leer: () => REGIONALES.map(r => ({ ...r })),
+    aplicar: recs => REGIONALES.splice(0, REGIONALES.length, ...recs.map(r => ({ id: String(r.id || nuevoId('R')).toUpperCase(), n: r.n, zona: r.zona || '', enc: String(r.enc || '').trim() })).sort((a, b) => a.id.localeCompare(b.id, 'es', { numeric: true }))),
   },
-  buses: {
-    titulo: 'Autobuses de participantes', icono: 'bus', quien: ['traslado', 'seguridad', 'coordinacion'],
-    ayuda: 'Cada salida de autobús. «Ida» recoge en los hoteles y va a la sede; «Regreso» sale de la sede y deja a cada quien en su hotel. Paradas: códigos de hotel en orden, separados por comas (H3, H4).',
-    campos: [{ k: 'h', t: 'Sale', tipo: 'hora', req: 1 }, { k: 'tipo', t: 'Viaje', tipo: 'opc', opc: () => [['Ida', 'Ida · hotel → sede'], ['Regreso', 'Regreso · sede → hotel']], req: 1 }, { k: 'unidad', t: 'Autobús', req: 1 }, { k: 'sede', t: 'Sede', tipo: 'opc', opc: SEDE_OPC, req: 1 }, { k: 'paradas', t: 'Paradas (hoteles en orden)', req: 1, ancho: 2 }, { k: 'resp', t: 'Staff a bordo', ancho: 2 }, { k: 'pax', t: 'Participantes', tipo: 'num' }],
-    leer: () => BUSES.map(b => ({ ...b })),
-    aplicar: recs => BUSES.splice(0, BUSES.length, ...recs.map(r => ({ ...r, id: r.id || nuevoId('B'), pax: +r.pax || 0 })).sort((a, b) => aMinutos(a.h) - aMinutos(b.h))),
+  delegadosReg: {
+    titulo: 'Delegados por regional', icono: 'gente', quien: ['traslado', 'seguridad', 'coordinacion'],
+    ayuda: 'La lista oficial de delegados de cada regional, para el pase de lista de la mañana y de la noche. Puedes pegarla completa desde el Excel.',
+    pegar: { titulo: 'Pegar la lista de delegados', ayuda: 'Una persona por línea, copiada del Excel: la regional (06, R06 o «Regional 06»), el nombre y, si la tienes, la comisión. Los que ya están no se repiten.', ejemplo: '06, Valeria Núñez, CSNU\n06, Josué Tavárez, AMS\nRegional 08; Sofía Almánzar' },
+    campos: [{ k: 'reg', t: 'Regional', tipo: 'opc', opc: () => REGIONALES.map(r => [r.id, `${r.n}${r.zona ? ' · ' + r.zona : ''}`]), req: 1 }, { k: 'n', t: 'Delegado', req: 1, ancho: 2 }, { k: 'com', t: 'Comisión', tipo: 'opc', opc: () => [['', '—']].concat(COMISIONES.map(([c]) => [c, c])) }],
+    leer: () => REG_DELEGADOS.map(d => ({ ...d })),
+    aplicar: recs => REG_DELEGADOS.splice(0, REG_DELEGADOS.length, ...recs.map(r => ({ id: r.id || nuevoId('D'), reg: r.reg, n: String(r.n || '').trim(), com: r.com || '' }))),
   },
   responsables: {
     titulo: 'Responsables por área', icono: 'gente', quien: ['coordinacion'],
@@ -160,9 +161,10 @@ const DATOS = {
     aplicar: recs => AREAS.splice(0, AREAS.length, ...recs.map(r => [r.k || nuevoId('ar'), r.area, r.persona])),
   },
 };
-const ORDEN_DATOS = ['programa', 'sedes', 'eventos', 'invitados', 'planos', 'montaje', 'problemasEv', 'comisiones', 'turnosAsis', 'checklists', 'confirma', 'necesito', 'staff', 'puntos', 'turnos', 'rutas', 'hoteles', 'buses', 'autobuses', 'kit', 'listasBienestar', 'listasObjetos', 'plantillas', 'rapidos', 'responsables'];
+const ORDEN_DATOS = ['programa', 'sedes', 'eventos', 'invitados', 'planos', 'montaje', 'problemasEv', 'comisiones', 'turnosAsis', 'checklists', 'confirma', 'necesito', 'staff', 'puntos', 'turnos', 'rutas', 'regionales', 'delegadosReg', 'autobuses', 'kit', 'listasBienestar', 'listasObjetos', 'plantillas', 'rapidos', 'responsables'];
 const EJEMPLO_DATOS = Object.fromEntries(ORDEN_DATOS.map(k => [k, JSON.parse(JSON.stringify(DATOS[k].leer()))]));
-const puedeEditar = k => !!estado.usuario && DATOS[k].quien.includes(estado.usuario.rol);
+// Solo la dirección edita datos (subsecretarios, quien dirige cada equipo y Coordinación general)
+const puedeEditar = k => esDir() && DATOS[k].quien.includes(estado.usuario.rol);
 // Lo guardado antes del cambio de sedes (Dominican Fiesta, Sede 2 y 3) ya no sirve: se usa el ejemplo nuevo
 const deSedesViejas = r => Array.isArray(r) && r.some(x => x && ['sede', 'de', 'a'].some(k => x[k] && !SEDES[x[k]]));
 function aplicarDatosGuardados() {
@@ -190,12 +192,14 @@ function refrescarTodo() {
 // ---------- Ventana de edición ----------
 let edK = null, edRecs = [], edQuitados = [], edRestaurar = false;
 function abrirEditorDatos(k) {
-  if (!puedeEditar(k)) return toast('Esta parte la edita otro equipo o coordinación');
+  if (!puedeEditar(k)) return toast('Esta parte la edita la dirección de cada equipo o Coordinación general');
   edK = k; edRecs = JSON.parse(JSON.stringify(DATOS[k].leer())).map(r => ({ ...r, _viejo: 1 })); edQuitados = []; edRestaurar = false;
   $('#edTitulo').textContent = DATOS[k].titulo; $('#edAyuda').textContent = DATOS[k].ayuda;
   $('#edAgregar').hidden = !!DATOS[k].fijo; $('#edBuscar').value = ''; $('#edEstado').textContent = '';
   $('#edRestaurar').textContent = 'Volver a los datos de ejemplo';
-  $('#edPegar').hidden = k !== 'staff'; $('#edPegar').open = false; $('#edPegarTxt').value = '';
+  const pg = DATOS[k].pegar || (k === 'staff' ? { titulo: 'Pegar una lista de personas', ayuda: 'Una persona por línea, copiada del Excel o de WhatsApp. Si pones el equipo después de una coma, se usa: Ana Rosario, Traslado. Las que ya están no se repiten.', ejemplo: 'Ana Rosario, Traslado\nLuis Gómez, Seguridad\nMaría Pérez' } : null);
+  $('#edPegar').hidden = !pg; $('#edPegar').open = false; $('#edPegarTxt').value = '';
+  if (pg) { $('#edPegar summary').textContent = pg.titulo; $('#edPegar p').textContent = pg.ayuda; $('#edPegarTxt').placeholder = pg.ejemplo; }
   pintarEditorDatos(); $('#editor').hidden = false; document.body.style.overflow = 'hidden';
   setTimeout(() => $('#edBuscar').focus(), 50);
 }
@@ -233,6 +237,20 @@ $('#edLista').addEventListener('click', e => {
 $('#edEstado').addEventListener('click', e => { if (e.target.id === 'edDeshacer' && edQuitados.length) { edRecs.push(edQuitados.pop()); pintarEditorDatos(); $('#edEstado').textContent = 'Cambios sin guardar'; } });
 $('#edBuscar').addEventListener('input', pintarEditorDatos);
 $('#edPegarOk').addEventListener('click', () => {
+  if (edK === 'delegadosReg') {
+    const regDe = t => { const m = String(t).match(/^(?:r|regional)?\s*0*(\d{1,2})$/i); if (!m) return null; const id = 'R' + m[1].padStart(2, '0'); return REGIONALES.some(r => r.id === id) ? id : null; };
+    const coms = new Set(COMISIONES.map(([c]) => c.toUpperCase())), ya = new Set(edRecs.map(r => `${r.reg}|${sinAcentos(r.n)}`));
+    let agregados = 0, sinReg = 0;
+    for (const linea of $('#edPegarTxt').value.split(/\r?\n/)) {
+      const partes = linea.split(/\t|;|,/).map(x => x.trim()).filter(Boolean); if (!partes.length) continue;
+      const reg = partes.map(regDe).find(Boolean), com = partes.find(x => coms.has(x.toUpperCase())) || '', n = partes.find(x => !regDe(x) && !coms.has(x.toUpperCase())) || '';
+      if (!reg) { sinReg++; continue; } if (!n || ya.has(`${reg}|${sinAcentos(n)}`)) continue;
+      ya.add(`${reg}|${sinAcentos(n)}`); edRecs.push({ id: nuevoId('D'), reg, n, com: com.toUpperCase(), _nuevo: 1 }); agregados++;
+    }
+    $('#edPegarTxt').value = ''; pintarEditorDatos();
+    $('#edEstado').textContent = (agregados ? `${agregados} ${agregados === 1 ? 'delegado agregado' : 'delegados agregados'} · falta tocar «Guardar cambios»` : 'No había delegados nuevos en la lista') + (sinReg ? ` · ${sinReg} sin regional reconocible` : '');
+    return;
+  }
   const equipo = t => /trasl|movil/i.test(t) ? 'Traslado' : /direc|coord/i.test(t) ? 'Dirección' : /segur/i.test(t) ? 'Seguridad' : '';
   const usados = new Set(edRecs.map(r => String(r.cod || '').toUpperCase())), nombres = new Set(edRecs.map(r => String(r.nombre || '').toLowerCase().trim()));
   const codigo = area => { const l = { Traslado: 'T', 'Dirección': 'D' }[area] || 'S'; let n = 1; while (usados.has(l + String(n).padStart(2, '0'))) n++; const c = l + String(n).padStart(2, '0'); usados.add(c); return c; };

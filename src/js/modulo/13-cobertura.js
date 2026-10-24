@@ -45,14 +45,18 @@ const cobNombre = c => (COB_STAFF[c] || [c])[0];
 const cobCorto = c => cobNombre(c).split(' ')[0];
 const slotDe = (p, min) => p.turnos.find(t => min >= t[0] && min < t[1]) || null;
 const claveSlot = (p, t) => `${p.id}@${t[0]}`;
-const miCodCob = () => (estado.usuario && COB_CODIGO[estado.usuario.codigo]) || null;
-const puedeAsignar = () => !!estado.usuario && ['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol);
+// Tu código en la lista del staff: por el código de prueba o por tu nombre (así el plan del día le aparece a cada quien)
+const sinAcentos = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const miCodCob = () => { const u = estado.usuario; if (!u) return null; if (COB_CODIGO[u.codigo]) return COB_CODIGO[u.codigo]; const n = sinAcentos(u.nombre); return (Object.entries(COB_STAFF).find(([, [x]]) => sinAcentos(x) === n) || [null])[0]; };
+// Refuerzos, «Llegó» de otros y asignaciones: solo la dirección (en la reunión del 21 de octubre se pidió así para evitar confusiones)
+const puedeAsignar = () => esDir() && ['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol);
 function cobEstado() {
   const { dia } = cobAhora(); let c = leerComp('cobertura', null);
   if (!c || c.dia !== dia) c = { dia, conf: {}, refs: [], sembrado: {} }; // cada día empieza limpio
   estado.cob = c; return c;
 }
-const cobGuardar = () => guardarComp('cobertura', estado.cob);
+// Además de la clave del día, queda una copia por fecha para los reportes de días anteriores
+const cobGuardar = () => { guardarComp('cobertura', estado.cob); guardarComp('archivo.cobertura.' + estado.cob.dia, estado.cob); };
 // Demo: el staff de ejemplo confirma solo al empezar su turno (menos Kelvin y Wendy, para que se vea un punto incompleto).
 // Tú sí confirmas el tuyo con el botón.
 function cobSembrar(min) {
@@ -79,6 +83,12 @@ function cobFilas(min) {
 function cobConflictos(min) {
   return estado.cob.refs.filter(r => !r.mantener).map(r => { const n = cobProximo(r.cod, min); return n && n.t[0] - min <= 30 ? { r, ...n, falta: n.t[0] - min } : null; }).filter(Boolean);
 }
+// Walkie-talkie y «voy en camino»: cada quien lo marca y la dirección ve cuántos tienen la radio activa
+const radioDe = cod => ((estado.cob && estado.cob.radio) || {})[cod] || {};
+function lineaRadio(yo, puedeCamino) {
+  const r = radioDe(yo);
+  return `<div class="cob-radio"><button class="mini${r.walkie ? ' on' : ''}" data-cob="walkie">📻 ${r.walkie ? 'Walkie activo desde las ' + cobHora(r.walkie) : 'Ya activé mi walkie-talkie'}</button>${puedeCamino ? `<button class="mini${r.camino ? ' on' : ''}" data-cob="camino">🚶 ${r.camino ? 'Vas en camino desde las ' + cobHora(r.camino) : 'Voy en camino a mi puesto'}</button>` : ''}</div>`;
+}
 const COB_EST = { cubierta: ['Cubierto', 'verde'], incompleta: ['Falta gente', 'amarillo'], descubierta: ['Sin nadie', 'rojo'], libre: ['Sin turno ahora', ''] };
 let cobSede = 'todas', cobAbierto = null, cobPlan = null;
 function pintarCobertura() {
@@ -93,7 +103,8 @@ function pintarCobertura() {
   $('#cobTiles').innerHTML = tile(`${activas.length - desc.length - inc.length}/${activas.length}`, 'puntos cubiertos ahora', '#2fd38c', '')
     + tile(desc.length, desc.length === 1 ? 'punto sin nadie' : 'puntos sin nadie', '#ff4d5e', '', desc.length > 0)
     + tile(`${llegaron}/${esperados}`, 'confirmaron que llegaron', '#45c8ff', '')
-    + tile(libres.length, 'libres para reforzar', '#ffd23f', '');
+    + tile(libres.length, 'libres para reforzar', '#ffd23f', '')
+    + tile(`${Object.keys(COB_STAFF).filter(c => radioDe(c).walkie).length}/${Object.keys(COB_STAFF).length}`, 'con el walkie activo', '#c7a6ff', '');
 
   // Mi puesto
   const ref = yo && estado.cob.refs.find(r => r.cod === yo), mio = yo && cobOcupacion(min)[yo], prox = yo && cobProximo(yo, min);
@@ -101,29 +112,29 @@ function pintarCobertura() {
   let h;
   if (!yo) {
     const cambios = COB_PUNTOS.flatMap(p => p.turnos.filter(t => t[0] > min && t[0] - min <= 45).map(t => ({ p, t }))).sort((a, b) => a.t[0] - b.t[0]);
-    h = `<span class="chip">Vista de coordinación</span><h3 class="cob-mio-t">${desc.length ? `${desc.length} punto${desc.length > 1 ? 's' : ''} sin nadie` : 'Ningún punto está solo'}</h3>
+    h = `<span class="chip">Vista de dirección</span><h3 class="cob-mio-t">${desc.length ? `${desc.length} punto${desc.length > 1 ? 's' : ''} sin nadie` : 'Ningún punto está solo'}</h3>
       <p class="cob-sub">${inc.length ? `${inc.length} punto${inc.length > 1 ? 's tienen' : ' tiene'} gente que no ha confirmado. ` : ''}${libres.length} persona${libres.length === 1 ? '' : 's'} libre${libres.length === 1 ? '' : 's'} para reforzar.</p>
       <b class="cob-mini-t">Cambios de turno en los próximos 45 min</b>${cambios.length ? cambios.map(({ p, t }) => `<div class="dato"><span>${cobHora(t[0])} · ${p.id} ${esc(p.n)}</span><b>${t[3].map(([c]) => esc(cobCorto(c))).join(', ')}</b></div>`).join('') : '<p class="cob-sub">No hay cambios de turno pronto.</p>'}`;
   } else if (ref) {
     const p = COB_PUNTOS.find(x => x.id === ref.punto);
     h = `<span class="chip" style="color:#c7a6ff;border-color:rgba(169,116,255,.5)">Estás de refuerzo</span><h3 class="cob-mio-t">${p.id} · ${esc(p.n)}</h3><p class="cob-sub">${SEDES[p.sede].nombre} · desde las ${cobHora(ref.desde)}${ref.por ? ' · te asignó ' + esc(ref.por) : ''}</p>
       ${mio ? `<div class="cob-tarea">Tu puesto de este turno (${mio.p.id} ${esc(mio.p.n)}) se ve como “de refuerzo”. Vuelve cuando coordinación te libere.</div>` : ''}
-      <button class="boton" data-cob="volver" style="margin-top:6px">Volver a mi puesto</button>${lineaProx}`;
+      <button class="boton" data-cob="volver" style="margin-top:6px">Volver a mi puesto</button>${lineaRadio(yo, false)}${lineaProx}`;
   } else if (mio) {
     const k = claveSlot(mio.p, mio.t), c = estado.cob.conf[k + '#' + yo], comp = mio.t[3].filter(([x]) => x !== yo);
     h = `<span class="chip">Tu puesto ahora</span><h3 class="cob-mio-t">${mio.p.id} · ${esc(mio.p.n)}</h3><p class="cob-sub">${SEDES[mio.p.sede].nombre} · ${cobHora(mio.t[0])} a ${cobHora(mio.t[1])} · ${esc(mio.t[2])}</p>
       <div class="cob-tarea"><b>Tu tarea:</b> ${esc(mio.tarea)}${comp.length ? `<br><small>Contigo: ${comp.map(([x, ta]) => `${esc(cobNombre(x))} (${esc(ta.toLowerCase())})`).join(', ')}</small>` : ''}</div>
-      ${c != null ? `<div class="cob-ok">✓ Confirmaste que llegaste a las ${cobHora(c)}</div>` : `<button class="boton" data-cob="llegue" data-k="${k}" data-cod="${yo}">Ya estoy en mi puesto</button>`}${lineaProx}`;
+      ${c != null ? `<div class="cob-ok">✓ Confirmaste que llegaste a las ${cobHora(c)}</div>` : `<button class="boton" data-cob="llegue" data-k="${k}" data-cod="${yo}">Ya estoy en mi puesto</button>`}${lineaRadio(yo, c == null)}${lineaProx}`;
   } else {
     h = `<span class="chip verde">Libre ahora</span><h3 class="cob-mio-t">${prox ? 'Tu turno empieza a las ' + cobHora(prox.t[0]) : 'No tienes más turnos hoy'}</h3>
       <p class="cob-sub">${prox ? `${prox.p.id} · ${esc(prox.p.n)} · ${esc(prox.t[2])}` : 'Gracias por tu trabajo.'}</p>
-      <div class="cob-tarea">Mientras estás libre, coordinación puede mandarte como refuerzo a un punto que se quedó solo. Si te asignan, aparece aquí.</div>`;
+      <div class="cob-tarea">Mientras estás libre, la dirección puede mandarte como refuerzo a un punto que se quedó solo. Si te asignan, aparece aquí.</div>${lineaRadio(yo, !!prox && prox.t[0] - min <= 30)}`;
   }
   $('#cobMio').innerHTML = h;
 
   // Qué atender
   const al = [
-    ...desc.map(f => `<div class="cob-alerta"><span class="pt" style="background:var(--rojo)"></span><div><b>${f.p.id} · ${esc(f.p.n)} está sin nadie</b><small>${esc(f.t ? f.t[2] : '')}${f.gente.length ? ' · esperaba a ' + f.gente.map(g => esc(cobCorto(g.cod))).join(', ') : ''}</small></div><div class="acc"><button class="mini" data-cob="abrir" data-p="${f.p.id}">Mandar refuerzo</button></div></div>`),
+    ...desc.map(f => `<div class="cob-alerta"><span class="pt" style="background:var(--rojo)"></span><div><b>${f.p.id} · ${esc(f.p.n)} está sin nadie</b><small>${esc(f.t ? f.t[2] : '')}${f.gente.length ? ' · esperaba a ' + f.gente.map(g => esc(cobCorto(g.cod))).join(', ') : ''}</small></div>${puedeAsignar() ? `<div class="acc"><button class="mini" data-cob="abrir" data-p="${f.p.id}">Mandar refuerzo</button></div>` : ''}</div>`),
     ...confl.map(x => `<div class="cob-alerta"><span class="pt" style="background:#a974ff"></span><div><b>${esc(cobNombre(x.r.cod))} tiene turno en ${x.falta} min</b><small>Está de refuerzo en ${x.r.punto} y le toca ${x.p.id} a las ${cobHora(x.t[0])}</small></div><div class="acc"><button class="mini" data-cob="mantener" data-cod="${x.r.cod}">Mantener</button><button class="mini" data-cob="quitar" data-cod="${x.r.cod}">Liberar</button></div></div>`),
     ...inc.map(f => `<div class="cob-alerta"><span class="pt" style="background:var(--amarillo)"></span><div><b>${f.p.id} · falta ${f.gente.filter(g => g.conf == null && !g.fuera).map(g => esc(cobCorto(g.cod))).join(', ') || 'gente'}</b><small>${f.estan} de ${f.req} en su puesto · ${esc(f.t ? f.t[2] : '')}</small></div><div class="acc"><button class="mini" data-cob="abrir" data-p="${f.p.id}">Ver</button></div></div>`),
   ];
@@ -138,7 +149,7 @@ function pintarCobertura() {
     const per = [
       ...f.gente.map(g => g.fuera ? `<span class="cob-per fuera"><i>${g.cod}</i>${esc(cobNombre(g.cod))}<small>de refuerzo en ${g.fuera}</small></span>`
         : g.conf != null ? `<span class="cob-per ok" title="${esc(g.tarea)}"><i>${g.cod}</i>${esc(cobNombre(g.cod))}<small>llegó ${cobHora(g.conf)}</small></span>`
-        : `<span class="cob-per falta" title="${esc(g.tarea)}"><i>${g.cod}</i>${esc(cobNombre(g.cod))}<small>no ha confirmado</small>${puedeAsignar() ? `<button class="mini" data-cob="llegue" data-k="${f.k}" data-cod="${g.cod}">Llegó</button>` : ''}</span>`),
+        : `<span class="cob-per falta" title="${esc(g.tarea)}"><i>${g.cod}</i>${esc(cobNombre(g.cod))}<small>${radioDe(g.cod).camino ? `va en camino (${cobHora(radioDe(g.cod).camino)})` : 'no ha confirmado'}</small>${puedeAsignar() ? `<button class="mini" data-cob="llegue" data-k="${f.k}" data-cod="${g.cod}">Llegó</button>` : ''}</span>`),
       ...f.refs.map(r => `<span class="cob-per ref"><i>${r.cod}</i>${esc(cobNombre(r.cod))}<small>refuerzo desde ${cobHora(r.desde)}</small>${puedeAsignar() ? `<button class="mini" data-cob="quitar" data-cod="${r.cod}">Quitar</button>` : ''}</span>`),
     ].join('');
     const abierto = cobAbierto === f.p.id;
@@ -208,8 +219,15 @@ $('#cobertura').addEventListener('click', e => {
   const a = b.dataset.cob, { min } = cobAhora(), c = estado.cob, quien = estado.usuario ? estado.usuario.nombre.split(' ')[0] : '';
   const punto = id => COB_PUNTOS.find(p => p.id === id);
   if (a === 'llegue') {
-    c.conf[b.dataset.k + '#' + b.dataset.cod] = min; cobGuardar();
+    c.conf[b.dataset.k + '#' + b.dataset.cod] = min;
     const p = b.dataset.k.split('@')[0];
+    // Si con esta llegada el punto ya tiene a toda su gente, el refuerzo queda libre (salvo que dirección pidiera mantenerlo)
+    const f = cobFilas(min).find(x => x.p.id === p);
+    if (f && f.req && f.gente.every(g => g.conf != null && !g.fuera)) {
+      const libres = c.refs.filter(r => r.punto === p && !r.mantener);
+      if (libres.length) { c.refs = c.refs.filter(r => !libres.includes(r)); registrar('🛡️ Refuerzo', `${p} ya está completo: ${libres.map(r => cobNombre(r.cod)).join(', ')} queda libre`); }
+    }
+    cobGuardar();
     registrar('📍 Llegó a su puesto', `${cobNombre(b.dataset.cod)} → ${p} ${punto(p).n}`);
     toast(b.dataset.cod === miCodCob() ? 'Coordinación ya sabe que estás en tu puesto' : `${cobNombre(b.dataset.cod)} quedó en su puesto`);
   } else if (a === 'abrir') { cobAbierto = cobAbierto === b.dataset.p ? null : b.dataset.p; if (cobAbierto) setTimeout(() => { const el = $$('#cobLista .cob-asignar')[0]; if (el) el.scrollIntoView({ block: 'nearest' }); }, 50); }
@@ -225,6 +243,13 @@ $('#cobertura').addEventListener('click', e => {
     const p = punto(b.dataset.p), t = p.turnos[+b.dataset.t], [cod] = t[3][+b.dataset.j];
     t[3].splice(+b.dataset.j, 1); guardarTurnos();
     toast(`${cobNombre(cod)} ya no está en ${p.id} de ${cobHora(t[0])} a ${cobHora(t[1])}`); return;
+  }
+  else if (a === 'walkie' || a === 'camino') {
+    const yo = miCodCob(); if (!yo) return;
+    c.radio = c.radio || {}; const r = c.radio[yo] = c.radio[yo] || {}, k = a;
+    r[k] = r[k] ? 0 : min; cobGuardar();
+    if (r[k]) registrar(a === 'walkie' ? '📻 Walkie-talkie' : '🚶 En camino', a === 'walkie' ? `${cobNombre(yo)} activó su walkie-talkie` : `${cobNombre(yo)} va en camino a su puesto`);
+    toast(r[k] ? (a === 'walkie' ? 'Listo: la dirección ve que tu walkie está activo' : 'La dirección ve que vas en camino') : 'Quitado');
   }
   else if (a === 'plan') { cobPlan = b.dataset.p; pintarCobertura(); $('#cobPlanSel').scrollIntoView({ block: 'center' }); return; }
   else if (a === 'mapa') {
