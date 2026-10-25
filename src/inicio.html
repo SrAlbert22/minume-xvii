@@ -24,6 +24,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+html.modo-evento .solo-demo{display:none!important}
 html{background:var(--fondo)}
 body{margin:0;min-height:100%;color:var(--texto);font:15px/1.5 var(--f-txt);
   background:radial-gradient(1100px 620px at 10% -12%,#0043c5,transparent 58%),radial-gradient(900px 600px at 105% -5%,#002193,transparent 55%),linear-gradient(180deg,#0a0464,var(--fondo) 60%);background-attachment:fixed;
@@ -293,7 +294,7 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
     <div class="der">
       <span class="reloj" id="reloj">--:--</span>
       <span class="pastilla" id="red"><span class="pt"></span><span id="redTxt">En línea</span></span>
-      <button class="sim" id="sim" type="button" aria-pressed="false" title="Muestra la página como si fuera el 15 de noviembre a las 10:20">Simular<span class="largo"> día del evento</span></button>
+      <button class="sim solo-demo" id="sim" type="button" aria-pressed="false" title="Muestra la página como si fuera el 15 de noviembre a las 10:20">Simular<span class="largo"> día del evento</span></button>
     </div>
   </header>
 
@@ -376,7 +377,7 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
   </section>
 
   <div class="pie-marca"><img src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas" style="height:22px"><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD"></div>
-  <footer class="pie">
+  <footer class="pie solo-demo">
     <span>DEMO · datos de ejemplo. Códigos de prueba:</span>
     <div class="cods" id="cods"></div>
     <span>Subdirección:</span>
@@ -560,7 +561,7 @@ function aplicarConfigInicio() {
 }
 /* ---------- Reloj (real o simulado para la reunión) ---------- */
 const SIM_INICIO = new Date('2026-11-15T10:20:00-04:00').getTime();
-let sim = leerLS('minume.portal.sim', null); // { desde: ms reales cuando se activó }
+let sim = window.MINUME_DEMO === false ? null : leerLS('minume.portal.sim', null); // { desde: ms reales cuando se activó }
 const ahora = () => sim ? new Date(SIM_INICIO + (Date.now() - sim.desde)) : new Date();
 $('#sim').addEventListener('click', () => {
   sim = sim ? null : { desde: Date.now() }; guardarLS('minume.portal.sim', sim);

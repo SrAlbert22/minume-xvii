@@ -51,6 +51,7 @@ function pintarAtenciones() {
     </div>`;
   }).join('') : `<p class="cob-sub">${atVer === 'punto' ? 'No hay nadie en el punto ahora.' : 'Todavía no hay atenciones hoy.'}</p>`;
   $('#atExp').hidden = coord;
+  if (typeof pintarBorrarSalud === 'function') pintarBorrarSalud();
 }
 $('#atNuevo').onclick = () => ventanaCaso({});
 $('#atFormArea').onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return; atFormArea = b.dataset.a; pintarFormAt(); };

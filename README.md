@@ -111,3 +111,15 @@ Mapa: maqueta 3D propia hecha en Blender · calles y contornos © colaboradores 
 - Las acreditaciones de todas las mesas van en `minume.compartido.acreditados` (una entrada por delegado): si dos mesas escanean a la vez, la base junta las dos y nadie se acredita dos veces.
 - La lista oficial de delegados (Excel o CSV con columnas nombre, comision, delegacion, colegio) la sube la subdirección de Acreditación o Coordinación general y llega a todas las mesas (`minume.compartido.config.delegados`). Súbela antes de imprimir los gafetes: los QR usan el número de fila (D-001, D-002…).
 - Cambios en la base: sección «Acreditación con sistema propio» de `supabase/esquema.sql`.
+
+## Antes del evento: modo evento
+
+1. En Coordinación general → «Códigos de acceso», entra con **tu código personal** (no con CG-0001) y toca **«Anular los N códigos de prueba»**.
+2. Arma sin nada de demostración y publica:
+   - `python herramientas/armar.py --evento` (quita la franja DEMO, los códigos de prueba escritos en la página, «Simular día del evento», los botones de simular y el reloj simulado).
+   - Copia `dist/` a una carpeta fuera del repositorio y ejecuta `npx vercel deploy --prod --yes --scope itsalberthjesus-7130s-projects`.
+3. Para volver a la demostración: `python herramientas/armar.py` (sin `--evento`) y publica otra vez.
+
+## Después del evento: datos de salud
+
+En Bienestar → «Expedientes», la subdirección de Bienestar o Coordinación general tocan **«Borrar los datos de salud»** (piden escribir BORRAR). Se borran todos los casos, las alergias y las fotos de los expedientes, en todos los teléfonos. Descarga antes el PDF o el Excel si la subsecretaría lo necesita.

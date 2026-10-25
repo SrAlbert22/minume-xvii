@@ -2,13 +2,13 @@
   <section id="delegados" data-roles="acreditacion coordinacion">
     <div class="titulo-sec"><span class="n">01</span><h2>Acreditación de delegados</h2><span class="chip amarillo">NUEVO</span></div>
     <p class="lead">Escanea el QR del delegado, revisa sus datos y confirma. Si se va el internet, sigue funcionando: todo se guarda en el teléfono y se sube solo cuando vuelve la señal.</p>
-    <div class="sync" id="dSync"><span class="punto"></span><b id="dSyncTxt">En línea · todo guardado</b><button id="dOffline" class="sec-mini">Simular sin internet</button></div>
+    <div class="sync" id="dSync"><span class="punto"></span><b id="dSyncTxt">En línea · todo guardado</b><button id="dOffline" class="sec-mini solo-demo">Simular sin internet</button></div>
     <div class="rejilla r2" style="margin-top:12px">
       <div class="tarjeta">
         <b class="cond" style="font-size:26px">Escanear QR del delegado</b>
         <div class="visor"><video id="video2" playsinline muted></video><div class="mira"></div><div class="visor-msg" id="visorMsg2">La cámara está apagada.</div></div>
         <button class="boton" id="bCamara2" style="margin-top:12px">Abrir la cámara</button>
-        <div class="prueba" id="simDel"><b>Probar sin cámara (solo en esta demo):</b><br><button data-sim="ok">QR de un delegado</button><button data-sim="repetido">Ya acreditado</button><button data-sim="falso">QR inventado</button></div>
+        <div class="prueba solo-demo" id="simDel"><b>Probar sin cámara (solo en esta demo):</b><br><button data-sim="ok">QR de un delegado</button><button data-sim="repetido">Ya acreditado</button><button data-sim="falso">QR inventado</button></div>
         <label for="dBuscar" style="margin-top:16px">🔎 Sin QR: busca por nombre, colegio o delegación</label>
         <input id="dBuscar" placeholder="Ej.: Pérez, Japón, Liceo…" autocomplete="off">
         <div id="dResultados"></div>

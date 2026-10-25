@@ -110,3 +110,10 @@
     #trTiles .tile b { font-size: 24px; }
     #trTiles .tile small { font-size: 11px; line-height: 1.2; display: block; }
   }
+
+  /* Borrar los datos de salud al terminar el evento */
+  .borrar-salud { margin-top: 18px; display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; border: 1px dashed rgba(255, 107, 122, .5); }
+  .borrar-salud[hidden] { display: none; }
+  .borrar-salud b { display: block; color: #ff9aa4; font-size: 15px; }
+  .borrar-salud small { display: block; color: var(--suave); font-size: 13px; max-width: 70ch; margin-top: 2px; }
+  .borrar-salud .boton { border-color: rgba(255, 107, 122, .6); color: #ffc2c8; }

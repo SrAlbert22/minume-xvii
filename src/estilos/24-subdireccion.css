@@ -55,3 +55,8 @@
   .sd-turnos li.sd-ahora { background: rgba(0, 181, 255, .16); outline: 1px solid rgba(0, 181, 255, .5); }
   .sd-turnos li.sd-paso { opacity: .55; }
   .sd-turnos-acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  /* Íconos de línea de «lo que le toca» */
+  .sd-toca .sd-ic { flex: none; align-self: center; color: var(--suave); }
+  .sd-toca .sd-ic-ok, .sd-toca .sd-ic-libre { color: #2fd38c; }
+  .sd-toca .sd-ic-espera { color: #ffd23f; }
+  .sd-toca .sd-ic-pin { color: var(--m-celeste, #00b5ff); }

@@ -201,4 +201,8 @@ def main():
 
 
 if __name__ == '__main__':
+    # Modo evento: sin franja DEMO, sin códigos de prueba a la vista, sin «Simular» y con el reloj real siempre
+    if '--evento' in sys.argv:
+        CONFIG_JS += " window.MINUME_DEMO = false; document.documentElement.classList.add('modo-evento');"
+        print('Modo evento: sin nada de demostración')
     main()

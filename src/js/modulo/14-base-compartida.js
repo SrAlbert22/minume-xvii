@@ -6,7 +6,7 @@ const guardarComp = (k, v) => { try { localStorage.setItem(CLAVE_COMP(k), JSON.s
 const nuevoId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 // Hora del evento: siempre la de República Dominicana. Si en el Inicio está encendido "Simular día del evento", usa ese reloj.
 function ahoraEvento() {
-  try { const s = JSON.parse(localStorage.getItem('minume.portal.sim') || 'null'); if (s && s.desde) return new Date(new Date('2026-11-15T10:20:00-04:00').getTime() + (Date.now() - s.desde)); } catch {}
+  if (window.MINUME_DEMO !== false) try { const s = JSON.parse(localStorage.getItem('minume.portal.sim') || 'null'); if (s && s.desde) return new Date(new Date('2026-11-15T10:20:00-04:00').getTime() + (Date.now() - s.desde)); } catch {}
   return new Date();
 }
 const ahoraMs = () => ahoraEvento().getTime();

@@ -58,3 +58,8 @@
   .cod-fila small { display: block; color: var(--suave); font-size: 12px; }
   .cod-fila.anulado { opacity: .5; }
   .cod-pre { font: 800 15px 'Barlow Condensed'; padding: 4px 8px; border-radius: 8px; background: rgba(255, 210, 63, .14); color: var(--amarillo); }
+  /* Aviso de códigos de prueba activos (Códigos de acceso) */
+  .cod-prueba { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 10px 0; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 210, 63, .5); background: rgba(255, 210, 63, .08); }
+  .cod-prueba[hidden] { display: none; }
+  .cod-prueba b { display: block; color: #ffd23f; }
+  .cod-prueba small { color: var(--suave); font-size: 13px; }

@@ -32,6 +32,7 @@
   .rail a.on { color: #fff; background: rgba(47, 123, 255, .2); border-color: rgba(47, 123, 255, .5); }
   .rail a.nuevo::after { content: 'NUEVO'; margin-left: 6px; font-size: 9px; font-weight: 800; color: #1d1500; background: var(--amarillo); padding: 1px 5px; border-radius: 6px; }
 
+  html.modo-evento .solo-demo { display: none !important; }   /* «armar.py --evento» */
   main { max-width: 1720px; margin: 0 auto; padding: 22px 18px 80px; }
   section { margin-top: 56px; }
   .titulo-sec { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }

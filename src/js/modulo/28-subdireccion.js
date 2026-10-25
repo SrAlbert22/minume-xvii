@@ -3,7 +3,7 @@
 // (Seguridad y Traslado es un solo equipo), quién está activo, quién no ha entrado,
 // quién tiene los avisos al teléfono y los datos que puede editar. Coordinación general (la dirección) ve todo el evento.
 // La lista sale de la base (minume_mi_equipo): solo devuelve el equipo de quien la pide.
-const GRUPOS_SD = { seguridad: '🛡️ Seguridad y Traslado', asistencia: '🔷 Asistentes de comisión', coordinacion: '⭐ Coordinación', bienestar: '💚 Bienestar', eventos: '🎤 Eventos y Protocolo' };
+const GRUPOS_SD = { seguridad: 'Seguridad y Traslado', asistencia: 'Asistentes de comisión', coordinacion: 'Coordinación', bienestar: 'Bienestar', eventos: 'Eventos y Protocolo' };
 const sd = { filas: null, vista: null, cargado: 0, cargando: false, error: '', abiertos: new Set() };
 function veSubdireccion() { return esDir() && !['coordinacion', 'asistencia', 'todo'].includes(SISTEMA); }   // declarada así porque el arranque la usa antes de llegar aquí
 
@@ -21,20 +21,25 @@ function staffDelEquipo(filas) {
   return l;
 }
 // Lo que le toca a cada persona ahora: su punto y tarea (o el refuerzo), si ya confirmó, su siguiente turno, sus regionales y su comisión
+// Íconos de línea para lo que le toca a cada persona (antes eran emojis)
+const SD_IC = { pin: 'M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', tarea: 'M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9',
+  ok: 'M4 12l5 5L20 6', espera: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z', libre: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z', despues: 'M5 12h14M13 6l6 6-6 6',
+  grupo: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 11a3 3 0 1 0 0-6M3 20a6 6 0 0 1 12 0M15 14a6 6 0 0 1 6 6', comision: 'M4 6h16v12H4zM8 10h8M8 14h5' };
+const sdIco = k => `<svg class="sd-ic sd-ic-${k}" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${SD_IC[k] || SD_IC.pin}"/></svg>`;
 function queLeToca(p) {
   const l = [];
   if (p.cob) {
     cobEstado(); const { min } = cobAhora(), o = cobOcupacion(min)[p.cob], ref = estado.cob.refs.find(r => r.cod === p.cob), prox = cobProximo(p.cob, min);
-    if (ref) { const pt = COB_PUNTOS.find(x => x.id === ref.punto); l.push(['📍', `Refuerzo en ${ref.punto}${pt ? ' · ' + pt.n : ''}`, 'sd-ahora']); }
+    if (ref) { const pt = COB_PUNTOS.find(x => x.id === ref.punto); l.push(['pin', `Refuerzo en ${ref.punto}${pt ? ' · ' + pt.n : ''}`, 'sd-ahora']); }
     else if (o) {
       const ok = estado.cob.conf[claveSlot(o.p, o.t) + '#' + p.cob] != null;
-      l.push(['📍', `${o.p.id} · ${o.p.n}`, 'sd-ahora'], ['🛠️', `${o.tarea} · hasta las ${cobHora(o.t[1])}`, ''], [ok ? '✅' : '⏳', ok ? 'Ya está en su puesto' : 'No ha confirmado que llegó', ok ? 'sd-verde' : 'sd-amarillo']);
-    } else if (p.cob !== 'DIR-S') l.push(['🟢', 'Libre ahora (se puede mandar de refuerzo)', '']);
-    if (prox) l.push(['⏭️', `Después: ${cobHora(prox.t[0])} · ${prox.p.id} ${prox.p.n}`, '']);
+      l.push(['pin', `${o.p.id} · ${o.p.n}`, 'sd-ahora'], ['tarea', `${o.tarea} · hasta las ${cobHora(o.t[1])}`, ''], [ok ? 'ok' : 'espera', ok ? 'Ya está en su puesto' : 'No ha confirmado que llegó', ok ? 'sd-verde' : 'sd-amarillo']);
+    } else if (p.cob !== 'DIR-S') l.push(['libre', 'Libre ahora (se puede mandar de refuerzo)', '']);
+    if (prox) l.push(['despues', `Después: ${cobHora(prox.t[0])} · ${prox.p.id} ${prox.p.n}`, '']);
   }
   const regs = REGIONALES.filter(r => mismoNombre(r.enc, p.nombre));
-  if (regs.length) l.push(['🧑‍🤝‍🧑', `Encargado de ${regs.map(r => r.n).join(', ')}`, '']);
-  if (p.comision && ASIGNA[p.comision]) l.push(['🔷', `Comisión ${p.comision} · ${ASIGNA[p.comision][1]}`, '']);
+  if (regs.length) l.push(['grupo', `Encargado de ${regs.map(r => r.n).join(', ')}`, '']);
+  if (p.comision && ASIGNA[p.comision]) l.push(['comision', `Comisión ${p.comision} · ${ASIGNA[p.comision][1]}`, '']);
   return l;
 }
 
@@ -84,11 +89,11 @@ function pintarSubdireccion() {
         const ult = ultimaOrden(p.ref);
         return `<div class="sd-persona"><span class="sd-punto ${est[0]}"></span><div><b>${esc(p.nombre)}${p.yo ? ' (tú)' : ''}</b>
           <small>${p.nivel && p.nivel !== 'voluntario' ? `<b style="color:var(--amarillo)">${NIVELES[p.nivel] || esc(p.nivel)}</b> · ` : ''}${p.comision ? esc(p.comision) + ' · ' : ''}${p.area ? (p.area === 'emocional' ? 'Emocional · ' : 'Físico · ') : ''}${est[1]}${p.prueba ? ' · código de prueba' : ''}</small>
-          ${(() => { const t = queLeToca(p); return t.length ? `<ul class="sd-toca">${t.map(([i, x, c]) => `<li class="${c}"><span>${i}</span>${esc(x)}</li>`).join('')}</ul>` : ''; })()}
+          ${(() => { const t = queLeToca(p); return t.length ? `<ul class="sd-toca">${t.map(([i, x, c]) => `<li class="${c}">${sdIco(i)}${esc(x)}</li>`).join('')}</ul>` : ''; })()}
           ${p.cob && p.cob !== 'DIR-S' ? turnosHtml(p) : ''}
-          ${ult ? `<small class="sd-orden">📣 ${esc(ult.que)} · <span class="chip ${EST_ORD[ult.estado][1]}">${EST_ORD[ult.estado][0]}</span> ${horaDR(ult.tE || ult.t)}</small>` : ''}</div>
+          ${ult ? `<small class="sd-orden">${esc(ult.que)} · <span class="chip ${EST_ORD[ult.estado][1]}">${EST_ORD[ult.estado][0]}</span> ${horaDR(ult.tE || ult.t)}</small>` : ''}</div>
           ${!p.yo && p.ref ? `<button class="mini sd-mandar" type="button" data-mandar="${esc(p.ref)}">Mandar</button>` : ''}
-          ${conDatos && !p.sinCodigo ? `<span class="sd-push ${p.avisos ? 'on' : ''}" title="${p.avisos ? 'Tiene los avisos al teléfono activados' : 'No ha activado los avisos al teléfono: los SOS no le suenan con el teléfono bloqueado'}">${p.avisos ? '📱 ✓' : '📱 ✗'}</span>` : ''}</div>`;
+          ${conDatos && !p.sinCodigo ? `<span class="sd-push ${p.avisos ? 'on' : ''}" title="${p.avisos ? 'Tiene los avisos al teléfono activados' : 'No ha activado los avisos al teléfono: los SOS no le suenan con el teléfono bloqueado'}">${p.avisos ? 'Avisos sí' : 'Sin avisos'}</span>` : ''}</div>`;
       }).join('')}</div></div>`;
   }).join('') : `<p class="cob-sub">${q ? 'Nadie coincide con la búsqueda.' : 'Todavía no hay códigos para tu equipo. Coordinación general los crea en «Datos del evento → Códigos de acceso».'}</p>`);
   // solo las listas que este equipo edita (las mismas reglas que la base)

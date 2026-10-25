@@ -317,5 +317,24 @@ async function exportarExpedienteCaso(x) {
   });
 }
 
+// ---- Después del evento: borrar todos los datos de salud (subdirección de Bienestar o Coordinación general) ----
+const puedeBorrarSalud = () => !!estado.usuario && (SISTEMA === 'coordinacion' || (SISTEMA === 'bienestar' && esDir()));
+function pintarBorrarSalud() { const c = $('#atBorrar'); if (c) c.hidden = !puedeBorrarSalud(); }
+$('#atBorrarBtn').onclick = async () => {
+  if (!puedeBorrarSalud()) return;
+  const l = leerBien(), casos = l.filter(x => !esAlerta(x));
+  if (!l.length) return toast('No hay datos de salud guardados');
+  if ((prompt(`Se van a borrar ${casos.length} casos y ${l.length - casos.length} alertas médicas, con sus fotos, en todos los teléfonos. No se puede deshacer.
+
+Escribe BORRAR para confirmar.`) || '').trim().toUpperCase() !== 'BORRAR') return toast('No se borró nada');
+  const b = $('#atBorrarBtn'); b.disabled = true; toast('Borrando…');
+  let fotosMal = 0;
+  if (window.MINUME_RPC) for (const x of casos) { try { await window.MINUME_RPC('minume_foto_borrar', { p_clave: claveFotoBien(x.id) }); fotos.delete(claveFotoBien(x.id)); } catch { fotosMal++; } }
+  guardarComp('atenciones', []);
+  registrar('💚 Datos de salud', `Se borraron ${casos.length} casos y ${l.length - casos.length} alertas`);
+  b.disabled = false; pintarCasos(); pintarAtenciones(); pintarTablero();
+  toast(fotosMal ? `Casos borrados. ${fotosMal} fotos no se pudieron borrar: vuelve a intentarlo con internet.` : 'Listo: se borraron todos los datos de salud');
+};
+pintarBorrarSalud();
 addEventListener('storage', e => { if (e.key === CLAVE_COMP('atenciones') || e.key === CLAVE_AVISOS) { pintarCasos(); } });
 setInterval(() => { if (seVe($('#trCola'))) pintarCasos(); }, 20000);
