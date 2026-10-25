@@ -83,9 +83,11 @@ function modoApp() {
   caja.innerHTML = `<h2 class="accesos-t">¿Qué quieres hacer?</h2><div class="accesos-g">${ids.map(id => { const [i, n, d] = SECCION[id]; return `<button type="button" class="acceso${id === principalDe(u) ? ' principal' : ''}" data-ir="${id}" title="${d}"><span class="acceso-ic">${ico(i)}</span><b>${n}</b></button>`; }).join('')}</div>`;
   // barra de abajo: Inicio · lo principal del equipo · Chat · Mapa · Comunicados
   const abajo = ['inicio', principalDe(u), 'chat', 'mapa', 'comunicados'].filter((id, k, l) => id && l.indexOf(id) === k && (id === 'inicio' || ids.includes(id)));
-  const corto = { chat: 'Chat', inicio: 'Inicio', mapa: 'Mapa', comunicados: 'Avisos', 'comisiones-vivo': 'Comisiones', datos: 'Datos', eventos: 'Eventos', listas: 'Mis listas' };
+  const corto = { chat: 'Chat', inicio: 'Inicio', mapa: 'Mapa', comunicados: 'Avisos', 'comisiones-vivo': 'Comisiones', datos: 'Datos', eventos: 'Eventos', listas: 'Mis listas', casos: 'Casos', cobertura: 'Cobertura', subdireccion: 'Mi equipo', delegados: 'Delegados', invitados: 'Invitados' };
   $('#barraAbajo').style.gridTemplateColumns = `repeat(${abajo.length}, minmax(0, 1fr))`;
   $('#barraAbajo').innerHTML = abajo.map(id => `<button type="button" data-ir="${id}">${ico(SECCION[id][0], 22)}<span>${corto[id] || SECCION[id][1]}</span></button>`).join('');
+  // menú de secciones (arriba en tableta, a la izquierda en PC): el mismo ícono y nombre que los botones del inicio
+  $$('#rail a').forEach(a => { const id = a.getAttribute('href').slice(1), s = SECCION[id]; if (!s) return; const ins = a.querySelector('.insignia'); a.innerHTML = `${ico(s[0], 18)}<span>${s[1]}</span>`; a.title = s[2]; if (ins) a.append(ins); });
   // «Volver» arriba de cada sección
   for (const s of seccionesDe()) if (s.id !== 'inicio' && !s.querySelector(':scope > .volver')) s.insertAdjacentHTML('afterbegin', `<button type="button" class="volver" data-ir="inicio">← Volver al inicio</button>`);
   if (window.CHAT_LISTO) pintarChat();
@@ -126,6 +128,13 @@ Element.prototype.scrollIntoView = function (...a) {
   rail.addEventListener('click', e => { if (movio) { e.preventDefault(); e.stopPropagation(); movio = false; } }, true);
   // la sección abierta siempre queda a la vista en el menú
   window.railALaVista = () => { const a = rail.querySelector('a.on'); if (a && a.offsetParent) rail.scrollTo({ left: a.offsetLeft - rail.clientWidth / 2 + a.offsetWidth / 2 }); };
+})();
+// En PC el menú va fijo a la izquierda, debajo de la barra de arriba: aquí se mide dónde termina esa barra
+(() => {
+  const fila = $('.cab-fila'); if (!fila) return; let pend = false;
+  const medir = () => { pend = false; document.documentElement.style.setProperty('--cab-h', Math.max(0, Math.round(fila.getBoundingClientRect().bottom)) + 'px'); };
+  const pedir = () => { if (!pend) { pend = true; requestAnimationFrame(medir); } };
+  addEventListener('scroll', pedir, { passive: true }); addEventListener('resize', pedir); new ResizeObserver(pedir).observe(fila); medir();
 })();
 // listo: desde aquí el inicio de sesión ya arma la navegación
 window.NAV_LISTA = true;

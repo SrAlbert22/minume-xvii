@@ -19,7 +19,7 @@ function iniciarGps() {
       lecturas.push([p.coords.latitude, p.coords.longitude, acc]); if (lecturas.length > 4) lecturas.shift();
       let w = 0, la = 0, lo = 0; for (const [a, b, c] of lecturas) { const k = 1 / (c * c); w += k; la += a * k; lo += b * k; } // las lecturas más precisas pesan más
       miPos = [la / w, lo / w]; miPos.real = true; miPos.acc = Math.round(Math.min(...lecturas.map(l => l[2])));
-    }, () => { miPos = null; if (!avisoGps) { avisoGps = true; toast('No diste permiso de ubicación: en la demo usamos una posición de ejemplo'); } }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+    }, () => { miPos = null; if (!avisoGps) { avisoGps = true; let ya = null; try { ya = localStorage.getItem('minume.aviso.gps'); localStorage.setItem('minume.aviso.gps', '1'); } catch {} if (!ya) toast('No diste permiso de ubicación: en la demo usamos una posición de ejemplo'); } }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   }
 }
 if (compartiendo()) iniciarGps();
