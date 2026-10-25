@@ -9,6 +9,10 @@ const CODIGOS = {
   'EP-2603': { nombre: 'Paola Ventura', rol: 'eventos', acr: 'ACR-1C0RD' },
   'BI-2207': { nombre: 'Sofía Matos', rol: 'bienestar', area: 'fisico', acr: 'ACR-8B1EN' },
   'BI-3318': { nombre: 'Marcos Peña', rol: 'bienestar', area: 'emocional', acr: 'ACR-8B1EN' },
+  // Subdirección de prueba de cada equipo: entran directo a «Mi subdirección»
+  'SE-4400': { nombre: 'Subdirección de Seguridad y Traslado', rol: 'seguridad', nivel: 'subdirector', acr: 'ACR-1C0RD' },
+  'BI-4400': { nombre: 'Subdirección de Bienestar', rol: 'bienestar', area: 'fisico', nivel: 'subdirector', acr: 'ACR-1C0RD' },
+  'EP-4400': { nombre: 'Subdirección de Eventos y Protocolo', rol: 'eventos', nivel: 'subdirector', acr: 'ACR-1C0RD' },
 };
 const ROLES = { asistencia: ['🔷 Asistencia', '#45c8ff'], acreditacion: ['🪪 Acreditación', '#a974ff'], seguridad: ['🛡️ Seguridad y Traslado', '#ff4d5e'], traslado: ['🛡️ Seguridad y Traslado', '#ff4d5e'], coordinacion: ['⭐ Coordinación', '#ffd23f'], bienestar: ['💚 Bienestar', '#2fd38c'], eventos: ['🎤 Eventos y Protocolo', '#f472b6'] };
 // Niveles (como en la organización): Secretaría General (Coordinación general) → Subdirección (subsecretarios) → Coordinación → voluntarios.

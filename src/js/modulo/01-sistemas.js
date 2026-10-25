@@ -7,7 +7,7 @@ const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAl
 const SISTEMA = window.MINUME_SISTEMA || 'todo';
 const SISTEMAS = {
   todo: { nombre: 'Subsecretaría de Asistencia', roles: ['asistencia', 'acreditacion', 'seguridad', 'traslado', 'coordinacion'], letra: 'M' },
-  asistencia: { nombre: 'Subsecretaría de Asistencia', roles: ['asistencia', 'coordinacion'], letra: 'A', color: '#00b5ff', prefijos: ['AS', 'CO'] },
+  asistencia: { nombre: 'Asistencia, Bienvenida y Acreditación', roles: ['asistencia', 'coordinacion'], letra: 'A', color: '#00b5ff', prefijos: ['AS', 'CO'] },
   seguridad: { nombre: 'Seguridad y Traslado', roles: ['seguridad', 'traslado'], letra: 'S', color: '#e53535', prefijos: ['SE', 'TR'] },
   bienestar: { nombre: 'Bienestar', roles: ['bienestar'], letra: 'B', color: '#00fdef', prefijos: ['BI'] },
   eventos: { nombre: 'Eventos y Protocolo', roles: ['eventos'], letra: 'E', color: '#ffbeff', prefijos: ['EP'] },

@@ -918,3 +918,51 @@ create trigger minume_push_compartido after insert or update of valor on public.
   for each row when (new.clave in ('minume.compartido.avisos', 'minume.compartido.comunicados', 'minume.compartido.ordenes'))
   execute function public.minume_push_compartido();
 revoke all on function public.minume_push_compartido() from public, anon, authenticated;
+
+-- =====================================================================
+-- 2026-10-25 · Fotos de los invitados especiales (Eventos y Protocolo)
+-- Van en su propia tabla y solo se descargan cuando alguien abre «Invitados» (no con el resto de los datos).
+-- La página las achica antes de subirlas (JPEG de unos 30 KB). Las suben Eventos y Protocolo y Coordinación general.
+-- =====================================================================
+create table if not exists public.minume_fotos (
+  clave text primary key check (clave ~ '^[a-z0-9._-]{1,80}$'),
+  data text not null check (data like 'data:image/jpeg;base64,%' and char_length(data) <= 200000),
+  por text,
+  actualizado timestamptz not null default now()
+);
+alter table public.minume_fotos enable row level security;
+revoke all on public.minume_fotos from anon, authenticated;
+
+create or replace function public.minume_foto_guardar(p_token text, p_clave text, p_data text)
+returns jsonb language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); v timestamptz;
+begin
+  if c.sistema not in ('eventos', 'coordinacion') then raise exception 'Solo Eventos y Protocolo o Coordinación general suben fotos' using errcode = '42501'; end if;
+  if p_clave !~ '^inv\.[a-z0-9_-]{1,60}$' then raise exception 'Clave no permitida'; end if;
+  if p_data is null or p_data not like 'data:image/jpeg;base64,%' or char_length(p_data) > 200000 then raise exception 'La foto no es válida o es muy grande'; end if;
+  insert into public.minume_fotos (clave, data, por, actualizado) values (p_clave, p_data, left(c.nombre, 80), now())
+  on conflict (clave) do update set data = excluded.data, por = excluded.por, actualizado = now() returning actualizado into v;
+  perform realtime.send(jsonb_build_object('clave', p_clave), 'foto', 'minume-compartido', false);
+  return jsonb_build_object('clave', p_clave, 'actualizado', v);
+end $$;
+
+create or replace function public.minume_foto_borrar(p_token text, p_clave text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  if c.sistema not in ('eventos', 'coordinacion') then raise exception 'Solo Eventos y Protocolo o Coordinación general quitan fotos' using errcode = '42501'; end if;
+  delete from public.minume_fotos where clave = p_clave;
+  perform realtime.send(jsonb_build_object('clave', p_clave), 'foto', 'minume-compartido', false);
+end $$;
+
+-- Lee solo las fotos que se piden (máximo 40 a la vez); las que no existen no vienen
+create or replace function public.minume_foto_leer(p_token text, p_claves text[])
+returns jsonb language plpgsql stable security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  return coalesce((select jsonb_object_agg(f.clave, f.data) from public.minume_fotos f
+                   where f.clave = any(p_claves[1:40])), '{}'::jsonb);
+end $$;
+
+revoke all on function public.minume_foto_guardar(text, text, text), public.minume_foto_borrar(text, text), public.minume_foto_leer(text, text[]) from public;
+grant execute on function public.minume_foto_guardar(text, text, text), public.minume_foto_borrar(text, text), public.minume_foto_leer(text, text[]) to anon, authenticated;

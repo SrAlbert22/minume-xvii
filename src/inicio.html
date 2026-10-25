@@ -177,6 +177,7 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 .pie{margin-top:28px;border-top:1px solid var(--borde);padding-top:16px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--suave);font-size:13px}
 .pie .der{margin-left:auto}
 .cods{display:flex;gap:6px;flex-wrap:wrap}
+.cod.sub{border-color:rgba(255,210,63,.55);color:#ffd23f}
 .cod{border:1px solid var(--borde);background:none;border-radius:99px;padding:4px 10px;font:700 12px var(--f-txt);color:#c3d0ff;letter-spacing:.04em}
 
 /* Ventana para entrar desde un atajo */
@@ -317,6 +318,8 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
   <footer class="pie">
     <span>DEMO · datos de ejemplo. Códigos de prueba:</span>
     <div class="cods" id="cods"></div>
+    <span>Subdirección:</span>
+    <div class="cods" id="codsSub"></div>
     <button class="cod der" id="bPrueba" type="button" title="Crea un aviso de nivel 2 para ver cómo llega a los sistemas">Enviar aviso de prueba</button>
   </footer>
 </div>
@@ -365,7 +368,7 @@ const guardarLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); 
 /* ---------- Datos del evento (los mismos de los sistemas) ---------- */
 const ENLACES = window.MINUME_ENLACES;
 const EQUIPOS = {
-  asistencia: { nombre: 'Subsecretaría de Asistencia', corto: 'Asistencia', letra: 'A', color: '#00b5ff', quienes: 'Asistentes de comisión y su coordinación' },
+  asistencia: { nombre: 'Asistencia, Bienvenida y Acreditación', corto: 'Asistencia', letra: 'A', color: '#00b5ff', quienes: 'Asistentes de comisión y su coordinación' },
   seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y regionales' },
   bienestar: { nombre: 'Bienestar', corto: 'Bienestar', letra: 'B', color: '#00fdef', quienes: 'Bienestar físico y emocional' },
   eventos: { nombre: 'Eventos y Protocolo', corto: 'Eventos', letra: 'E', color: '#ffbeff', quienes: 'Ceremonias, montajes e invitados' },
@@ -374,6 +377,7 @@ const EQUIPOS = {
 // Prefijo del código → sistema. El sistema valida el código completo al entrar.
 const PREFIJOS = { AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
 const PRUEBA = ['AS-4821', 'CO-0001', 'SE-1093', 'TR-5570', 'BI-2207', 'BI-3318', 'EP-2603', 'CG-0001'];
+const PRUEBA_SUB = [['SE-4400', 'Seguridad y Traslado'], ['BI-4400', 'Bienestar'], ['EP-4400', 'Eventos y Protocolo']];   // subdirección de prueba de cada equipo
 const ATAJOS = {
   asistencia: [
     ['listas', 'lista', 'Checklist del momento', 'Lo que toca ahora'],
@@ -384,6 +388,7 @@ const ATAJOS = {
     ['bolsillo', 'bolsillo', 'Guía de bolsillo', 'Reglas y contactos']
   ],
   seguridad: [
+    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
     ['cobertura', 'cobertura', 'Cobertura de áreas', 'Quién está en cada punto'],
     ['rondas', 'lista', 'Rondas', 'Marcar cada punto'],
     ['seguridad', 'escudo', 'Avisos y SOS', 'Responder y despachar'],
@@ -392,6 +397,7 @@ const ATAJOS = {
     ['mapa', 'mapa', 'Mapa 3D', 'Salones y puntos']
   ],
   bienestar: [
+    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
     ['casos', 'corazon', 'Casos en vivo', 'Atender y derivar'],
     ['atenciones', 'tablilla', 'Registro de atenciones', 'Físico y emocional'],
     ['protocolos', 'lista', 'Protocolos', 'Qué hacer en cada caso'],
@@ -400,6 +406,7 @@ const ATAJOS = {
     ['bitacora', 'libro', 'Bitácora', 'Casos del día']
   ],
   eventos: [
+    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
     ['eventos', 'reloj', 'Eventos de hoy', 'Un botón por paso'],
     ['invitados', 'gente', 'Invitados especiales', 'Marcar quién llegó'],
     ['comunicados', 'bandera', 'Comunicados', 'Lo que manda dirección'],
@@ -748,6 +755,8 @@ $('#equipos').addEventListener('click', e => {
 /* ---------- Resto ---------- */
 $('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${a}</span><b>${p}</b></div>`).join('');
 $('#cods').innerHTML = PRUEBA.map(c => `<button class="cod" type="button" data-c="${c}">${c}</button>`).join('');
+$('#codsSub').innerHTML = PRUEBA_SUB.map(([c, n]) => `<button class="cod sub" type="button" data-c="${c}" title="Subdirección de ${n}">${c} · ${n}</button>`).join('');
+$('#codsSub').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; const i = $('#codigo'); i.value = b.dataset.c; i.dispatchEvent(new Event('input')); i.focus(); });
 $('#cods').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; const i = $('#codigo'); i.value = b.dataset.c; i.dispatchEvent(new Event('input')); i.focus(); });
 function red() { const on = navigator.onLine !== false; $('#red').classList.toggle('off', !on); $('#redTxt').textContent = on ? 'En línea' : 'Sin internet · se guarda y sincroniza después'; }
 addEventListener('online', red); addEventListener('offline', red);

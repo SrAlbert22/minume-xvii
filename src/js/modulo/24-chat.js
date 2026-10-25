@@ -2,7 +2,7 @@
 // Los mensajes se guardan en Supabase (minume_chat) y solo se leen con la sesión del código.
 // El servidor avisa en tiempo real «hay mensaje nuevo en tal canal» y cada teléfono lo pide; si no hay tiempo real, revisa cada 20 s.
 const CANALES_CHAT = {
-  general: ['General', 'Todo el staff', 'var(--m-celeste)'], asistencia: ['Asistencia', 'Subsecretaría de Asistencia', '#00b5ff'],
+  general: ['General', 'Todo el staff', 'var(--m-celeste)'], asistencia: ['Asistencia', 'Asistencia, Bienvenida y Acreditación', '#00b5ff'],
   seguridad: ['Seguridad y Traslado', 'Seguridad y traslado', '#e53535'], bienestar: ['Bienestar', 'Bienestar físico y emocional', '#00fdef'],
   eventos: ['Eventos y Protocolo', 'Eventos y protocolo', '#ffbeff'], coordinacion: ['Coordinación', 'Coordinadores de cada equipo', '#0090fb'],
 };

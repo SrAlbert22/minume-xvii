@@ -184,16 +184,60 @@ function crearVisor(caja, { capaHTML }) {
   function tam() { const w = caja.clientWidth, h = caja.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camara.aspect = w / h; camara.updateProjectionMatrix(); pedir(); }
   new ResizeObserver(tam).observe(caja);
   const vv = new THREE.Vector3();
+  // Marcas que se enciman (gente en el mismo lobby, puntos pegados): se juntan en una burbuja con el número.
+  // Al tocarla el mapa se acerca hasta que se separan; si ya no se puede acercar más, sale la lista con los nombres.
+  const RADIO_GRUPO = 30, burbujas = [];
+  const seAgrupa = (id, el) => /^(v|p):/.test(id) || (el.classList.contains('lugar-mapa') && !/\bt-(lobby|terraza)\b|\bmio\b/.test(el.className));
+  const nombreDe = el => el.title || (el.querySelector('span') || el).textContent.trim();
+  function burbuja(i) {
+    if (burbujas[i]) return burbujas[i];
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'marca3d grupo-mapa';
+    b.addEventListener('click', ev => { ev.stopPropagation(); abrirGrupo(b); });
+    capaHTML.appendChild(b); return (burbujas[i] = b);
+  }
+  function abrirGrupo(b) {
+    const l = b._grupo || []; if (!l.length) return;
+    const c = new THREE.Vector3(); l.forEach(m => c.add(m.p)); c.divideScalar(l.length); c.y = control.target.y;
+    const lejos = camara.position.distanceTo(control.target);
+    if (lejos > control.minDistance * 1.4) {
+      const off = camara.position.clone().sub(control.target).multiplyScalar(0.4); if (off.length() < control.minDistance) off.setLength(control.minDistance);
+      v.vuelo = { t0: performance.now(), dur: 650, p0: camara.position.clone(), p1: c.clone().add(off), c0: control.target.clone(), c1: c }; return pedir();
+    }
+    cerrarListaGrupo();
+    const lista = document.createElement('div'); lista.className = 'grupo-lista'; lista.style.transform = b.style.transform;
+    lista.innerHTML = `<b>${l.length} aquí</b>` + l.map((m, i) => `<button type="button" data-i="${i}">${m.el.innerHTML.includes('marca-vivo') || m.el.classList.contains('punto-mapa') ? `<span class="gl-ic">${(m.el.querySelector('.marca-vivo, i') || {}).outerHTML || ''}</span>` : ''}<span>${esc(nombreDe(m.el))}</span></button>`).join('');
+    lista.addEventListener('click', ev => { ev.stopPropagation(); const x = ev.target.closest('[data-i]'); if (x) { const el = l[+x.dataset.i].el; cerrarListaGrupo(); el.click(); } });
+    capaHTML.appendChild(lista); v.listaGrupo = lista;
+  }
+  function cerrarListaGrupo() { if (v.listaGrupo) { v.listaGrupo.remove(); v.listaGrupo = null; } }
+  lienzo.addEventListener('pointerdown', cerrarListaGrupo);
   function moverMarcas() {
     const w = caja.clientWidth, h = caja.clientHeight;
     const visto = camara.position.distanceTo(control.target) * Math.tan(camara.fov * Math.PI / 360) / Math.tan(19 * Math.PI / 180);
     capaHTML.classList.toggle('lejos', visto > (v.dosD ? 480 : 260));   // en 2D los nombres se ven casi siempre: es para saber dónde queda cada cosa
-    for (const m of v.marcas.values()) {
+    const sueltas = [];
+    for (const [id, m] of v.marcas) {
       vv.copy(m.p).project(camara);
       const ok = vv.z < 1 && Math.abs(vv.x) < 1.15 && Math.abs(vv.y) < 1.15;
-      m.el.style.display = ok ? '' : 'none';
-      if (ok) m.el.style.transform = `translate(${((vv.x + 1) / 2 * w).toFixed(1)}px, ${((1 - vv.y) / 2 * h).toFixed(1)}px) translate(-50%, ${m.centro ? '-50%' : '-100%'})`;
+      m.el.style.display = ok ? '' : 'none'; m.el.style.visibility = '';
+      if (!ok) continue;
+      const x = (vv.x + 1) / 2 * w, y = (1 - vv.y) / 2 * h;
+      m.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, ${m.centro ? '-50%' : '-100%'})`;
+      if (seAgrupa(id, m.el)) sueltas.push({ m, x, y, id });
     }
+    // grupos por cercanía en la pantalla (son pocas marcas: basta con recorrerlas)
+    const grupos = [];
+    for (const a of sueltas) { const g = grupos.find(g => Math.abs(g.x - a.x) < RADIO_GRUPO && Math.abs(g.y - a.y) < RADIO_GRUPO); if (g) { g.l.push(a); g.x = (g.x * (g.l.length - 1) + a.x) / g.l.length; g.y = (g.y * (g.l.length - 1) + a.y) / g.l.length; } else grupos.push({ x: a.x, y: a.y, l: [a] }); }
+    let n = 0;
+    for (const g of grupos) {
+      if (g.l.length < 2) continue;
+      g.l.forEach(a => { a.m.el.style.visibility = 'hidden'; });
+      const b = burbuja(n++); b._grupo = g.l.map(a => a.m); b.style.display = '';
+      b.style.transform = `translate(${g.x.toFixed(1)}px, ${g.y.toFixed(1)}px) translate(-50%, -50%)`;
+      const txt = String(g.l.length); if (b.textContent !== txt) { b.textContent = txt; b.setAttribute('aria-label', `${txt} marcas juntas: toca para verlas`); }
+      b.classList.toggle('con-gente', g.l.some(a => a.id.startsWith('v:')));
+    }
+    for (let i = n; i < burbujas.length; i++) burbujas[i].style.display = 'none';
   }
   function cuadro(t) {
     pedido = false;
