@@ -79,3 +79,16 @@
     .red-pill { padding: 5px 8px; }
   }
   @media (max-width: 360px) { .logo-marca { height: 15px; } .sos { padding: 0 8px; font-size: 13px; } .cab-fila { gap: 4px; padding: 8px 8px; } .alertas-btn, .vivo-pill.on, .salir { width: 34px; min-width: 34px; height: 34px; } }
+  /* ---------- Más cómodo en el teléfono (25 de octubre) ---------- */
+  @media (max-width: 640px) {
+    /* los avisos cortos salen encima de la barra de abajo, no tapándola */
+    body.app .toast { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); max-width: calc(100% - 32px); text-align: center; }
+    /* el voluntario ve primero lo suyo («Mi turno») y después el resumen de todos los puntos */
+    body:not(.es-dir) #cobertura.activa { display: flex; flex-direction: column; }
+    body:not(.es-dir) #cobertura > .rejilla { order: 1; margin-top: 0 !important; margin-bottom: 14px; }
+    body:not(.es-dir) #cobertura > :is(.titulo-sec, .lead, .cob-top, .volver) { order: 0; }
+    body:not(.es-dir) #cobertura > #cobTiles { order: 2; }
+    body:not(.es-dir) #cobertura > .tarjeta { order: 3; }
+    /* descargar PDF o Excel es cosa de la dirección: al voluntario no le estorba en el teléfono */
+    body:not(.es-dir) .exp-btns { display: none; }
+  }
