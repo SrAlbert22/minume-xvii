@@ -11,13 +11,13 @@ function tono(f, d, vol = .2, tipo = 'square') {
 }
 function sirena(on) {
   clearInterval(alSirena); alSirena = null;
-  if (!on || !alertasOn()) return;
+  if (!on) return;
   let alto = false; const sonar = () => { alto = !alto; tono(alto ? 1050 : 760, .42); };
   sonar(); alSirena = setInterval(sonar, 450);
 }
 function notificar(titulo, cuerpo) {
   try {
-    if (!('Notification' in window) || Notification.permission !== 'granted' || !document.hidden) return;
+    if (!('Notification' in window) || Notification.permission !== 'granted' || !document.hidden || pushActivo()) return;
     if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.ready.then(r => r.showNotification(titulo, { body: cuerpo, tag: 'minume-alerta', renotify: true, requireInteraction: true }));
     else new Notification(titulo, { body: cuerpo });
   } catch {}
@@ -31,8 +31,8 @@ function pintarBotonAlertas() {
 function activarAlertas() {
   audioListo(); tono(880, .15, .15, 'sine');
   guardar('alertas', true); pintarBotonAlertas();
-  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
-  toast('Alertas activadas: los SOS van a sonar en este teléfono');
+  if (pushPosible()) activarPush({ callado: true }).then(ok => toast(ok ? 'Alertas activadas: los SOS suenan aunque el teléfono esté bloqueado' : 'Alertas activadas: los SOS van a sonar con la página abierta'));
+  else { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {}); toast('Alertas activadas: los SOS van a sonar en este teléfono'); }
 }
 function alarmaSOS(a) {
   alActual = a;
@@ -41,13 +41,15 @@ function alarmaSOS(a) {
   $('#alTit').textContent = (a.tipo || '').replace(/^SOS · /, '');
   $('#alTxt').innerHTML = `<b>${esc(lugar)}</b>${a.comision ? ' · ' + esc(a.comision) : ''}<br>${esc(a.texto && a.texto !== a.tipo ? a.texto : '')}<br><small>Enviado por ${esc(a.por || '—')} · ${NOMBRE_SIS[a.de] || ''} · ${hora(a.t)}</small>`;
   $('#alVoy').hidden = !(a.para === SISTEMA || SISTEMA === 'todo') || CERRADO(a);
-  $('#alarma').hidden = false;
+  $('#alarma').hidden = false; document.body.classList.add('en-alarma');
   sirena(true);
   vibrar([500, 200, 500, 200, 900]); clearInterval(alVib); alVib = setInterval(() => vibrar([500, 200, 500]), 2600);
   notificar(`${$('#alEti').textContent}: ${$('#alTit').textContent}`, lugar);
 }
-function cerrarAlarma() { $('#alarma').hidden = true; sirena(false); clearInterval(alVib); vibrar(0); alActual = null; }
+function cerrarAlarma() { if (alActual) borrarNotificaciones(['sos-' + alActual.id]); $('#alarma').hidden = true; document.body.classList.remove('en-alarma'); sirena(false); clearInterval(alVib); vibrar(0); alActual = null; }
 $('#alVoy').onclick = () => { if (alActual) { cambiarAviso(alActual.id, 'camino'); toast('Avisaste que vas en camino'); registrar('🚨 Voy en camino', `${alActual.tipo} · ${alActual.salon ? 'Salón ' + alActual.salon : alActual.donde || ''}`); pintarTablero(); pintarCasos(); } cerrarAlarma(); };
 $('#alMapa').onclick = () => { const a = alActual; cerrarAlarma(); $('#mapa').scrollIntoView(); if (a && a.salon) setTimeout(() => mostrarSalon(a.salon, a.comision && ASIGNA[a.comision] ? ASIGNA[a.comision][0] : ''), 300); };
 $('#alCerrar').onclick = cerrarAlarma;
+// si el navegador no dejó sonar la sirena (nadie había tocado la página), el primer toque la arranca
+$('#alarma').addEventListener('pointerdown', () => audioListo());
 $('#bAlertas').onclick = () => { if (alertasOn()) { tono(880, .15, .15, 'sine'); toast('Las alertas ya están activas en este teléfono'); } else activarAlertas(); };

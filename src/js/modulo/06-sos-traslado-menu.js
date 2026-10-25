@@ -16,38 +16,10 @@ $('#sosEnviar').onclick = () => {
 };
 $('#bVerSeg').onclick = () => { $('#mapa').scrollIntoView(); setTimeout(() => activarCapa('seg'), 400); };
 
-// ---------- Movilización entre sedes (a pie) ----------
+// ---------- Regionales ----------
+// Las movilizaciones a pie entre sedes y el conteo del grupo se quitaron (pedido del 25 de octubre): Traslado se ocupa de las regionales.
 const minutos = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
-const LUGAR_SALIDA = { jaragua: 'j-este', sheraton: 's-oeste', malecon: 'malecon-terrace' };
-const LUGAR_LLEGADA = { jaragua: 'j-lobby', sheraton: 's-oeste', malecon: 'malecon-terrace' };
-const rutaViaje = v => calcularRuta(LUGAR_SALIDA[v.de], LUGAR_LLEGADA[v.a]);
-function viajesDeMiSede() { if (!estado.comision) return []; const s = ASIGNA[estado.comision][0]; return VIAJES.filter(v => v.de === s || v.a === s); }
-function proximoViaje() { const ahora = new Date(), m = ahora.getHours() * 60 + ahora.getMinutes(); const l = viajesDeMiSede(); return l.find(v => minutos(v.h) > m) || l[0]; }
-function pintarTraslado() {
-  if (window.REGIONALES_LISTO) pintarRegionales();
-  const mis = new Set(viajesDeMiSede());
-  $('#tLista').innerHTML = VIAJES.map(v => { const r = rutaViaje(v); return `<div class="viaje${mis.has(v) ? ' mio' : ''}"><div class="hora">${v.h}<small>${minutos(v.h) < 720 ? 'a. m.' : 'p. m.'}</small></div><div class="ruta"><b>${SEDES[v.de].corto} → ${SEDES[v.a].corto}</b><span>${esc(v.nota)}${r ? ` · ${r.metros} m, ${r.minutos} min a pie` : ''}</span></div><span class="chip ${v.estado.startsWith('A tiempo') ? 'verde' : 'amarillo'}">${esc(v.estado)}</span></div>`; }).join('');
-  const v = proximoViaje();
-  if (!v) { if (estado.comision) $('#tProx').innerHTML = `<b class="cond" style="font-size:26px;color:#fff">Hoy no hay movilizaciones para tu sede</b><div style="margin-top:6px">Si coordinación te pide acompañar a un grupo, aquí abajo están todas las salidas.</div>`; return; }
-  const r = rutaViaje(v);
-  $('#tProx').innerHTML = `<div class="contador" id="tCuenta">—</div><div style="margin:4px 0 10px">para la salida de las <b style="color:#fff">${v.h}</b></div>
-    <div class="linea-ruta"><b>${SEDES[v.de].corto}</b><i></i>🚶<i></i><b>${SEDES[v.a].corto}</b></div>
-    <div style="font-size:13.5px">📍 Salida: ${LUGAR[LUGAR_SALIDA[v.de]].n}${r ? ` · ${r.metros} m, unos ${r.minutos} min caminando` : ''}<br>🔷 Tu comisión: ${estado.comision} (${ASIGNA[estado.comision][1]})</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="boton" id="tVerMapa">🧭 Ver la ruta en el mapa</button></div>`;
-  $('#tVerMapa').onclick = () => { $('#mapa').scrollIntoView(); $('#rOrigen').value = LUGAR_SALIDA[v.de]; $('#rDestino').value = LUGAR_LLEGADA[v.a]; setTimeout(() => irA(), 300); };
-  cuentaRegresiva(v);
-}
-let reloj;
-function cuentaRegresiva(v) {
-  clearInterval(reloj);
-  const tick = () => { const el = $('#tCuenta'); if (!el) return; const ahora = new Date(); let d = minutos(v.h) * 60 - (ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds()); if (d < 0) d += 86400; const h = Math.floor(d / 3600), m = Math.floor(d % 3600 / 60); el.textContent = h ? `${h} h ${m} min` : `${m} min`; };
-  tick(); reloj = setInterval(tick, 15000);
-}
-const total = 32;
-function pintarAbordaje() { $('#aCuenta').textContent = estado.abordo; const f = total - estado.abordo; $('#aEstado').textContent = f > 0 ? `Faltan ${f}` : f === 0 ? 'Completo ✓' : `Sobran ${-f}`; $('#aEstado').className = 'chip ' + (f === 0 ? 'verde' : f < 0 ? 'rojo' : 'amarillo'); }
-$('#aMas').onclick = () => { estado.abordo++; pintarAbordaje(); };
-$('#aMenos').onclick = () => { estado.abordo = Math.max(0, estado.abordo - 1); pintarAbordaje(); };
-$('#aConfirmar').onclick = () => { if (estado.abordo !== total) return toast(`El conteo no cuadra: ${estado.abordo} de ${total}`); registrar('🚶 Movilización', `Grupo completo: ${total} delegados`); toast('Grupo completo, confirmado y registrado'); };
+function pintarTraslado() { if (window.REGIONALES_LISTO) pintarRegionales(); }
 
 // ---------- Ranking ----------
 function pintarRanking() {

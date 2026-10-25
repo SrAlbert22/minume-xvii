@@ -621,3 +621,300 @@ create or replace function public.minume_chat_canales(c public.minume_codigos)
               when c.rol = 'coordinacion' or c.nivel in ('coordinacion', 'subdirector') then array['general', c.sistema, 'coordinacion']
               else array['general', c.sistema] end
 $function$;
+
+-- =====================================================================
+-- 2026-10-25 · Avisos al teléfono (Web Push): los SOS, el nivel 3, los comunicados urgentes y los mensajes
+-- urgentes del chat suenan aunque el teléfono esté bloqueado o la página cerrada.
+-- Cómo funciona: cada teléfono que activa «Avisos al teléfono» guarda su suscripción (minume_push) con su sesión.
+-- Cuando entra algo urgente, un disparador anota el aviso en la cola (minume_push_cola) con quién debe recibirlo
+-- y llama a la Edge Function «minume-push» (supabase/functions/minume-push), que lo cifra y lo envía en paralelo.
+-- Las llaves VAPID están en el Vault de Supabase (minume_vapid_publica y minume_vapid_privada), nunca en el código.
+-- Para un proyecto nuevo: node herramientas/llaves_vapid.mjs, guardar lo que imprime con vault.create_secret,
+-- poner la pública en armar.py (VAPID) y cambiar la dirección de la función en minume_push_encolar.
+-- =====================================================================
+create extension if not exists pg_net with schema extensions;
+
+create table if not exists public.minume_push (
+  id bigint generated always as identity primary key,
+  codigo_id bigint not null references public.minume_codigos(id) on delete cascade,
+  endpoint text not null unique check (char_length(endpoint) <= 1000),
+  p256dh text not null check (p256dh ~ '^[A-Za-z0-9_-]{80,100}$'),
+  auth text not null check (auth ~ '^[A-Za-z0-9_-]{16,32}$'),
+  dispositivo text check (char_length(dispositivo) <= 60),
+  creado timestamptz not null default now(),
+  actualizado timestamptz not null default now(),
+  ultimo_ok timestamptz,
+  fallos int not null default 0
+);
+create index if not exists minume_push_codigo_idx on public.minume_push (codigo_id);
+
+create table if not exists public.minume_push_cola (
+  id bigint generated always as identity primary key,
+  codigos bigint[] not null,               -- a quién va (códigos con teléfono suscrito)
+  datos jsonb not null,                    -- título, texto, etiqueta y sección que se abre al tocarlo
+  ttl int not null default 3600,           -- segundos que el servicio de push lo guarda si el teléfono está apagado
+  enviar_desde timestamptz not null default now(),
+  estado text not null default 'pendiente' check (estado in ('pendiente', 'enviando', 'listo')),
+  intentos int not null default 0,
+  tomado timestamptz,
+  creado timestamptz not null default now(),
+  enviados int, fallidos int, error text
+);
+create index if not exists minume_push_cola_pendientes_idx on public.minume_push_cola (id) where estado <> 'listo';
+
+alter table public.minume_push enable row level security;
+alter table public.minume_push_cola enable row level security;
+revoke all on public.minume_push, public.minume_push_cola from anon, authenticated;
+
+-- Solo se aceptan direcciones de los servicios de push de los navegadores (así nadie usa la función para llamar a otro sitio)
+create or replace function public.minume_push_valida(p_sub jsonb) returns boolean
+language sql immutable set search_path = public as $$
+  select coalesce(p_sub->>'endpoint', '') ~ '^https://(fcm\.googleapis\.com|android\.googleapis\.com|updates\.push\.services\.mozilla\.com|push\.services\.mozilla\.com|[a-z0-9-]+(\.[a-z0-9-]+)*\.push\.apple\.com|[a-z0-9-]+(\.[a-z0-9-]+)*\.notify\.windows\.com)/'
+     and char_length(p_sub->>'endpoint') <= 1000
+     and coalesce(p_sub->'keys'->>'p256dh', '') ~ '^[A-Za-z0-9_-]{80,100}$'
+     and coalesce(p_sub->'keys'->>'auth', '') ~ '^[A-Za-z0-9_-]{16,32}$'
+$$;
+
+-- El teléfono se suscribe (o cambia de código): una fila por teléfono; máximo 10 teléfonos por código
+create or replace function public.minume_push_suscribir(p_token text, p_sub jsonb, p_dispositivo text default null)
+returns jsonb language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); n int;
+begin
+  if not public.minume_push_valida(p_sub) then raise exception 'Suscripción no válida'; end if;
+  insert into public.minume_push (codigo_id, endpoint, p256dh, auth, dispositivo)
+  values (c.id, p_sub->>'endpoint', p_sub->'keys'->>'p256dh', p_sub->'keys'->>'auth', left(p_dispositivo, 60))
+  on conflict (endpoint) do update set codigo_id = excluded.codigo_id, p256dh = excluded.p256dh, auth = excluded.auth,
+    dispositivo = excluded.dispositivo, actualizado = now(), fallos = 0;
+  delete from public.minume_push where id in (select id from public.minume_push where codigo_id = c.id order by actualizado desc offset 10);
+  select count(*) into n from public.minume_push where codigo_id = c.id;
+  return jsonb_build_object('ok', true, 'telefonos', n);
+end $$;
+
+create or replace function public.minume_push_quitar(p_token text, p_endpoint text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  delete from public.minume_push where endpoint = p_endpoint and codigo_id = c.id;
+end $$;
+
+-- El navegador renovó la suscripción por su cuenta (pasa poco): la dirección vieja prueba que es el mismo teléfono
+create or replace function public.minume_push_cambio(p_viejo text, p_sub jsonb)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public.minume_push_valida(p_sub) then return; end if;
+  update public.minume_push set endpoint = p_sub->>'endpoint', p256dh = p_sub->'keys'->>'p256dh', auth = p_sub->'keys'->>'auth',
+    actualizado = now(), fallos = 0
+  where endpoint = p_viejo and not exists (select 1 from public.minume_push x where x.endpoint = p_sub->>'endpoint');
+end $$;
+
+-- Anota un aviso en la cola y despierta a la Edge Function (pg_net la llama al terminar la transacción, sin hacer esperar a nadie)
+create or replace function public.minume_push_encolar(p_codigos bigint[], p_datos jsonb, p_ttl int default 3600, p_desde timestamptz default now())
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if coalesce(cardinality(p_codigos), 0) = 0 then return; end if;
+  insert into public.minume_push_cola (codigos, datos, ttl, enviar_desde) values (p_codigos, p_datos, p_ttl, p_desde);
+  perform net.http_post(url := 'https://fakkqpwgidjvodippxup.supabase.co/functions/v1/minume-push',
+    body := '{}'::jsonb, headers := '{"Content-Type": "application/json"}'::jsonb, timeout_milliseconds := 5000);
+end $$;
+
+-- «Probar»: en 10 segundos le llega un aviso de prueba a cada teléfono de ese código (máximo 3 cada 5 minutos)
+create or replace function public.minume_push_probar(p_token text)
+returns jsonb language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); n int;
+begin
+  select count(*) into n from public.minume_push where codigo_id = c.id;
+  if n = 0 then return jsonb_build_object('telefonos', 0); end if;
+  if (select count(*) from public.minume_push_cola where codigos = array[c.id] and datos->>'tipo' = 'prueba' and creado > now() - interval '5 minutes') >= 3 then
+    raise exception 'Ya hiciste varias pruebas: espera unos minutos';
+  end if;
+  perform public.minume_push_encolar(array[c.id], jsonb_build_object('tipo', 'prueba', 'sos', true, 'tag', 'minume-prueba', 'sec', '',
+    't', '🔔 Prueba de avisos MINUME', 'b', 'Si ves esto con el teléfono bloqueado, los SOS y los urgentes te van a llegar.'), 120, now() + interval '10 seconds');
+  return jsonb_build_object('telefonos', n);
+end $$;
+
+-- ---------- Lo que usa la Edge Function (solo con la llave de servicio) ----------
+create or replace function public.minume_push_llaves() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'publica', (select decrypted_secret from vault.decrypted_secrets where name = 'minume_vapid_publica'),
+    'privada', (select decrypted_secret from vault.decrypted_secrets where name = 'minume_vapid_privada'),
+    'sub', 'https://minume-xvii.vercel.app')
+$$;
+
+-- Toma hasta p_limite avisos pendientes (los que otra llamada ya tomó se saltan) con los teléfonos a los que van
+create or replace function public.minume_push_tomar(p_limite int default 25) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare r jsonb;
+begin
+  with t as (
+    select id from public.minume_push_cola
+     where (estado = 'pendiente' or (estado = 'enviando' and tomado < now() - interval '2 minutes' and intentos < 3))
+       and creado > now() - interval '30 minutes' and enviar_desde <= now() + interval '25 seconds'
+     order by id limit least(greatest(p_limite, 1), 100) for update skip locked),
+  q as (
+    update public.minume_push_cola c set estado = 'enviando', tomado = now(), intentos = c.intentos + 1
+      from t where c.id = t.id returning c.id, c.codigos, c.datos, c.ttl, c.enviar_desde)
+  select coalesce(jsonb_agg(jsonb_build_object('id', q.id, 'datos', q.datos, 'ttl', q.ttl, 'desde', q.enviar_desde,
+    'subs', coalesce((select jsonb_agg(jsonb_build_object('id', p.id, 'endpoint', p.endpoint, 'p256dh', p.p256dh, 'auth', p.auth, 'sistema', k.sistema))
+                        from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                       where p.codigo_id = any(q.codigos) and k.activo), '[]'::jsonb)) order by q.id), '[]'::jsonb)
+    into r from q;
+  return r;
+end $$;
+
+-- Resultado de un aviso: los teléfonos que ya no existen se borran; los que fallan 5 veces seguidas, también
+create or replace function public.minume_push_listo(p_id bigint, p_buenos bigint[], p_malos bigint[], p_borrar bigint[], p_error text default null)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update public.minume_push_cola set estado = 'listo', enviados = cardinality(p_buenos), fallidos = cardinality(p_malos) + cardinality(p_borrar),
+    error = left(p_error, 300) where id = p_id;
+  if cardinality(p_borrar) > 0 then delete from public.minume_push where id = any(p_borrar); end if;
+  if cardinality(p_buenos) > 0 then
+    update public.minume_push set fallos = 0, ultimo_ok = now()
+     where id = any(p_buenos) and (fallos > 0 or ultimo_ok is null or ultimo_ok < now() - interval '10 minutes');
+  end if;
+  if cardinality(p_malos) > 0 then
+    update public.minume_push set fallos = fallos + 1 where id = any(p_malos);
+    delete from public.minume_push where id = any(p_malos) and fallos >= 5;
+  end if;
+  delete from public.minume_push_cola where creado < now() - interval '3 days';
+end $$;
+
+-- ---------- Disparadores ----------
+-- SOS y nivel 3 (avisos) y comunicados urgentes: solo cuentan los elementos nuevos (se compara con lo que había)
+create or replace function public.minume_push_compartido() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare a jsonb; ids bigint[]; ya bigint[] := '{}'; viejos text[] := '{}'; lugar text; sos boolean;
+begin
+  if jsonb_typeof(new.valor) <> 'array' then return null; end if;
+  if tg_op = 'UPDATE' and jsonb_typeof(old.valor) = 'array' then
+    viejos := array(select e->>'id' from jsonb_array_elements(old.valor) e where jsonb_typeof(e) = 'object' and e ? 'id');
+  end if;
+  for a in select e from jsonb_array_elements(new.valor) e where jsonb_typeof(e) = 'object' and e ? 'id' and not ((e->>'id') = any(viejos)) loop
+    if new.clave = 'minume.compartido.avisos' then
+      sos := coalesce(a->>'tipo', '') ~* '^SOS';
+      continue when not (sos or coalesce(a->>'tipo', '') ~ '^Nivel 3') or coalesce(a->>'estado', 'nuevo') in ('resuelto', 'derivado');
+      continue when (a->>'t') ~ '^\d+$' and (a->>'t')::numeric < extract(epoch from now()) * 1000 - 6 * 3600 * 1000;   -- llegó horas tarde (sin internet)
+      -- Un mismo SOS va a varios equipos: a coordinación le llega una sola vez
+      ids := array(select distinct p.codigo_id from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                    where k.activo and (k.sistema = a->>'para' or k.sistema = 'coordinacion') and k.nombre is distinct from a->>'por'
+                      and not (p.codigo_id = any(ya)));
+      ya := ya || ids;
+      lugar := coalesce('Salón ' || nullif(a->>'salon', ''), nullif(a->>'donde', ''), nullif(a->>'sede', ''), 'Lugar sin indicar');
+      perform public.minume_push_encolar(ids, jsonb_build_object('tipo', 'sos', 'sos', true, 'sec', '', 'tag', 'sos-' || (a->>'id'),
+        't', case when sos then '🚨 SOS · ' || regexp_replace(a->>'tipo', '^SOS · ', '') else '⚠️ ' || (a->>'tipo') end,
+        'b', left(lugar || coalesce(' · ' || nullif(a->>'comision', ''), '') || ' · Enviado por ' || coalesce(nullif(a->>'por', ''), '—'), 240)), 900);
+    elsif new.clave = 'minume.compartido.comunicados' then
+      continue when coalesce(a->>'tipo', '') <> 'urgente';
+      ids := array(select distinct p.codigo_id from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                    where k.activo and (a->>'para' = 'todos' or k.sistema = a->>'para' or k.sistema = 'coordinacion')
+                      and ('r:' || k.ref) is distinct from a->>'deCod');
+      perform public.minume_push_encolar(ids, jsonb_build_object('tipo', 'comunicado', 'sos', true, 'sec', 'comunicados', 'tag', 'com-' || (a->>'id'),
+        't', '📢 Comunicado urgente' || coalesce(' · ' || nullif(a->>'de', ''), ''), 'b', left(coalesce(a->>'texto', ''), 240)), 3600);
+    end if;
+  end loop;
+  return null;
+end $$;
+
+drop trigger if exists minume_push_compartido on public.minume_compartido;
+create trigger minume_push_compartido after insert or update of valor on public.minume_compartido
+  for each row when (new.clave in ('minume.compartido.avisos', 'minume.compartido.comunicados'))
+  execute function public.minume_push_compartido();
+
+-- Mensajes urgentes del chat: a todos los que tienen ese canal, menos a quien lo escribió
+create or replace function public.minume_push_chat() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare ids bigint[];
+begin
+  ids := array(select distinct p.codigo_id from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                where k.activo and k.id <> new.codigo_id and new.canal = any(public.minume_chat_canales(k)));
+  perform public.minume_push_encolar(ids, jsonb_build_object('tipo', 'chat', 'sos', false, 'sec', 'chat', 'tag', 'chat-' || new.id,
+    't', '🚨 Urgente en el chat · ' || case new.canal when 'general' then 'General' when 'asistencia' then 'Asistencia' when 'seguridad' then 'Seguridad'
+      when 'bienestar' then 'Bienestar' when 'eventos' then 'Eventos' else 'Coordinación' end,
+    'b', left(new.nombre || ': ' || new.texto, 240)), 1800);
+  return null;
+end $$;
+
+drop trigger if exists minume_push_chat on public.minume_chat;
+create trigger minume_push_chat after insert on public.minume_chat for each row when (new.urgente) execute function public.minume_push_chat();
+
+revoke all on function public.minume_push_valida(jsonb), public.minume_push_encolar(bigint[], jsonb, int, timestamptz),
+  public.minume_push_llaves(), public.minume_push_tomar(int), public.minume_push_listo(bigint, bigint[], bigint[], bigint[], text),
+  public.minume_push_compartido(), public.minume_push_chat() from public, anon, authenticated;
+grant execute on function public.minume_push_llaves(), public.minume_push_tomar(int), public.minume_push_listo(bigint, bigint[], bigint[], bigint[], text) to service_role;
+revoke all on function public.minume_push_suscribir(text, jsonb, text), public.minume_push_quitar(text, text), public.minume_push_cambio(text, jsonb),
+  public.minume_push_probar(text) from public;
+grant execute on function public.minume_push_suscribir(text, jsonb, text), public.minume_push_quitar(text, text), public.minume_push_cambio(text, jsonb),
+  public.minume_push_probar(text) to anon, authenticated;
+
+-- =====================================================================
+-- 2026-10-25 · «Mi subdirección»: la subdirección o la coordinación de cada equipo ve SU staff
+-- (solo lectura: nombre, rol, nivel, actividad de hoy y si tiene los avisos al teléfono). Nadie ve otro equipo.
+-- =====================================================================
+create or replace function public.minume_mi_equipo(p_token text)
+returns jsonb language plpgsql stable security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); d date := (now() at time zone 'America/Santo_Domingo')::date;
+begin
+  if not public.minume_es_admin(c) then raise exception 'Solo la coordinación o la subdirección ven su equipo' using errcode = '42501'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object('ref', k.ref, 'nombre', k.nombre, 'rol', k.rol, 'nivel', k.nivel, 'area', k.area,
+      'comision', k.comision, 'usado', k.usado, 'ultima', a.ultima, 'minutos', coalesce(a.minutos, 0),
+      'avisos', exists (select 1 from public.minume_push p where p.codigo_id = k.id), 'prueba', public.minume_es_prueba(k), 'yo', k.id = c.id)
+      order by k.rol, k.nombre)
+    from public.minume_codigos k left join public.minume_actividad a on a.codigo_id = k.id and a.dia = d
+    where k.activo and k.sistema = c.sistema), '[]'::jsonb);
+end $$;
+revoke all on function public.minume_mi_equipo(text) from public;
+grant execute on function public.minume_mi_equipo(text) to anon, authenticated;
+
+-- =====================================================================
+-- 2026-10-25 · «Mandar a su gente»: la subdirección o coordinación de un equipo manda a una persona de su staff.
+-- La orden viaja en la clave «minume.compartido.ordenes» y le suena a esa persona en el teléfono (Web Push).
+-- Solo suena si quien la manda es administración de ese mismo equipo (o Coordinación general).
+-- (Esta definición reemplaza la de minume_push_compartido de arriba.)
+-- =====================================================================
+create or replace function public.minume_push_compartido() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare a jsonb; ids bigint[]; ya bigint[] := '{}'; viejos text[] := '{}'; lugar text; sos boolean; jefe public.minume_codigos;
+begin
+  if jsonb_typeof(new.valor) <> 'array' then return null; end if;
+  if tg_op = 'UPDATE' and jsonb_typeof(old.valor) = 'array' then
+    viejos := array(select e->>'id' from jsonb_array_elements(old.valor) e where jsonb_typeof(e) = 'object' and e ? 'id');
+  end if;
+  for a in select e from jsonb_array_elements(new.valor) e where jsonb_typeof(e) = 'object' and e ? 'id' and not ((e->>'id') = any(viejos)) loop
+    if new.clave = 'minume.compartido.avisos' then
+      sos := coalesce(a->>'tipo', '') ~* '^SOS';
+      continue when not (sos or coalesce(a->>'tipo', '') ~ '^Nivel 3') or coalesce(a->>'estado', 'nuevo') in ('resuelto', 'derivado');
+      continue when (a->>'t') ~ '^\d+$' and (a->>'t')::numeric < extract(epoch from now()) * 1000 - 6 * 3600 * 1000;
+      ids := array(select distinct p.codigo_id from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                    where k.activo and (k.sistema = a->>'para' or k.sistema = 'coordinacion') and k.nombre is distinct from a->>'por'
+                      and not (p.codigo_id = any(ya)));
+      ya := ya || ids;
+      lugar := coalesce('Salón ' || nullif(a->>'salon', ''), nullif(a->>'donde', ''), nullif(a->>'sede', ''), 'Lugar sin indicar');
+      perform public.minume_push_encolar(ids, jsonb_build_object('tipo', 'sos', 'sos', true, 'sec', '', 'tag', 'sos-' || (a->>'id'),
+        't', case when sos then '🚨 SOS · ' || regexp_replace(a->>'tipo', '^SOS · ', '') else '⚠️ ' || (a->>'tipo') end,
+        'b', left(lugar || coalesce(' · ' || nullif(a->>'comision', ''), '') || ' · Enviado por ' || coalesce(nullif(a->>'por', ''), '—'), 240)), 900);
+    elsif new.clave = 'minume.compartido.comunicados' then
+      continue when coalesce(a->>'tipo', '') <> 'urgente';
+      ids := array(select distinct p.codigo_id from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                    where k.activo and (a->>'para' = 'todos' or k.sistema = a->>'para' or k.sistema = 'coordinacion')
+                      and ('r:' || k.ref) is distinct from a->>'deCod');
+      perform public.minume_push_encolar(ids, jsonb_build_object('tipo', 'comunicado', 'sos', true, 'sec', 'comunicados', 'tag', 'com-' || (a->>'id'),
+        't', '📢 Comunicado urgente' || coalesce(' · ' || nullif(a->>'de', ''), ''), 'b', left(coalesce(a->>'texto', ''), 240)), 3600);
+    elsif new.clave = 'minume.compartido.ordenes' then
+      continue when coalesce(a->>'estado', 'nueva') <> 'nueva';
+      select * into jefe from public.minume_codigos where ref = a->>'deRef' and activo;
+      continue when jefe.id is null or not public.minume_es_admin(jefe);
+      ids := array(select distinct p.codigo_id from public.minume_push p join public.minume_codigos k on k.id = p.codigo_id
+                    where k.activo and k.ref = a->>'para' and (k.sistema = jefe.sistema or jefe.sistema = 'coordinacion'));
+      perform public.minume_push_encolar(ids, jsonb_build_object('tipo', 'orden', 'sos', true, 'sec', '', 'tag', 'ord-' || (a->>'id'),
+        't', '📣 ' || coalesce(nullif(split_part(jefe.nombre, ' ', 1), ''), 'Tu subdirección') || ' te manda', 'b', left(coalesce(a->>'que', ''), 240)), 1800);
+    end if;
+  end loop;
+  return null;
+end $$;
+
+drop trigger if exists minume_push_compartido on public.minume_compartido;
+create trigger minume_push_compartido after insert or update of valor on public.minume_compartido
+  for each row when (new.clave in ('minume.compartido.avisos', 'minume.compartido.comunicados', 'minume.compartido.ordenes'))
+  execute function public.minume_push_compartido();
+revoke all on function public.minume_push_compartido() from public, anon, authenticated;

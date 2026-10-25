@@ -34,6 +34,7 @@
 @@css estilos/20-autobuses.css
 @@css estilos/21-chat.css
 @@css estilos/23-rendimiento.css
+@@css estilos/24-subdireccion.css
 @@css estilos/22-telefono-fluido.css
 </style>
 </head>
@@ -82,12 +83,14 @@
     <button class="vivo-pill" id="vivoPill" title="Estás compartiendo tu ubicación"><span class="punto-vivo"></span><span id="vivoTxt">En vivo</span></button>
     <span class="red-pill" id="redPill" hidden>Sin internet<span class="largo"> · todo se guarda</span></span>
     <button class="alertas-btn" id="bAlertas" type="button"></button>
+    <button class="alertas-btn" id="bPush" type="button" hidden></button>
     <span class="rol-chip" id="rolChip"></span>
     <button class="sos" id="bSOS" title="Emergencia">🚨 SOS</button>
     <button class="salir" id="bSalir" title="Salir">Salir</button>
   </div>
   <nav class="rail" id="rail">
     <a href="#inicio"><span>00</span>Inicio</a>
+    <a href="#subdireccion"><span>00</span>Mi subdirección</a>
     <a href="#chat"><span>00</span>Chat</a>
     <a href="#rendimiento"><span>00</span>Rendimiento</a>
     <a href="#comunicados" class="nuevo"><span>00</span>Comunicados</a>
@@ -121,6 +124,8 @@
     <a href="#mejoras"><span>✨</span>Qué mejora</a>
   </nav>
   <div class="banner-com" id="bannerCom" hidden></div>
+  <div class="banner-orden" id="bannerOrden" hidden></div>
+  <div class="banner-orden banner-chat" id="bannerChat" hidden></div>
 </header>
 
 <main>
@@ -157,6 +162,7 @@
 @@html secciones/29-que-mejora.html
 @@html secciones/30-rendimiento.html
 @@html secciones/31-reportes.html
+@@html secciones/32-subdireccion.html
 </main>
 
 <footer><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD" style="height:34px;display:block;margin:0 auto 12px;opacity:.85">Hecho por Albert Silvestre · Maqueta 3D propia con datos de © OpenStreetMap · Asignación de salones y horarios de ejemplo</footer>
@@ -213,6 +219,7 @@
 @@js js/modulo/13-cobertura.js
 @@js js/modulo/14-base-compartida.js
 @@js js/modulo/15-alarma.js
+@@js js/modulo/15-avisos-al-telefono.js
 @@js js/modulo/16-comunicados.js
 @@js js/modulo/17-programa.js
 @@js js/modulo/18-comisiones-en-vivo.js
@@ -232,6 +239,8 @@
 @@js js/modulo/25-rendimiento.js
 @@js js/modulo/26-arranque.js
 @@js js/modulo/27-navegacion-facil.js
+@@js js/modulo/28-ordenes.js
+@@js js/modulo/28-subdireccion.js
 </script>
 </body>
 </html>

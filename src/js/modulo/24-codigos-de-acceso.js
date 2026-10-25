@@ -1,6 +1,6 @@
 // ---------- Códigos de acceso del staff (solo Coordinación general) ----------
 // Los crea el servidor: el código completo se muestra una sola vez y en la base solo queda cifrado.
-const TIPOS_CODIGO = [['AS', 'Asistente de comisión'], ['CO', 'Coordinación de Asistencia'], ['SE', 'Seguridad'], ['TR', 'Traslado'], ['BI', 'Bienestar'], ['EP', 'Eventos y Protocolo'], ['CG', 'Coordinación general']];
+const TIPOS_CODIGO = [['AS', 'Asistente de comisión'], ['CO', 'Coordinación de Asistencia'], ['SE', 'Seguridad y Traslado (SE)'], ['TR', 'Seguridad y Traslado (TR)'], ['BI', 'Bienestar'], ['EP', 'Eventos y Protocolo'], ['CG', 'Dirección (Coordinación general)']];
 const puedeCodigos = () => !!window.MINUME_RPC && SISTEMA === 'coordinacion' && estado.usuario && estado.usuario.rol === 'coordinacion';
 let listaCodigos = null;
 async function pintarCodigos(recargar) {

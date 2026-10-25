@@ -49,7 +49,7 @@ const claveSlot = (p, t) => `${p.id}@${t[0]}`;
 const sinAcentos = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 const miCodCob = () => { const u = estado.usuario; if (!u) return null; if (COB_CODIGO[u.codigo]) return COB_CODIGO[u.codigo]; const n = sinAcentos(u.nombre); return (Object.entries(COB_STAFF).find(([, [x]]) => sinAcentos(x) === n) || [null])[0]; };
 // Refuerzos, «Llegó» de otros y asignaciones: solo la dirección (en la reunión del 21 de octubre se pidió así para evitar confusiones)
-const puedeAsignar = () => esDir() && ['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol);
+const puedeAsignar = () => esDir() && SISTEMA !== 'asistencia';   // cada dirección asigna a su gente (Asistencia no usa Cobertura)
 function cobEstado() {
   const { dia } = cobAhora(); let c = leerComp('cobertura', null);
   if (!c || c.dia !== dia) c = { dia, conf: {}, refs: [], sembrado: {} }; // cada día empieza limpio
@@ -93,7 +93,7 @@ const COB_EST = { cubierta: ['Cubierto', 'verde'], incompleta: ['Falta gente', '
 let cobSede = 'todas', cobAbierto = null, cobPlan = null;
 function pintarCobertura() {
   const sec = $('#cobertura');
-  if (!sec || !estado.usuario || !['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol)) return;
+  if (!sec || !estado.usuario || sec.classList.contains('sin-permiso')) return;   // a todos los equipos les tocan áreas
   cobEstado(); const { min } = cobAhora(); cobSembrar(min);
   const filas = cobFilas(min), activas = filas.filter(f => f.est !== 'libre');
   const desc = activas.filter(f => f.est === 'descubierta'), inc = activas.filter(f => f.est === 'incompleta');

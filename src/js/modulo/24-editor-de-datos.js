@@ -49,9 +49,9 @@ const DATOS = {
     },
   },
   staff: {
-    titulo: 'Staff de Seguridad y Traslado', icono: 'gente', quien: ['seguridad', 'traslado', 'coordinacion'],
-    ayuda: 'Las personas que se pueden asignar a los puntos y turnos. El código es corto, por ejemplo S08.',
-    campos: [{ k: 'cod', t: 'Código', req: 1, mayus: 1 }, { k: 'nombre', t: 'Nombre', req: 1, ancho: 2 }, { k: 'area', t: 'Equipo', tipo: 'opc', opc: () => ['Seguridad', 'Traslado', 'Dirección'].map(x => [x, x]) }],
+    titulo: 'Staff y sus áreas', icono: 'gente', quien: ['seguridad', 'traslado', 'coordinacion', 'bienestar', 'eventos'],
+    ayuda: 'Todo el staff que cubre áreas, de todos los equipos. El código es corto: S08 Seguridad, T05 Traslado, B01 Bienestar, E01 Eventos.',
+    campos: [{ k: 'cod', t: 'Código', req: 1, mayus: 1 }, { k: 'nombre', t: 'Nombre', req: 1, ancho: 2 }, { k: 'area', t: 'Equipo', tipo: 'opc', opc: () => ['Seguridad', 'Traslado', 'Bienestar', 'Eventos y Protocolo', 'Dirección'].map(x => [x, x]) }],
     leer: () => Object.entries(COB_STAFF).map(([cod, [nombre, area]]) => ({ cod, nombre, area })),
     aplicar: recs => { Object.keys(COB_STAFF).forEach(k => delete COB_STAFF[k]); recs.forEach(r => { COB_STAFF[String(r.cod).toUpperCase()] = [r.nombre, r.area || 'Seguridad']; }); },
   },
@@ -64,7 +64,7 @@ const DATOS = {
     aplicar: recs => { const viejos = Object.fromEntries(COB_PUNTOS.map(p => [p.id, p])); COB_PUNTOS.splice(0, COB_PUNTOS.length, ...recs.map(r => { const v = viejos[r.id] || {}; const o = { ...v, id: String(r.id).toUpperCase(), n: r.n, sede: r.sede, tipo: r.tipo || 'Puerta', turnos: v.turnos || [] }; if (r.lugar) o.lugar = r.lugar; if (r.x != null && r.x !== '') { o.x = +r.x; o.y = +r.y; } return o; })); },
   },
   turnos: {
-    titulo: 'Turnos y personas asignadas', icono: 'reloj', quien: ['seguridad', 'coordinacion'],
+    titulo: 'Turnos y personas asignadas', icono: 'reloj', quien: ['seguridad', 'coordinacion', 'bienestar', 'eventos'],
     ayuda: 'Quién va en cada punto y a qué hora. Para poner a dos personas en el mismo turno, agrega dos filas con el mismo punto y horario.',
     campos: [{ k: 'punto', t: 'Punto', tipo: 'opc', opc: () => COB_PUNTOS.map(p => [p.id, `${p.id} · ${p.n}`]), req: 1, ancho: 2 }, { k: 'i', t: 'Desde', tipo: 'hora', req: 1 }, { k: 'f', t: 'Hasta', tipo: 'hora', req: 1 }, { k: 'turno', t: 'Turno', req: 1 }, { k: 'persona', t: 'Persona', tipo: 'opc', opc: () => Object.entries(COB_STAFF).map(([c, [n]]) => [c, `${n} · ${c}`]) }, { k: 'tarea', t: 'Qué hace', ancho: 2 }],
     leer: () => COB_PUNTOS.flatMap(p => p.turnos.flatMap(t => (t[3].length ? t[3] : [['', '']]).map(([persona, tarea]) => ({ punto: p.id, i: cobHora(t[0]), f: cobHora(t[1]), turno: t[2], persona, tarea })))),
@@ -162,10 +162,12 @@ const DATOS = {
     aplicar: recs => AREAS.splice(0, AREAS.length, ...recs.map(r => [r.k || nuevoId('ar'), r.area, r.persona])),
   },
 };
-const ORDEN_DATOS = ['programa', 'sedes', 'eventos', 'invitados', 'planos', 'montaje', 'problemasEv', 'comisiones', 'turnosAsis', 'checklists', 'confirma', 'necesito', 'staff', 'puntos', 'turnos', 'rutas', 'regionales', 'delegadosReg', 'autobuses', 'kit', 'listasBienestar', 'listasObjetos', 'plantillas', 'rapidos', 'responsables'];
+const ORDEN_DATOS = ['programa', 'sedes', 'eventos', 'invitados', 'planos', 'montaje', 'problemasEv', 'comisiones', 'turnosAsis', 'checklists', 'confirma', 'necesito', 'staff', 'puntos', 'turnos', 'rutas', 'regionales', 'delegadosReg', 'kit', 'listasBienestar', 'listasObjetos', 'plantillas', 'rapidos', 'responsables'];
 const EJEMPLO_DATOS = Object.fromEntries(ORDEN_DATOS.map(k => [k, JSON.parse(JSON.stringify(DATOS[k].leer()))]));
 // Solo la dirección edita datos (subsecretarios, quien dirige cada equipo y Coordinación general)
-const puedeEditar = k => esDir() && DATOS[k].quien.includes(estado.usuario.rol);
+// Seguridad y Traslado son una sola subdirección: quien la dirige edita lo de los dos
+const rolesDeEquipo = r => SISTEMA === 'seguridad' && (r === 'seguridad' || r === 'traslado') ? ['seguridad', 'traslado'] : [r];
+const puedeEditar = k => esDir() && rolesDeEquipo(estado.usuario.rol).some(r => DATOS[k].quien.includes(r));
 // Lo guardado antes del cambio de sedes (Dominican Fiesta, Sede 2 y 3) ya no sirve: se usa el ejemplo nuevo
 const deSedesViejas = r => Array.isArray(r) && r.some(x => x && ['sede', 'de', 'a'].some(k => x[k] && !SEDES[x[k]]));
 function aplicarDatosGuardados() {
@@ -187,7 +189,7 @@ function repintarListasFijas() {
 }
 function refrescarTodo() {
   repintarListasFijas();
-  try { pintarNuevas(); pintarCobertura(); pintarTraslado(); pintarDatos(); if (estado.usuario) pintarTablero(); $('#contactos').innerHTML = AREAS.map(([, a, p]) => `<div class="dato"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join(''); if (estado.comision) pintarPanel(); } catch (e) { console.warn(e); }
+  try { pintarNuevas(); pintarCobertura(); pintarTraslado(); pintarDatos(); if (window.SUBDIR_LISTO) pintarSubdireccion(); if (estado.usuario) pintarTablero(); $('#contactos').innerHTML = AREAS.map(([, a, p]) => `<div class="dato"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join(''); if (estado.comision) pintarPanel(); } catch (e) { console.warn(e); }
 }
 
 // ---------- Ventana de edición ----------

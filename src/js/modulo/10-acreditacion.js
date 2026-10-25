@@ -43,7 +43,7 @@ function pintarQR(forzar) {
   if (forzar || v !== qrVentana) { qrVentana = v; const q = qrcode(0, 'M'); q.addData(qrTexto(u.acr, v)); q.make(); const svg = q.createSvgTag({ cellSize: 8, margin: 2, scalable: true }); $('#qr').innerHTML = svg; $('#qrG').innerHTML = svg; }
   $('#qrBarra').style.width = (resta / 30 * 100) + '%'; $('#qrSeg').textContent = `El QR cambia en ${resta} s`;
 }
-setInterval(() => pintarQR(false), 1000);
+setInterval(() => { if (seVe($('#qr'))) pintarQR(false); }, 1000);
 // QR en grande: pantalla blanca y, si el teléfono lo permite, que no se apague mientras lo escanean
 let candado = null;
 $('#bQrGrande').onclick = async () => { $('#qrGNombre').textContent = estado.usuario ? estado.usuario.nombre : ''; $('#qrGrande').classList.add('on'); try { candado = await navigator.wakeLock.request('screen'); } catch {} };

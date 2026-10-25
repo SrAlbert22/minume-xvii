@@ -26,7 +26,6 @@ function pintarPanel() {
   const [sede, salon] = ASIGNA[estado.comision];
   $('#mpCodigo').textContent = estado.comision; $('#mpNombre').textContent = COMISIONES.find(c => c[0] === estado.comision)[1];
   $('#mpSede').textContent = SEDES[sede].nombre; $('#mpSalon').textContent = salon;
-  const v = proximoViaje(); $('#mpTraslado').textContent = v ? `${v.h} → ${SEDES[v.a].nombre}` : 'No necesitas';
   $('#mpEtapa').textContent = NOMBRE_ETAPA[estado.etapa];
   const l = LISTAS[estado.etapa], m = estado.marcas[estado.etapa] || [];
   const pct = Math.round(m.length / l.length * 100);

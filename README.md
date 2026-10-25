@@ -39,6 +39,7 @@ herramientas/
   ensamblar.py         junta los pedazos de src/
 blender/               modelos 3D de las sedes (ver blender/LEEME.txt y blender/sheraton/LEEME.txt)
 supabase/esquema.sql   la base de datos: tablas, funciones y permisos (sin códigos ni datos)
+supabase/functions/    Edge Function «minume-push» que envía los avisos al teléfono
 docs/                  guía del staff (guia.html → PDF)
 ```
 
@@ -60,6 +61,42 @@ python herramientas/armar.py
 - Niveles por código, como en la organización: voluntario (ve solo lo suyo), coordinación y subdirección (administran su equipo: ven todo su sistema, asignan turnos y refuerzos, editan datos y ven los Reportes por día). Coordinación general (Secretaría General) ve todo y pone el nivel de cada código. La base lo hace cumplir: los datos del evento solo los escribe la administración, la bitácora de cada equipo solo ese equipo y los códigos de prueba no administran códigos.
 - Las atenciones de Bienestar solo las leen Bienestar y Coordinación general. El chat solo deja leer y escribir en los canales de cada persona.
 - Antes del evento: anular los códigos de prueba y no guardar datos de salud reales mientras sigan activos.
+
+## Avisos al teléfono (Web Push)
+
+Los SOS, el nivel 3, los comunicados urgentes y los mensajes urgentes del chat suenan aunque la página esté cerrada o el teléfono bloqueado (probado en Android con Chrome el 25 de octubre de 2026).
+
+- Cada persona lo activa con el botón del telefonito junto a «Activar alertas» (o con «Activar las alertas» al entrar). Tocándolo otra vez sale «Mandar una prueba».
+- La base decide a quién le llega: SOS y nivel 3 al equipo al que van y a Coordinación general; comunicados urgentes al equipo (o a todos) y a Coordinación general; urgentes del chat a quien tiene ese canal. Nunca a quien lo mandó.
+- Recorrido: disparador en `minume_compartido` o `minume_chat` → cola `minume_push_cola` → `pg_net` llama a la Edge Function `minume-push` → la función cifra y envía 64 a la vez → los teléfonos que ya no existen se borran solos.
+- iPhone: solo funciona si MINUME está agregada a la pantalla de inicio (iOS 16.4 o más nuevo) y se activa desde ahí. Suena con el sonido normal de notificaciones, no con la sirena.
+- Si un teléfono no suena: que no esté en silencio ni en «No molestar», y en Ajustes → Apps → Chrome → Notificaciones, el sitio con sonido.
+
+## Dirección, subdirección y «Mandar»
+
+- **Dirección**: los códigos CG entran a Coordinación general y ven todo el evento.
+- **Subdirección / coordinación de cada equipo**: al entrar, su botón principal es «Mi subdirección» (`#subdireccion`): su staff (Seguridad y Traslado es un solo equipo: los códigos SE y TR ven y hacen lo mismo), quién está activo, quién nunca ha entrado, quién tiene los avisos al teléfono y las listas que puede editar. La lista sale de `minume_mi_equipo`, que solo devuelve el equipo de quien la pide.
+- **Lo que le toca a cada uno**: en «Mi subdirección» sale todo el staff del equipo (con código o solo en «Staff y sus áreas») con su punto y tarea de ahora, si ya confirmó, su siguiente turno, todos sus turnos del día, sus regionales y botones para editar sus turnos y sus datos (abren el editor ya filtrado).
+- **Cobertura en todos los equipos menos Asistencia** (Albert pidió no agregarle nada a Asistencia): a todo el staff le tocan áreas; la dirección de cada equipo asigna a su gente. Asistencia tampoco tiene «Mi equipo». Los puntos los define Seguridad y Traslado o Coordinación general.
+- **Mandar**: en cada persona, «📣 Mandar» le manda una orden (clave `ordenes`). A esa persona le aparece arriba con «Voy en camino», «Ya llegué» o «No puedo», y le suena en el teléfono bloqueado si quien manda es jefe de su equipo o Coordinación general.
+- **Regionales**: lo principal es marcar cada regional con un toque: Llegó, En camino o En espera. El pase de lista por delegado queda como opción. Ya no hay movilizaciones a pie entre sedes ni conteo del grupo.
+- **Chat**: cualquiera puede marcar «🚨 Mandar como aviso»; le suena a todo el canal aunque tenga el teléfono bloqueado.
+  Mientras haya avisos sin marcar sale un aviso rojo arriba de la página. La notificación del teléfono trae «✓ Recibido» (funciona con la página cerrada: la página deja su sesión en la caché `minume-sesion` para el service worker) y se borra sola cuando se lee el chat, el comunicado, la orden o el SOS.
+
+## Mudanza a otro proyecto (Supabase o Vercel nuevos)
+
+Todo lo que hace falta está en este repositorio, menos los secretos, que están en `Documents\MINUME-XVII-Acceso` (fuera del repo).
+
+1. **Supabase nuevo**: en `supabase/esquema.sql`, cambia la dirección `https://fakkqpwgidjvodippxup.supabase.co/functions/v1/minume-push` (función `minume_push_encolar`) por la del proyecto nuevo. Pega el archivo completo en el SQL Editor y ejecútalo.
+2. **Llaves de los avisos**: usa las de `MINUME-XVII-Acceso\vapid-llaves.json` (o crea otras con `node herramientas/llaves_vapid.mjs`) y guárdalas en el Vault:
+   `select vault.create_secret('<publica>', 'minume_vapid_publica'); select vault.create_secret('<privada>', 'minume_vapid_privada');`
+   La privada nunca va en el código.
+3. **Edge Function**: desde la carpeta del repo, `npx supabase functions deploy minume-push --no-verify-jwt --project-ref <ref-del-proyecto>` (pide `npx supabase login` la primera vez).
+4. **armar.py**: cambia `SUPABASE` (dirección y llave pública), `VAPID` (si cambiaste las llaves), el dominio de Supabase en la `CSP` y `VERCEL` (ids del proyecto de Vercel).
+5. **Dominio nuevo**: si la página cambia de dirección, cambia `'sub'` en `minume_push_llaves` y cada persona tiene que volver a activar los avisos (el permiso es por sitio).
+6. **Primer código**: crea el de Coordinación general (instrucciones al principio de `esquema.sql`).
+7. **Datos del evento** (opcional): en el SQL Editor del proyecto viejo, `select clave, valor from minume_compartido where clave like 'minume.compartido.config.%'`, descarga el resultado e insértalo en el nuevo. Los códigos no se pasan: se crean otra vez.
+8. Arma y publica como siempre: `python herramientas/armar.py`, copia `dist/` fuera del repo y `npx vercel deploy --prod --yes --scope <equipo>`.
 
 ## Datos de ejemplo
 

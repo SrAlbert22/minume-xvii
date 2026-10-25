@@ -35,15 +35,13 @@
   .accesos { margin: 22px 0 8px; }
   .accesos-t { font: 800 clamp(26px, 4vw, 34px) var(--f-tit); text-transform: uppercase; margin: 0 0 12px; }
   .accesos-g { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); grid-auto-rows: 1fr; gap: 12px; }
-  .acceso { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 14px; row-gap: 4px; align-content: center; align-items: center; min-width: 0; overflow: hidden; text-align: left; padding: 16px; min-height: 92px; border-radius: 18px; border: 1px solid rgba(0, 181, 255, .22); background: linear-gradient(155deg, rgba(0, 67, 197, .38), rgba(10, 4, 100, .6)); color: #fff; cursor: pointer; transition: transform .12s, border-color .12s; }
+  .acceso { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-content: center; align-items: center; min-width: 0; overflow: hidden; text-align: left; padding: 16px; min-height: 92px; border-radius: 18px; border: 1px solid rgba(0, 181, 255, .22); background: linear-gradient(155deg, rgba(0, 67, 197, .38), rgba(10, 4, 100, .6)); color: #fff; cursor: pointer; transition: transform .12s, border-color .12s; }
   .acceso:hover, .acceso:focus-visible { transform: translateY(-2px); border-color: var(--m-celeste); }
   .acceso:active { transform: scale(.98); }
-  .acceso-ic { grid-row: 1 / 3; align-self: center; width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; background: rgba(0, 181, 255, .16); color: var(--m-celeste); }
-  .acceso b { align-self: end; min-width: 0; font: 800 clamp(17px, 1.3vw, 21px)/1.05 var(--f-tit); text-transform: uppercase; letter-spacing: .01em; overflow-wrap: break-word; hyphens: auto; }
-  .acceso small { align-self: start; min-width: 0; color: var(--suave); font-size: 13.5px; line-height: 1.3; overflow-wrap: break-word; }
+  .acceso-ic { align-self: center; width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; background: rgba(0, 181, 255, .16); color: var(--m-celeste); }
+  .acceso b { align-self: center; min-width: 0; font: 800 clamp(17px, 1.3vw, 21px)/1.05 var(--f-tit); text-transform: uppercase; letter-spacing: .01em; overflow-wrap: break-word; hyphens: auto; }
   .acceso.principal { grid-column: span 2; background: linear-gradient(135deg, var(--m-rey), var(--m-azul)); border-color: var(--m-celeste); }
   .acceso.principal .acceso-ic { background: rgba(255, 255, 255, .18); color: #fff; }
-  .acceso.principal small { color: #dce8ff; }
   /* barra de abajo (teléfono) */
   .barra-abajo { display: none; }
   body.app .barra-abajo { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: rgba(10, 4, 100, .94); backdrop-filter: blur(14px); border-top: 1px solid rgba(0, 181, 255, .25); grid-template-columns: repeat(4, 1fr); gap: 4px; }
@@ -58,7 +56,6 @@
     .acceso { grid-template-columns: 1fr; padding: 14px; min-height: 120px; }
     .acceso-ic { grid-row: auto; width: 44px; height: 44px; margin-bottom: 8px; }
     .acceso b { font-size: 18px; }
-    .acceso small { font-size: 12.5px; }
     .logo-marca { height: 24px; }
   }
   /* botones y textos más cómodos en el teléfono */

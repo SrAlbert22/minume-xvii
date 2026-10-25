@@ -40,7 +40,7 @@
     body.app #inicio .hero .sub, body.app #inicio .hero .lead { display: none; }
     body.app #inicio .cuenta { margin-top: 10px; }
     .acceso.principal { grid-template-columns: auto 1fr; min-height: 84px; }
-    .acceso.principal .acceso-ic { grid-row: 1 / 3; margin-bottom: 0; }
+    .acceso.principal .acceso-ic { margin-bottom: 0; }
     /* el chat aprovecha toda la pantalla: el canal elegido ya se ve arriba */
     .chat-cab { display: none; }
     .chat-panel { border-radius: 16px; }
@@ -56,7 +56,6 @@
   @media (max-width: 640px) {
     .hero .cuenta { display: none; }                       /* los conteos regresivos sobran en el teléfono */
     .acceso { min-height: 88px; padding: 12px; }
-    .acceso:not(.principal) small { display: none; }         /* el nombre basta; la explicación solo en el botón principal */
     .acceso-ic { width: 38px; height: 38px; margin-bottom: 6px; }
     main > section > .lead { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; }
     main > section > .lead.abierto { -webkit-line-clamp: unset; display: block; }
@@ -64,3 +63,19 @@
     .rep-dia { min-width: 104px; padding: 10px 12px; } .rep-dia b { font-size: 19px; }
     .bus-cifras { grid-template-columns: 1fr 1fr; }
   }
+  /* ---------- Barra de arriba en el teléfono (25 de octubre): todo en una sola línea, sin cortar el logo ---------- */
+  @media (max-width: 640px) {
+    .cab-fila { flex-wrap: nowrap; gap: 5px; padding: 8px 10px; }
+    .cab-fila > div:nth-child(2), .cab .mio { display: none; }            /* el nombre del equipo ya sale grande en el inicio */
+    .logo-marca { height: 18px; margin-right: auto; }
+    .vivo-pill.on { width: 36px; height: 36px; padding: 0; justify-content: center; }
+    .vivo-pill #vivoTxt { display: none; }                                 /* solo el punto verde: la hora está en «Equipo en vivo» */
+    .alertas-btn { width: 36px; height: 36px; min-width: 36px; padding: 0; }
+    .sos { height: 36px; padding: 0 10px; font-size: 13.5px; }
+    .salir { position: relative; width: 36px; height: 36px; min-width: 36px; padding: 0; font-size: 0; }
+    .salir::before { content: ''; position: absolute; inset: 0; margin: auto; width: 18px; height: 18px; background: currentColor;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9'/%3E%3C/svg%3E") center / contain no-repeat; }
+    .red-pill { padding: 5px 8px; }
+  }
+  @media (max-width: 360px) { .logo-marca { height: 15px; } .sos { padding: 0 8px; font-size: 13px; } .cab-fila { gap: 4px; padding: 8px 8px; } .alertas-btn, .vivo-pill.on, .salir { width: 34px; min-width: 34px; height: 34px; } }

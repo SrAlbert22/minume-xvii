@@ -10,13 +10,13 @@ const CODIGOS = {
   'BI-2207': { nombre: 'Sofía Matos', rol: 'bienestar', area: 'fisico', acr: 'ACR-8B1EN' },
   'BI-3318': { nombre: 'Marcos Peña', rol: 'bienestar', area: 'emocional', acr: 'ACR-8B1EN' },
 };
-const ROLES = { asistencia: ['🔷 Asistencia', '#45c8ff'], acreditacion: ['🪪 Acreditación', '#a974ff'], seguridad: ['🛡️ Seguridad', '#ff4d5e'], traslado: ['🚶 Traslado', '#ff9a3c'], coordinacion: ['⭐ Coordinación', '#ffd23f'], bienestar: ['💚 Bienestar', '#2fd38c'], eventos: ['🎤 Eventos y Protocolo', '#f472b6'] };
+const ROLES = { asistencia: ['🔷 Asistencia', '#45c8ff'], acreditacion: ['🪪 Acreditación', '#a974ff'], seguridad: ['🛡️ Seguridad y Traslado', '#ff4d5e'], traslado: ['🛡️ Seguridad y Traslado', '#ff4d5e'], coordinacion: ['⭐ Coordinación', '#ffd23f'], bienestar: ['💚 Bienestar', '#2fd38c'], eventos: ['🎤 Eventos y Protocolo', '#f472b6'] };
 // Niveles (como en la organización): Secretaría General (Coordinación general) → Subdirección (subsecretarios) → Coordinación → voluntarios.
 // Subdirección y coordinación tienen la vista de administración de SU equipo: ven todo su sistema, asignan personas, turnos
 // y refuerzos y editan los datos. El voluntario ve solo lo suyo. El nivel lo pone Coordinación general en cada código.
 const NIVELES = { voluntario: 'Voluntario', coordinacion: 'Coordinación', subdirector: 'Subdirección' };
 const esDir = () => !!estado.usuario && (estado.usuario.rol === 'coordinacion' || ['coordinacion', 'subdirector', 'direccion'].includes(estado.usuario.nivel));
-const cargoDe = u => SISTEMA === 'coordinacion' ? 'Coordinación general' : u.nivel === 'subdirector' || u.nivel === 'direccion' ? 'Subdirección' : u.nivel === 'coordinacion' || u.rol === 'coordinacion' ? 'Coordinación' : '';
+const cargoDe = u => SISTEMA === 'coordinacion' ? 'Dirección' : u.nivel === 'subdirector' || u.nivel === 'direccion' ? 'Subdirección' : u.nivel === 'coordinacion' || u.rol === 'coordinacion' ? 'Coordinación' : '';
 // Cada sistema solo deja entrar a sus equipos y solo muestra sus códigos de prueba
 $$('#entrada .prueba button').forEach(b => { if (!SIS.roles.includes(CODIGOS[b.dataset.c].rol) || (SIS.prefijos && !SIS.prefijos.includes(b.dataset.c.slice(0, 2)))) b.remove(); });
 if (SISTEMA !== 'todo') {
@@ -54,7 +54,7 @@ function aplicarRol() {
   if (!u.acr && CODIGOS[u.codigo]) u.acr = CODIGOS[u.codigo].acr; // sesiones guardadas antes de que existiera el gafete
   const [txt, color] = ROLES[u.rol];
   document.body.classList.toggle('es-dir', esDir());
-  $('#rolChip').textContent = SISTEMA === 'coordinacion' ? '⭐ Coordinación general' : u.rol === 'coordinacion' ? `⭐ ${cargoDe(u)}` : esDir() ? `${txt} · ${cargoDe(u)}` : `${txt} · ${u.nombre.split(' ')[0]}`; $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
+  $('#rolChip').textContent = SISTEMA === 'coordinacion' ? '⭐ Dirección · Coordinación general' : u.rol === 'coordinacion' ? `⭐ ${cargoDe(u)}` : esDir() ? `${txt.split(' ')[0]} ${cargoDe(u)}` : `${txt.split(' ')[0]} ${u.nombre.split(' ')[0]}`;   // el nombre del equipo ya sale al lado del logo $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
   $$('[data-roles]').forEach(el => el.classList.toggle('sin-permiso', !el.dataset.roles.split(' ').includes(u.rol)));
   enlaces.forEach((a, i) => a.classList.toggle('sin-permiso', secciones[i].classList.contains('sin-permiso')));
   if (u.rol === 'asistencia') {
@@ -77,13 +77,13 @@ let capasListas = false;
 const HERO = {
   asistencia: ['Asistencia', 'EQUIPO DE ASISTENCIA DE COMISIÓN', 'Que tu comisión esté lista, acompañada y funcionando. Aquí ves tu turno, cómo llegar a tu salón y pides lo que falte con un toque.'],
   acreditacion: ['Acreditación', 'EQUIPO DE ACREDITACIÓN', 'Recibe a cada delegado: escanea su QR, revisa sus datos y confirma. Funciona aunque se vaya el internet.'],
-  seguridad: ['Seguridad', 'EQUIPO DE SEGURIDAD', 'Todo el evento en vivo: dónde está el staff, las rutas entre los hoteles, las alertas y los puntos de seguridad en el mapa.'],
-  traslado: ['Traslado', 'EQUIPO DE TRASLADO Y MOVILIDAD', 'Las movilizaciones a pie entre el Jaragua, el Sheraton y el Malecón Terrace: horarios, ruta, conteo del grupo y dónde queda cada comisión.'],
-  coordinacion: ['Coordinación', 'COORDINACIÓN GENERAL', 'Lo ves todo: cada equipo, cada sede, las movilizaciones, las alertas y lo que piden los salones.'],
+  seguridad: ['Seguridad y Traslado', 'SUBDIRECCIÓN DE SEGURIDAD Y TRASLADO', 'Todo el evento en vivo: el staff en el mapa, los puntos y sus turnos, las rondas, las 18 regionales y las alertas.'],
+  traslado: ['Seguridad y Traslado', 'SUBDIRECCIÓN DE SEGURIDAD Y TRASLADO', 'Todo el evento en vivo: el staff en el mapa, los puntos y sus turnos, las rondas, las 18 regionales y las alertas.'],
+  coordinacion: ['Coordinación', 'DIRECCIÓN · COORDINACIÓN GENERAL', 'Lo ves todo: cada equipo, cada sede, las movilizaciones, las alertas y lo que piden los salones.'],
   eventos: ['Eventos y Protocolo', 'EVENTOS Y PROTOCOLO', 'Cada ceremonia y actividad del día, paso a paso, los invitados especiales y el plano de asientos de cada evento.'],
   bienestar: ['Bienestar', 'EQUIPO DE BIENESTAR', 'Los casos de bienestar en vivo: quién necesita ayuda, dónde está y quién lo atiende. Con protocolos rápidos y el punto de bienestar en el mapa.'],
 };
-const HERO_SIS = { coordinacion: { coordinacion: ['Coordinación general', 'COORDINACIÓN GENERAL', 'Todo el evento en un solo lugar: comunicados, comisiones, cobertura de seguridad, rondas, bienestar, objetos perdidos y avisos.'] }, asistencia: { coordinacion: ['Coordinación', 'COORDINACIÓN DE ASISTENCIA A COMISIONES', 'Las incidencias que reportan los asistentes, los pedidos de los salones y el avance de cada comisión.'] } };
+const HERO_SIS = { coordinacion: { coordinacion: ['Coordinación general', 'DIRECCIÓN · COORDINACIÓN GENERAL', 'Todo el evento en un solo lugar: comunicados, comisiones, cobertura de seguridad, rondas, bienestar, objetos perdidos y avisos.'] }, asistencia: { coordinacion: ['Coordinación', 'COORDINACIÓN DE ASISTENCIA A COMISIONES', 'Las incidencias que reportan los asistentes, los pedidos de los salones y el avance de cada comisión.'] } };
 // Cada equipo ve sus secciones en su propio orden; las demás no existen para él
 const ORDEN = {
   asistencia: ['inicio', 'chat', 'comunicados', 'comisiones-vivo', 'empieza', 'mi-comision', 'listas', 'sesion', 'incidencias', 'bitacora', 'programa', 'objetos', 'bolsillo', 'mapa', 'ubicacion', 'cumplimiento', 'mejoras'],
@@ -91,19 +91,21 @@ const ORDEN = {
   seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'incidencias', 'traslado', 'objetos', 'programa', 'bitacora', 'mejoras'],
   traslado: ['inicio', 'chat', 'comunicados', 'traslado', 'cobertura', 'mapa', 'ubicacion', 'programa', 'objetos', 'bitacora', 'mejoras'],
   coordinacion: ['inicio', 'chat', 'datos', 'rendimiento', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'delegados', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora', 'listas', 'sesion', 'mi-comision', 'empieza', 'bolsillo', 'cumplimiento', 'mejoras'],
-  eventos: ['inicio', 'chat', 'comunicados', 'eventos', 'invitados', 'asientos', 'programa', 'objetos', 'mapa', 'bitacora'],
-  bienestar: ['inicio', 'chat', 'comunicados', 'casos', 'atenciones', 'protocolos', 'punto', 'programa', 'objetos', 'mapa', 'ubicacion', 'bitacora'],
+  eventos: ['inicio', 'chat', 'comunicados', 'cobertura', 'eventos', 'invitados', 'asientos', 'programa', 'objetos', 'mapa', 'bitacora'],
+  bienestar: ['inicio', 'chat', 'comunicados', 'cobertura', 'casos', 'atenciones', 'protocolos', 'punto', 'programa', 'objetos', 'mapa', 'ubicacion', 'bitacora'],
 };
 // En los sistemas separados, cada equipo ve solo lo suyo (nada de delegados ni checklists de otros)
 const ORDEN_SIS = {
   asistencia: { coordinacion: ['inicio', 'chat', 'comunicados', 'comisiones-vivo', 'incidencias', 'bitacora', 'listas', 'sesion', 'mi-comision', 'empieza', 'bolsillo', 'cumplimiento', 'programa', 'objetos', 'mapa', 'ubicacion', 'mejoras'] },
-  seguridad: { seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'], traslado: ['inicio', 'chat', 'comunicados', 'traslado', 'cobertura', 'mapa', 'ubicacion', 'programa', 'objetos', 'bitacora'] },
+  seguridad: { seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'], traslado: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'] },
   coordinacion: { coordinacion: ['inicio', 'chat', 'datos', 'rendimiento', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora'] },
 };
 function reordenar(rol) {
   const main = $('main'), rail = $('#rail'), base = (ORDEN_SIS[SISTEMA] || {})[rol] || ORDEN[rol];
   // La dirección de cada equipo suma «Reportes» (solo de su equipo); el voluntario no lo ve
-  const orden = esDir() && $('#reportes') && !base.includes('reportes') ? [...base.slice(0, 3), 'reportes', ...base.slice(3)] : base;
+  let orden = esDir() && $('#reportes') && !base.includes('reportes') ? [...base.slice(0, 3), 'reportes', ...base.slice(3)] : base;
+  // La subdirección y la coordinación de cada equipo tienen su panel, justo después del inicio
+  if (veSubdireccion() && $('#subdireccion')) orden = ['inicio', 'subdireccion', ...orden.filter(id => id !== 'inicio' && id !== 'subdireccion')];
   orden.forEach(id => { main.appendChild($('#' + id)); const a = rail.querySelector(`a[href="#${id}"]`); if (a) rail.appendChild(a); });
   $$('main > section').forEach(sec => { if (!orden.includes(sec.id)) sec.classList.add('sin-permiso'); });
   let n = 0;
@@ -114,7 +116,7 @@ function reordenar(rol) {
 $('#bEntrar').onclick = () => entrar($('#codigo').value);
 $('#codigo').addEventListener('keydown', e => { if (e.key === 'Enter' && !$('#bEntrar').disabled) entrar($('#codigo').value); });
 // Entrada: escribe el guion solo, reconoce el equipo por las dos letras y avisa si el código es de otro sistema
-const EQUIPO_PREF = { AS: 'Asistente de comisión', CO: 'Coordinación de Asistencia', SE: 'Seguridad', TR: 'Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
+const EQUIPO_PREF = { AS: 'Asistente de comisión', CO: 'Coordinación de Asistencia', SE: 'Seguridad y Traslado', TR: 'Seguridad y Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
 const SIS_PREF = { AS: 'asistencia', CO: 'asistencia', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', CG: 'coordinacion', AC: 'todo' };
 const INICIO_MINUME = window.MINUME_INICIO || '';
 if (INICIO_MINUME) { $('#entVolver').href = INICIO_MINUME; $('#entVolver').hidden = false; }

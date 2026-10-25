@@ -19,7 +19,7 @@ const ICO = {
 const ico = (k, t = 26) => `<svg viewBox="0 0 24 24" width="${t}" height="${t}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICO[k] || ICO.estrella}"/></svg>`;
 // sección: [ícono, nombre corto, para qué sirve, en una línea]
 const SECCION = {
-  inicio: ['casa', 'Inicio', 'Tu tablero'], datos: ['ajustes', 'Datos del evento', 'Horarios, salones, staff y códigos'],
+  inicio: ['casa', 'Inicio', 'Tu tablero'], subdireccion: ['grupo', 'Mi subdirección', 'Tu staff, quién está activo y lo que puedes editar'], datos: ['ajustes', 'Datos del evento', 'Horarios, salones, staff y códigos'],
   comunicados: ['megafono', 'Comunicados', 'Avisos para todo el staff'], chat: ['chat', 'Chat', 'Mensajes con tu equipo y el staff'], rendimiento: ['grafico', 'Rendimiento', 'Quién trabaja y cómo va cada persona'], 'comisiones-vivo': ['lista', 'Comisiones', 'Cómo va cada comisión'],
   eventos: ['estrella', 'Eventos de hoy', 'Avanza cada evento con un botón'], invitados: ['persona', 'Invitados', 'Quién llegó y dónde se sienta'],
   asientos: ['asiento', 'Asientos', 'Plano de asientos de cada evento'], cobertura: ['escudo', 'Cobertura', 'Quién cubre cada punto y cuándo'],
@@ -27,7 +27,7 @@ const SECCION = {
   objetos: ['bolso', 'Objetos perdidos', 'Lo encontrado y lo que se busca'], programa: ['calendario', 'Programa', 'Qué pasa hoy y a qué hora'],
   delegados: ['qr', 'Delegados', 'Acreditación de delegados'], mapa: ['mapa', 'Mapa y rutas', 'Cómo llegar a cada salón'],
   ubicacion: ['pin', 'Equipo en vivo', 'Dónde está el equipo'], seguridad: ['alerta', 'Seguridad', 'Código del evento y protocolo'],
-  traslado: ['grupo', 'Regionales', 'Pase de lista y salidas a pie'], incidencias: ['aviso', 'Reportar algo', 'Una incidencia, en un minuto'],
+  traslado: ['grupo', 'Regionales', 'Llegó, en camino o en espera'], incidencias: ['aviso', 'Reportar algo', 'Una incidencia, en un minuto'],
   bitacora: ['libro', 'Bitácora', 'Lo importante del día'], reportes: ['reporte', 'Reportes', 'Todo lo que pasó, día por día'], listas: ['check', 'Mis listas', 'Lo que te toca ahora'],
   sesion: ['reloj', 'Durante la sesión', 'Sesión y transiciones'], 'mi-comision': ['grupo', 'Mi comisión', 'La ficha de tu comisión'],
   empieza: ['persona', 'Mi rol', 'Qué hace un asistente'], bolsillo: ['tarjeta', 'Guía de bolsillo', 'Contactos y respuestas rápidas'],
@@ -35,7 +35,8 @@ const SECCION = {
   protocolos: ['libro', 'Protocolos', 'Qué hacer en cada caso'], punto: ['cruz', 'Punto de bienestar', 'Dónde está y qué tiene'],
 };
 // lo que va en la barra de abajo (además de Inicio, Mapa y Comunicados)
-const PRINCIPAL = { asistencia: 'listas', acreditacion: 'delegados', seguridad: 'cobertura', traslado: 'traslado', bienestar: 'casos', eventos: 'eventos', coordinacion: SISTEMA === 'asistencia' ? 'comisiones-vivo' : 'datos' };
+const PRINCIPAL = { asistencia: 'listas', acreditacion: 'delegados', seguridad: 'cobertura', traslado: 'cobertura', bienestar: 'casos', eventos: 'eventos', coordinacion: SISTEMA === 'asistencia' ? 'comisiones-vivo' : 'datos' };
+const principalDe = u => veSubdireccion() ? 'subdireccion' : PRINCIPAL[u.rol];
 let seccionActual = 'inicio';
 // Direcciones limpias: …/coordinacion/mapa en vez de index.html#mapa (el archivo suelto, sin servidor, sigue con #mapa)
 function baseRuta() { return (location.pathname.match(new RegExp(`^(.*/${SISTEMA}/)`)) || [])[1] || ''; }
@@ -61,23 +62,27 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   const url = urlSeccion(id), ahora = location.pathname + location.search + location.hash;
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
+  if (id === 'inicio') pintarTablero();
   if (id === 'traslado' && window.REGIONALES_LISTO) pintarRegionales();
   if (id === 'rendimiento' && window.RENDIMIENTO_LISTO) cargarRendimiento();
   if (id === 'reportes' && window.REPORTES_DIA_LISTO) pintarReportes();
+  if (id === 'subdireccion' && window.SUBDIR_LISTO) cargarSubdireccion();
+  if (window.CHAT_LISTO) pintarBannerChat();
   if (window.CHAT_LISTO) { if (id === 'chat') { ajustarChatAlto(); cargarChat(true); const l = chat.msgs[chat.canal]; if (l && l.length) marcarVistoChat(chat.canal, l[l.length - 1].id); } pintarInsigniasChat(); }
   // instalada como app la ventana ya dice «MINUME XVII · equipo»: el título solo dice la sección
   document.title = matchMedia('(display-mode: standalone)').matches ? (SECCION[id] ? SECCION[id][1] : 'Inicio') : `${SECCION[id] && id !== 'inicio' ? SECCION[id][1] + ' · ' : ''}${SIS.nombre} · MINUME XVII`;
 }
 function modoApp() {
   const u = estado.usuario; document.body.classList.toggle('app', !!u); if (!u) return;
+  SECCION.subdireccion[1] = cargoDe(u) === 'Subdirección' ? 'Mi subdirección' : 'Mi equipo';
   const ids = seccionesDe().map(s => s.id).filter(id => id !== 'inicio');
-  ids.sort((a, b) => (b === PRINCIPAL[u.rol]) - (a === PRINCIPAL[u.rol]));   // lo principal del equipo, primero
+  ids.sort((a, b) => (b === principalDe(u)) - (a === principalDe(u)));   // lo principal del equipo, primero
   // botones grandes del inicio
   let caja = $('#accesos');
   if (!caja) { caja = document.createElement('div'); caja.id = 'accesos'; caja.className = 'accesos'; $('#inicio .hero').after(caja); }
-  caja.innerHTML = `<h2 class="accesos-t">¿Qué quieres hacer?</h2><div class="accesos-g">${ids.map(id => { const [i, n, d] = SECCION[id]; return `<button type="button" class="acceso${id === PRINCIPAL[u.rol] ? ' principal' : ''}" data-ir="${id}"><span class="acceso-ic">${ico(i)}</span><b>${n}</b><small>${d}</small></button>`; }).join('')}</div>`;
+  caja.innerHTML = `<h2 class="accesos-t">¿Qué quieres hacer?</h2><div class="accesos-g">${ids.map(id => { const [i, n, d] = SECCION[id]; return `<button type="button" class="acceso${id === principalDe(u) ? ' principal' : ''}" data-ir="${id}" title="${d}"><span class="acceso-ic">${ico(i)}</span><b>${n}</b></button>`; }).join('')}</div>`;
   // barra de abajo: Inicio · lo principal del equipo · Chat · Mapa · Comunicados
-  const abajo = ['inicio', PRINCIPAL[u.rol], 'chat', 'mapa', 'comunicados'].filter((id, k, l) => id && l.indexOf(id) === k && (id === 'inicio' || ids.includes(id)));
+  const abajo = ['inicio', principalDe(u), 'chat', 'mapa', 'comunicados'].filter((id, k, l) => id && l.indexOf(id) === k && (id === 'inicio' || ids.includes(id)));
   const corto = { chat: 'Chat', inicio: 'Inicio', mapa: 'Mapa', comunicados: 'Avisos', 'comisiones-vivo': 'Comisiones', datos: 'Datos', eventos: 'Eventos', listas: 'Mis listas' };
   $('#barraAbajo').style.gridTemplateColumns = `repeat(${abajo.length}, minmax(0, 1fr))`;
   $('#barraAbajo').innerHTML = abajo.map(id => `<button type="button" data-ir="${id}">${ico(SECCION[id][0], 22)}<span>${corto[id] || SECCION[id][1]}</span></button>`).join('');

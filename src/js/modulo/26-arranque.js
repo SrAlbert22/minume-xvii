@@ -2,10 +2,10 @@
 function pintarNuevas() { pintarRed(); pintarBotonAlertas(); pintarBanner(); pintarComunicados(); pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarObjetos(); pintarAtenciones(); pintarEventos(); pintarInvitados(); pintarAsientos(); pintarDatos(); }
 addEventListener('storage', e => { if (e.key && e.key.startsWith('minume.compartido.') && e.key !== CLAVE_AVISOS) { pintarNuevas(); pintarCobertura(); if (estado.usuario) pintarTablero(); } });
 setInterval(() => { if (!estado.usuario) return; demoLeer(); pintarBanner(); }, 4000);
-setInterval(() => { if (!estado.usuario) return; pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarAtenciones(); pintarEventos(); }, 30000);
+setInterval(() => { if (!estado.usuario || document.hidden) return; pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarAtenciones(); pintarEventos(); }, 30000);
 
 // ---------- Arranque ----------
-pintarListas(); pintarBitacora(); pintarRanking(); pintarAbordaje(); pintarTraslado(); elegirSede('todas');
+pintarListas(); pintarBitacora(); pintarRanking(); pintarTraslado(); elegirSede('todas');
 if (estado.nombre) $('#nombre').value = estado.nombre;
 if (estado.comision && (!estado.usuario || estado.usuario.rol === 'asistencia')) { elegida = estado.comision; paso(3); aplicarComision(); $$('.comi').forEach(x => x.classList.toggle('on', x.dataset.c === estado.comision)); $$('.etapa').forEach(x => x.classList.toggle('on', x.dataset.e === estado.etapa)); }
 aplicarRol(); pintarCompartir(); pintarCasos();

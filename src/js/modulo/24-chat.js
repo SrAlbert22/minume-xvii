@@ -69,7 +69,7 @@ async function cargarChat(irAbajo) {
     const l = await rpcChat('minume_chat_leer', { p_canal: k });
     chat.msgs[k] = l; if (k === chat.canal) pintarMensajes(irAbajo);
     $('#chatEstado').textContent = 'En línea'; $('#chatEstado').className = 'chip verde';
-    if (chatAbierto() && l.length) marcarVistoChat(k, l[l.length - 1].id);
+    if (chatAbierto() && l.length) { marcarVistoChat(k, l[l.length - 1].id); borrarNotificaciones(l.filter(m => !m.urgente || m.yaRecibi || m.mio).map(m => 'chat-' + m.id)); }
   } catch (e) { $('#chatEstado').textContent = navigator.onLine === false ? 'Sin internet' : 'Sin conexión'; $('#chatEstado').className = 'chip amarillo'; if (k === chat.canal && !chat.msgs[k]) pintarMensajes(); }
 }
 let vistoT = null;
@@ -86,7 +86,7 @@ async function resumenChat(avisar) {
       if (!u || u.mio || (viejo && viejo.id >= u.id) || (k === chat.canal && chatAbierto())) continue;
       avisoChat(k, u);
     }
-    pintarCanalesChat();
+    pintarCanalesChat(); pintarBannerChat();
   } catch {}
 }
 // Mensaje nuevo en otro canal o con el chat cerrado: aviso con sonido; si es urgente suena más fuerte y vibra
@@ -94,8 +94,25 @@ function avisoChat(k, u) {
   if (alertasOn()) { if (u.urgente) { tono(880, .18, .3); setTimeout(() => tono(660, .18, .3), 200); setTimeout(() => tono(880, .25, .3), 400); } else tono(740, .09, .12, 'sine'); }
   vibrar(u.urgente ? [300, 120, 300, 120, 500] : 120);
   toast(`${u.urgente ? '🚨 ' : '💬 '}${u.nombre.split(' ')[0]} · ${CANALES_CHAT[k][0]}: ${u.texto}`);
-  if (u.urgente && 'Notification' in window && Notification.permission === 'granted' && document.hidden) try { new Notification(`Urgente · ${CANALES_CHAT[k][0]}`, { body: `${u.nombre}: ${u.texto}`, tag: 'chat-' + u.id }); } catch {}
+  if (u.urgente && 'Notification' in window && Notification.permission === 'granted' && document.hidden && !pushActivo()) try { new Notification(`Urgente · ${CANALES_CHAT[k][0]}`, { body: `${u.nombre}: ${u.texto}`, tag: 'chat-' + u.id }); } catch {}
 }
+// Aviso arriba de la página mientras haya mensajes urgentes del chat sin marcar «Recibido» (en el chat mismo no hace falta)
+function pintarBannerChat() {
+  const b = $('#bannerChat'); if (!b) return;
+  const pend = Object.entries(chat.resumen).filter(([, r]) => r.urgentes > 0);
+  if (!pend.length || !estado.usuario || (typeof seccionActual !== 'undefined' && seccionActual === 'chat')) { b.hidden = true; return; }
+  const [k, r] = pend[0], n = pend.reduce((a, [, x]) => a + x.urgentes, 0), u = r.ultimo && r.ultimo.urgente && !r.ultimo.mio ? r.ultimo : null;
+  b.hidden = false;
+  b.innerHTML = `<div class="bo-txt"><b>🚨 Aviso en el chat · ${esc(CANALES_CHAT[k][0])}</b><span>${u ? `${esc(u.nombre.split(' ')[0])}: ${esc(u.texto)}` : `Tienes ${n} aviso${n > 1 ? 's' : ''} sin marcar «Recibido»`}</span>${u && n > 1 ? `<small>y ${n - 1} más sin marcar</small>` : ''}</div>
+    <div class="bo-acc">${u ? `<button class="boton" type="button" data-bc-recibido="${u.id}">✓ Recibido</button>` : ''}<button class="boton sec" type="button" data-bc-ver="${k}">Ver en el chat</button></div>`;
+}
+$('#bannerChat').addEventListener('click', async e => {
+  const v = e.target.closest('[data-bc-ver]');
+  if (v) { abrirSeccion('chat'); abrirCanalChat(v.dataset.bcVer); return; }
+  const r = e.target.closest('[data-bc-recibido]'); if (!r) return; r.disabled = true;
+  try { await rpcChat('minume_chat_recibido', { p_id: +r.dataset.bcRecibido }); borrarNotificaciones(['chat-' + r.dataset.bcRecibido]); toast('Marcado como recibido'); await resumenChat(false); }
+  catch (er) { r.disabled = false; toast(er.message || 'No se pudo marcar'); }
+});
 function abrirCanalChat(k) {
   if (!misCanalesChat().includes(k)) return;
   chat.canal = k; guardar('chat.canal', k);
@@ -141,7 +158,7 @@ $('#chatUrgente').addEventListener('change', e => $('#chatForm').classList.toggl
 $('#chatCanales').addEventListener('click', e => { const b = e.target.closest('[data-canal]'); if (b) abrirCanalChat(b.dataset.canal); });
 $('#chatLista').addEventListener('click', async e => {
   const b = e.target.closest('[data-recibir]'); if (!b) return; b.disabled = true;
-  try { await rpcChat('minume_chat_recibido', { p_id: +b.dataset.recibir }); cargarChat(); resumenChat(false); } catch (er) { b.disabled = false; toast(er.message || 'No se pudo marcar'); }
+  try { await rpcChat('minume_chat_recibido', { p_id: +b.dataset.recibir }); borrarNotificaciones(['chat-' + b.dataset.recibir]); cargarChat(); resumenChat(false); } catch (er) { b.disabled = false; toast(er.message || 'No se pudo marcar'); }
 });
 // Tiempo real: el canal abierto se recarga; los demás actualizan su numerito y avisan
 addEventListener('minume-chat', e => {

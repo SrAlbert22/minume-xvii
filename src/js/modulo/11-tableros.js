@@ -18,7 +18,7 @@ function estadoGrupos(t) {
 }
 function pintarBienvenida() {
   const u = estado.usuario; if (!u) return; const [txt, color] = ROLES[u.rol], nv = NIVEL[estado.codigoAlerta];
-  const desc = { asistencia: 'Tu turno, tu salón, cómo llegar y lo que necesites, en un toque.', acreditacion: 'Tu herramienta es el escáner de delegados. Funciona aunque se vaya el internet.', seguridad: 'Ves el evento completo en vivo: staff, alertas y el mapa de las sedes con los puntos de seguridad.', traslado: 'Guías a los grupos entre el Jaragua, el Sheraton y el Malecón Terrace, cambias su estado y sabes dónde queda cada comisión.', coordinacion: SISTEMA === 'asistencia' ? 'Ves las incidencias de los asistentes, los pedidos de los salones y lo que se escaló a Bienestar o Seguridad.' : 'Ves todo: cada equipo, las sedes, las movilizaciones, las alertas y los pedidos de los salones.', eventos: 'Toca el botón de cada evento cuando avance y marca a cada invitado cuando llegue. Coordinación lo ve al instante.', bienestar: 'Te llegan al instante los casos que escalan Asistencia y Seguridad. Tómalos, actualiza su estado y ciérralos.' }[u.rol];
+  const desc = { asistencia: 'Tu turno, tu salón, cómo llegar y lo que necesites, en un toque.', acreditacion: 'Tu herramienta es el escáner de delegados. Funciona aunque se vaya el internet.', seguridad: 'Ves el evento completo en vivo: staff, alertas y el mapa de las sedes con los puntos de seguridad.', traslado: 'Ves el evento completo en vivo: staff, alertas, tus puntos y las regionales que tienes a cargo.', coordinacion: SISTEMA === 'asistencia' ? 'Ves las incidencias de los asistentes, los pedidos de los salones y lo que se escaló a Bienestar o Seguridad.' : 'Ves todo: cada equipo, las sedes, las movilizaciones, las alertas y los pedidos de los salones.', eventos: 'Toca el botón de cada evento cuando avance y marca a cada invitado cuando llegue. Coordinación lo ve al instante.', bienestar: 'Te llegan al instante los casos que escalan Asistencia y Seguridad. Tómalos, actualiza su estado y ciérralos.' }[u.rol];
   $('#flujo').innerHTML = `<span class="chip" style="color:${color};border-color:${color}88">${txt}</span><h3 style="font-size:30px;margin:10px 0 4px">Hola, ${esc(u.nombre.split(' ')[0])}</h3><p style="color:var(--suave);font-size:14px;line-height:1.6;margin:0 0 10px">${desc}</p><div class="dato"><span>Código del evento</span><b style="color:${nv[1]}">${nv[0]}</b></div>`;
 }
 let ultimoTablero = '';
@@ -51,7 +51,7 @@ function pintarTablero() {
     const tot = DELEGADOS.length;
     h = `<div class="tiles">${tile(delOk, 'delegados acreditados', '#2fd38c', 'ir-delegados')}${tile(tot - delOk, 'faltan por llegar', '#ffd23f', 'ir-delegados')}${tile(colaDel.length, colaDel.length ? 'guardadas sin internet' : 'todo subido a la nube', '#ff9a3c', 'ir-delegados')}${tile(Math.round(tot ? delOk / tot * 100 : 0) + '%', 'del total', '#a974ff', 'ir-delegados')}</div>
       <div><button class="boton" data-acc="ir-delegados">📷 Empezar a escanear</button></div>`;
-  } else if (u.rol === 'seguridad') {
+  } else if (u.rol === 'seguridad' || u.rol === 'traslado') {
     const al = avisosPara('seguridad').reverse().slice(0, 5), abiertos = avisosPara('seguridad').filter(a => !CERRADO(a)).length;
     h = `<div class="tiles">${tile(eq.length, 'staff compartiendo ubicación', '#2fd38c', 'ir-ubicacion')}${tile(mov, 'en movimiento ahora', '#ff9a3c', 'ir-mapa')}${tile(lejos, 'fuera de la zona de su sede', '#ffd23f', 'ir-ubicacion', lejos > 0)}${tile(abiertos, 'avisos abiertos', '#ff4d5e', '', abiertos > 0)}</div>
       <div class="tiles">${resumenCobertura()}</div>
@@ -59,12 +59,6 @@ function pintarTablero() {
         <div class="niveles">${Object.entries(NIVEL).map(([k, [n, c]]) => `<button data-acc="nivel" data-k="${k}" class="${estado.codigoAlerta === k ? 'on' : ''}" style="background:${c}">${n}</button>`).join('')}</div></div>
       <div class="tarjeta"><b class="cond" style="font-size:24px">🚨 Avisos y SOS</b>${al.length ? al.map(a => filaAviso(a, ACC_SEG)).join('') : '<div class="pedido"><span style="font-size:18px">🟢</span><div><b>Sin alertas abiertas</b><small>Si alguien toca SOS, aparece aquí con su ubicación.</small></div></div>'}
         <button class="boton" data-acc="ir-mapa" style="margin-top:12px">🗺️ Ver todo en el mapa en vivo</button></div></div>`;
-  } else if (u.rol === 'traslado') {
-    const bs = estadoGrupos(t);
-    h = `<div class="rejilla r2"><div class="tarjeta"><b class="cond" style="font-size:24px">🚶 Grupos en movimiento</b>
-        ${bs.map(b => `<div class="bus-fila"><div class="marca-vivo" style="background:#ff9a3c">${iniciales(b.p.n)}</div><div><b>${b.p.n}</b><small style="display:block;color:var(--suave)">${b.txt} · ${esc(b.p.det)}</small></div><div class="estados">${['A tiempo', 'Retrasado', 'Salió', 'Llegó'].map(e => `<button class="mini${b.est === e ? ' on' : ''}" data-acc="bus" data-id="${b.p.id}" data-e="${e}">${e}</button>`).join('')}</div></div>`).join('')}
-        <button class="boton sec" data-acc="ir-ubicacion" style="margin-top:12px">📡 Verlos en el mapa en vivo</button></div>
-      <div class="tarjeta"><b class="cond" style="font-size:24px">📍 Dónde queda cada comisión</b><table class="tabla-com">${Object.entries(ASIGNA).map(([c, [se, sal]]) => `<tr><td>${c}</td><td>${SEDES[se].corto}<br><small style="color:var(--suave)">${sal}</small></td><td style="text-align:right"><button class="mini" data-acc="ver-salon" data-c="${c}">🧭 Cómo llegar</button></td></tr>`).join('')}</table></div></div>`;
   } else if (u.rol === 'eventos') {
     h = tableroEventos();
   } else if (u.rol === 'bienestar') {
@@ -82,7 +76,7 @@ function pintarTablero() {
   const elegido = $('#lugar2') && $('#lugar2').value; ultimoTablero = h; $('#tablero').innerHTML = h;
   if (elegido && $('#lugar2')) $('#lugar2').value = elegido; // no perder lo que la persona estaba eligiendo
 }
-setInterval(pintarTablero, 2500);
+setInterval(() => { if (seVe($('#tablero'))) pintarTablero(); }, 2500);
 const ACC_SEG = [['camino', 'Voy en camino'], ['atencion', 'Atendiendo'], ['resuelto', 'Resuelto']];
 const ACC_COORD = [['visto', 'Lo vi'], ['camino', 'Voy en camino'], ['resuelto', 'Resuelto']];
 const ACC_BIEN = [['camino', 'Voy en camino'], ['atencion', 'Atendiendo'], ['resuelto', 'Resuelto'], ['derivado', 'Derivar al 9-1-1']];

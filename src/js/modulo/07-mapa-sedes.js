@@ -591,4 +591,4 @@ function pintarVivoMapa() {
     else mapa.marca(id, x.xy);
   }
 }
-setInterval(() => { if (capas.vivo) pintarVivoMapa(); }, 1000);
+setInterval(() => { if (capas.vivo && seVe($('#mapa'))) pintarVivoMapa(); }, 1000);

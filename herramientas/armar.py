@@ -18,6 +18,9 @@ from ensamblar import ensamblar
 # Base de datos compartida en Supabase. Es la llave pública (anon), hecha para ir en la página;
 # lo que protege los datos son las reglas de la base (ver supabase/).
 SUPABASE = {'url': 'https://fakkqpwgidjvodippxup.supabase.co', 'key': 'sb_publishable_3C3Jueq_dsv75UwmOm0UnA_b-tlgAXc'}
+# Llave pública VAPID de los avisos al teléfono (Web Push). La privada está solo en el Vault de Supabase.
+VAPID = 'BBsn3Fuwh7pW7GXmiTFbJqF_JYGVzu4ODFaODJPWHgOAb6NaE9V5vcgtTncvHLa5euBVSmMOF-PTinbojCgIKsw'
+SUPABASE['vapid'] = VAPID
 CONFIG_JS = 'window.MINUME_SUPABASE = ' + json.dumps(SUPABASE) + ';'
 VERCEL = {'projectId': 'prj_dPyGbtm0VXXcpsgpDQXKcljhDQCd', 'orgId': 'team_8yZKZPf2aSv323isiAlHJwte', 'projectName': 'minume-xvii'}
 
@@ -177,7 +180,7 @@ def main():
     for c in SISTEMAS:
         precarga += [f'./{c}/', f'./{c}/manifest.webmanifest']
     sw = (SRC / 'sw.js').read_text(encoding='utf-8')
-    sw = sw.replace('__VERSION__', time.strftime('%Y%m%d-%H%M%S')).replace('__PRECARGA__', json.dumps(precarga, indent=1)).replace('__LIBS__', json.dumps(libs))
+    sw = sw.replace('__VERSION__', time.strftime('%Y%m%d-%H%M%S')).replace('__PRECARGA__', json.dumps(precarga, indent=1)).replace('__LIBS__', json.dumps(libs)).replace('__SUPABASE__', json.dumps({'url': SUPABASE['url'], 'key': SUPABASE['key']}))
     escribir(DIST / 'sw.js', sw)
 
     escribir(DIST / 'vercel.json', json.dumps({

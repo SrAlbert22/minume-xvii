@@ -56,7 +56,7 @@ function pintarRondas() {
         ${mk ? `<button class="mini" data-rn="deshacer" data-i="${i}">Cambiar</button>` : `<span class="rn-acc"><button class="mini on" data-rn="ok" data-i="${i}">En orden</button><button class="mini" data-rn="nov" data-i="${i}">Incidencia</button></span>`}</div>`; }).join('')}
       ${rnConfirmar && faltan ? `<div class="cob-asignar" style="margin-top:12px"><span>Te ${faltan === 1 ? 'falta 1 punto' : `faltan ${faltan} puntos`}. Si los saltas, dirección lo verá.</span><button class="mini on" data-rn="fin-si">Terminar igual</button><button class="mini" data-rn="fin-no">Seguir la ronda</button></div>` : `<button class="boton" data-rn="fin" style="margin-top:12px">Terminar ronda</button>`}</div>`;
   } else $('#rnActiva').innerHTML = '';
-  const puede = estado.usuario.rol === 'seguridad';
+  const puede = estado.usuario.rol === 'seguridad' || estado.usuario.rol === 'traslado';
   $('#rnRutas').innerHTML = est.map(({ r, e }) => {
     const u = e.ult, saltos = u && u.fin ? r.puntos.length - Object.keys(u.marcas).length : 0, nov = u ? Object.values(u.marcas).filter(m => !m.ok) : [];
     return `<div class="tarjeta rn-ruta ${e.k}"><div class="cob-cab" style="margin-bottom:4px"><b class="cond" style="font-size:22px">${r.n}</b><span class="chip ${e.cl}" style="margin-left:auto">${e.t}</span></div>

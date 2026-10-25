@@ -10,6 +10,7 @@ const LIBS = __LIBS__;
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
 const MAPA = /^https:\/\/(server\.arcgisonline\.com|tiles\.openfreemap\.org)\//;
 const MAX_MAPA = 600;
+const SUPA = __SUPABASE__;
 
 self.addEventListener('install', e => {
   e.waitUntil(Promise.all([
@@ -20,7 +21,7 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
-    .then(ks => Promise.all(ks.filter(k => k !== VERSION && k !== 'minume-cdn' && k !== 'minume-mapa').map(k => caches.delete(k))))
+    .then(ks => Promise.all(ks.filter(k => k !== VERSION && k !== 'minume-cdn' && k !== 'minume-mapa' && k !== 'minume-sesion').map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 
@@ -64,7 +65,49 @@ self.addEventListener('fetch', e => {
   }
 });
 
+// Avisos al teléfono (Web Push): llegan aunque la página esté cerrada o el teléfono bloqueado.
+// Siempre se muestra, aunque la página esté abierta: en el teléfono es lo único que suena con el sonido del sistema.
+self.addEventListener('push', e => {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch { d = { t: 'MINUME XVII', b: e.data ? e.data.text() : '' }; }
+  e.waitUntil(Promise.resolve().then(() => {
+    const sistema = (String(d.url || '').match(/^\/([a-z]+)\//) || [])[1] || 'inicio';
+    return self.registration.showNotification(d.t || 'MINUME XVII', {
+      body: d.b || '', tag: d.tag || 'minume', renotify: true, requireInteraction: !!d.sos,
+      icon: `/iconos/${sistema}-192.png`, badge: '/iconos/inicio-192.png', lang: 'es', timestamp: Date.now(),
+      vibrate: d.sos ? [600, 200, 600, 200, 600, 200, 1000] : [300, 120, 300],
+      data: { url: d.url || '/' },
+      actions: d.tipo === 'chat' && /^chat-\d+$/.test(d.tag || '') ? [{ action: 'recibido', title: '✓ Recibido' }] : [],
+    });
+  }));
+});
+
+// Al tocar el aviso se abre el sistema en la sección que toca (o se trae al frente si ya estaba abierto)
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(self.clients.matchAll({ type: 'window' }).then(l => l.length ? l[0].focus() : self.clients.openWindow('./')));
+  // «✓ Recibido» del chat: se marca sin abrir la página, con la sesión que dejó la página
+  if (e.action === 'recibido') {
+    const id = +String(e.notification.tag).slice(5);
+    e.waitUntil(caches.open('minume-sesion').then(c => c.match('/__minume_sesion')).then(r => r && r.text()).then(t => t && fetch(`${SUPA.url}/rest/v1/rpc/minume_chat_recibido`, {
+      method: 'POST', headers: { apikey: SUPA.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: t, p_id: id }),
+    })).catch(() => {}));
+    return;
+  }
+  const destino = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(l => {
+    const equipo = u => new URL(u).pathname.split('/')[1];
+    const c = l.find(x => equipo(x.url) === equipo(destino)) || l[0];
+    if (!c) return self.clients.openWindow(destino);
+    return c.focus().then(() => c.url === destino ? null : c.navigate(destino)).catch(() => self.clients.openWindow(destino));
+  }));
+});
+
+// El navegador cambió la suscripción por su cuenta: se avisa a la base con la dirección vieja para no perder los avisos
+self.addEventListener('pushsubscriptionchange', e => {
+  const vieja = e.oldSubscription;
+  e.waitUntil((e.newSubscription ? Promise.resolve(e.newSubscription)
+    : vieja ? self.registration.pushManager.subscribe(vieja.options) : Promise.reject())
+    .then(nueva => vieja && fetch(`${SUPA.url}/rest/v1/rpc/minume_push_cambio`, {
+      method: 'POST', headers: { apikey: SUPA.key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_viejo: vieja.endpoint, p_sub: nueva.toJSON() }),
+    })).catch(() => {}));
 });

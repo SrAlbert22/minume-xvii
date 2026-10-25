@@ -39,7 +39,7 @@ function pedirPermisosAlEntrar() {
     v.innerHTML = `<div class="permisos-caja"><span class="chip">Antes de empezar</span><h3 id="permTit">Dos cosas para tu turno</h3>
       <p>Así el equipo te encuentra si hace falta y los SOS suenan en tu teléfono. Lo puedes apagar cuando quieras.</p>
       ${conUbicacion ? `<button type="button" class="perm-op${u ? ' hecho' : ''}" data-perm="ubic"><span class="perm-ic">📡</span><span><b>${u ? 'Compartiendo tu ubicación' : 'Compartir mi ubicación'}</b><small>${u ? 'Se apaga sola al cierre del día. Solo la ve el staff autorizado.' : 'Hasta el cierre de hoy. Solo la ve el staff autorizado.'}</small></span><span class="perm-ok">${u ? '✓' : 'Activar'}</span></button>` : ''}
-      <button type="button" class="perm-op${a ? ' hecho' : ''}" data-perm="alertas"><span class="perm-ic">🔔</span><span><b>${a ? 'Alertas activas' : 'Activar las alertas'}</b><small>Los SOS y los comunicados urgentes van a sonar en este teléfono.</small></span><span class="perm-ok">${a ? '✓' : 'Activar'}</span></button>
+      <button type="button" class="perm-op${a ? ' hecho' : ''}" data-perm="alertas"><span class="perm-ic">🔔</span><span><b>${a ? 'Alertas activas' : 'Activar las alertas'}</b><small>Los SOS y los urgentes van a sonar en este teléfono, aunque esté bloqueado.</small></span><span class="perm-ok">${a ? '✓' : 'Activar'}</span></button>
       <div class="permisos-pie"><button type="button" class="boton" data-perm="listo">${(u || !conUbicacion) && a ? 'Listo, empezar' : 'Ahora no'}</button></div></div>`;
   };
   pintar();
@@ -128,7 +128,7 @@ function iniciarMapaVivo() {
     for (const [k, xy] of Object.entries(SEDES_XY)) { const el = document.createElement('div'); el.innerHTML = `<span class="marca-sede">${k === 'malecon' ? '⛺' : '🏨'} ${SEDES[k].corto}</span>`; visorVivo.marca('sede:' + k, xy, el, k === 'malecon' ? 12 : 48); }
     visorVivo.ruta(MAPA.rutas['jaragua-sheraton'].nodos.map(n => MAPA.xy[n]));
     EQUIPO.forEach(p => hace[p.id] = 3 + Math.floor(Math.random() * 30));
-    setInterval(actualizarVivo, 1000); actualizarVivo();
+    setInterval(() => { if (seVe($('#mapaVivo'))) actualizarVivo(); }, 1000); actualizarVivo();
   }).catch(() => { esperaVivo = null; $('#mapaVivo').insertAdjacentHTML('beforeend', '<div class="capa-msg"><div><b>No se pudo cargar la maqueta 3D</b>Hace falta internet la primera vez. La lista del equipo funciona igual.</div></div>'); });
   $('#mvHotel').onclick = () => visorVivo && visorVivo.volar(VISTA_CERCA, 1800);
   $('#mvTodo').onclick = () => visorVivo && visorVivo.volar(VISTA_TODO, 1800);

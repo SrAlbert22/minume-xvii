@@ -15,6 +15,8 @@ const SISTEMAS = {
 };
 const SIS = SISTEMAS[SISTEMA] || SISTEMAS.todo;
 const PREF = SISTEMA === 'todo' ? 'minumeDemo.' : `minume.${SISTEMA}.`; // cada sistema guarda su sesión aparte
+// ¿Se está viendo este pedazo? (pestaña al frente y su sección abierta). Los relojes de cada segundo lo revisan antes de trabajar.
+const seVe = el => !document.hidden && !!el && el.offsetParent !== null;
 const guardar = (k, v) => { try { localStorage.setItem(PREF + k, JSON.stringify(v)); } catch {} };
 const leer = (k, d) => { try { const v = localStorage.getItem(PREF + k); return v ? JSON.parse(v) : d; } catch { return d; } };
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2600); }

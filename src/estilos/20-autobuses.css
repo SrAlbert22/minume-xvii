@@ -52,6 +52,18 @@
 
   /* ---------- Regionales: pase de lista ---------- */
   .reg-todas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .reg-item { display: grid; border-radius: 16px; }
+  .reg-item .reg-card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; width: 100%; }
+  .reg-item .reg-rapido { border: 1px solid var(--borde); border-top: 0; border-radius: 0 0 16px 16px; padding: 6px; background: rgba(255, 255, 255, .02); }
+  .reg-item.on { outline: 2px solid var(--equipo); outline-offset: 1px; }
+  .reg-rapido { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .reg-rapido button { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; padding: 6px; border-radius: 12px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .04); color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .reg-rapido button.on { background: rgba(255, 255, 255, .14); border-color: #fff; }
+  .reg-rapido button.verde.on { background: rgba(25, 211, 162, .25); border-color: var(--verde); }
+  .reg-rapido button.amarillo.on { background: rgba(255, 210, 63, .2); border-color: var(--amarillo); }
+  .reg-rapido.grande { margin: 6px 0 8px; } .reg-rapido.grande button { min-height: 64px; font-size: 16px; flex-direction: column; gap: 2px; } .reg-rapido.grande span { font-size: 24px; }
+  .reg-pregunta { margin: 14px 0 0; font-weight: 800; }
+  .reg-pase { margin-top: 14px; border-top: 1px solid var(--borde); padding-top: 10px; } .reg-pase > summary { cursor: pointer; font-weight: 700; } .reg-pase > summary small { color: var(--suave); font-weight: 500; }
   .reg-card { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: start; text-align: left; padding: 12px; border-radius: 16px; border: 1px solid var(--borde); border-left: 4px solid var(--borde); background: rgba(255, 255, 255, .03); color: #fff; cursor: pointer; font: inherit; }
   .reg-card .chip { grid-column: 1 / -1; justify-self: start; }
   .reg-card.completa { border-left-color: var(--verde); } .reg-card.faltan, .reg-card.parcial { border-left-color: var(--amarillo); } .reg-card.sin { border-left-color: var(--m-rojo); }

@@ -15,7 +15,7 @@ const rosterCom = para => window.MINUME_PERSONAL ? window.MINUME_PERSONAL.filter
 const sinLeer = () => { const yo = yoCod(); if (!yo) return []; return leerComs().filter(m => comParaMi(m) && m.deCod !== yo && !(m.leidos || {})[yo] && diaDR(m.t) === hoyDR()).sort((a, b) => b.t - a.t); };
 function marcarLeido(id) {
   const l = leerComs(), m = l.find(x => x.id === id), yo = yoCod(); if (!m || !yo) return;
-  m.leidos = m.leidos || {}; m.leidos[yo] = { n: yoNombre(), t: ahoraMs() }; guardarComp('comunicados', l);
+  m.leidos = m.leidos || {}; m.leidos[yo] = { n: yoNombre(), t: ahoraMs() }; guardarComp('comunicados', l); borrarNotificaciones(['com-' + id]);
   pintarComunicados(); pintarBanner();
 }
 let comAvisados = new Set(leerComs().map(m => m.id));
