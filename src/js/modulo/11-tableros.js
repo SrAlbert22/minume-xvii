@@ -37,12 +37,12 @@ function pintarTablero() {
         <div class="hora-grande" style="margin-top:10px">${tt.de} – ${tt.a}</div>
         <b class="cond" style="font-size:26px;display:block;margin-top:4px">Salón ${tt.salon} · ${estado.comision || ''}</b>
         <div style="color:var(--suave);font-size:13.5px">${SEDES[(ASIGNA[estado.comision] || ['jaragua'])[0]].corto} · ${tt.tarea}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="boton" data-acc="ruta">🧭 Cómo llegar</button><button class="boton sec" data-acc="ir-listas">✅ Mi checklist · ${hechas}/${lista.length}</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="boton" data-acc="ruta">Cómo llegar</button><button class="boton sec" data-acc="ir-listas">Mi checklist · ${hechas}/${lista.length}</button></div>
         ${tur.length > 1 ? `<div style="color:var(--suave);font-size:12.5px;margin-top:10px">Tus turnos de hoy: ${tur.map(x => `${x.de}–${x.a}`).join(' · ')}</div>` : ''}</div>
-      <div class="tarjeta"><b class="cond" style="font-size:24px">🙋 Necesito en mi salón</b><div style="color:var(--suave);font-size:13px">Un toque y le llega a coordinación con tu salón.</div>
+      <div class="tarjeta"><b class="cond" style="font-size:24px">Necesito en mi salón</b><div style="color:var(--suave);font-size:13px">Un toque y le llega a coordinación con tu salón.</div>
         <div class="necesito">${NECESITO.map(([ic, n], i) => `<button data-acc="necesito" data-i="${i}"><span>${ic}</span>${n}</button>`).join('')}</div>
         ${mios.length ? `<div style="margin-top:8px">${mios.map(q => filaPedido(q)).join('')}</div>` : ''}</div></div>
-      <div class="tarjeta"><b class="cond" style="font-size:24px">📍 Me moví a…</b><div style="color:var(--suave);font-size:13px">Avísale a coordinación dónde estás, sin escribir.</div>
+      <div class="tarjeta"><b class="cond" style="font-size:24px">Me moví a…</b><div style="color:var(--suave);font-size:13px">Avísale a coordinación dónde estás, sin escribir.</div>
         <div style="display:flex;gap:8px;margin-top:8px"><select id="lugar2">${opcionesLugar()}</select><button class="boton sec" data-acc="lugar2" style="flex:none">Avisar</button></div>
         <div style="color:var(--suave);font-size:12.5px;margin-top:6px">${textoLugar()}</div></div>`;
     const misAv = leerAvisos().filter(a => a.por === u.nombre).reverse().slice(0, 3);
@@ -50,15 +50,15 @@ function pintarTablero() {
   } else if (u.rol === 'acreditacion') {
     const tot = DELEGADOS.length;
     h = `<div class="tiles">${tile(delOk, 'delegados acreditados', '#2fd38c', 'ir-delegados')}${tile(tot - delOk, 'faltan por llegar', '#ffd23f', 'ir-delegados')}${tile(colaDel.length, colaDel.length ? 'guardadas sin internet' : 'todo subido a la nube', '#ff9a3c', 'ir-delegados')}${tile(Math.round(tot ? delOk / tot * 100 : 0) + '%', 'del total', '#a974ff', 'ir-delegados')}</div>
-      <div><button class="boton" data-acc="ir-delegados">📷 Empezar a escanear</button></div>`;
+      <div><button class="boton" data-acc="ir-delegados">Empezar a escanear</button></div>`;
   } else if (u.rol === 'seguridad' || u.rol === 'traslado') {
     const al = avisosPara('seguridad').reverse().slice(0, 5), abiertos = avisosPara('seguridad').filter(a => !CERRADO(a)).length;
     h = `<div class="tiles">${tile(eq.length, 'staff compartiendo ubicación', '#2fd38c', 'ir-ubicacion')}${tile(mov, 'en movimiento ahora', '#ff9a3c', 'ir-mapa')}${tile(lejos, 'fuera de la zona de su sede', '#ffd23f', 'ir-ubicacion', lejos > 0)}${tile(abiertos, 'avisos abiertos', '#ff4d5e', '', abiertos > 0)}</div>
       <div class="tiles">${resumenCobertura()}</div>
       <div class="rejilla r2"><div class="tarjeta"><b class="cond" style="font-size:24px">Código del evento</b><div style="color:var(--suave);font-size:13px">Lo que elijas aquí lo ve todo el staff al instante.</div>
         <div class="niveles">${Object.entries(NIVEL).map(([k, [n, c]]) => `<button data-acc="nivel" data-k="${k}" class="${estado.codigoAlerta === k ? 'on' : ''}" style="background:${c}">${n}</button>`).join('')}</div></div>
-      <div class="tarjeta"><b class="cond" style="font-size:24px">🚨 Avisos y SOS</b>${al.length ? al.map(a => filaAviso(a, ACC_SEG)).join('') : '<div class="pedido"><span style="font-size:18px">🟢</span><div><b>Sin alertas abiertas</b><small>Si alguien toca SOS, aparece aquí con su ubicación.</small></div></div>'}
-        <button class="boton" data-acc="ir-mapa" style="margin-top:12px">🗺️ Ver todo en el mapa en vivo</button></div></div>`;
+      <div class="tarjeta"><b class="cond" style="font-size:24px">Avisos y SOS</b>${al.length ? al.map(a => filaAviso(a, ACC_SEG)).join('') : '<div class="pedido"><span style="font-size:18px">🟢</span><div><b>Sin alertas abiertas</b><small>Si alguien toca SOS, aparece aquí con su ubicación.</small></div></div>'}
+        <button class="boton" data-acc="ir-mapa" style="margin-top:12px">Ver todo en el mapa en vivo</button></div></div>`;
   } else if (u.rol === 'eventos') {
     h = tableroEventos();
   } else if (u.rol === 'bienestar') {
@@ -68,9 +68,9 @@ function pintarTablero() {
   } else {
     const bs = estadoGrupos(t), staffOk = Object.keys(estado.acreditados).length, movs = estado.bitacora.filter(b => b.tipo.startsWith('📍')).slice(-3).reverse();
     h = `<div class="tiles">${resumenGeneral()}</div><div class="tiles">${tile(`${delOk}/${DELEGADOS.length}`, 'delegados acreditados', '#a974ff', 'ir-delegados')}${tile(pend.length, 'pedidos de los salones', '#ffd23f', '', pend.length > 0)}${tile(sos, 'alertas SOS', '#ff4d5e', 'ir-incidencias', sos > 0)}${tile(eq.length, 'staff en vivo', '#2fd38c', 'ir-ubicacion')}${tile(mov, 'en movimiento', '#ff9a3c', 'ir-mapa')}${tile(`${bs.filter(b => b.x.mov).length}/${bs.length}`, 'grupos caminando', '#ff9a3c', 'ir-traslado')}${tile(nv[0], 'código del evento', nv[1], 'ir-seguridad')}</div>
-      <div class="rejilla r2"><div class="tarjeta"><b class="cond" style="font-size:24px">🙋 Pedidos de los salones</b>${estado.pedidos.slice().reverse().slice(0, 5).map(q => filaPedido(q, true)).join('')}</div>
-      <div class="tarjeta"><b class="cond" style="font-size:24px">🚶 Movilizaciones</b>${bs.map(b => `<div class="pedido"><span style="font-size:20px">🚶</span><div><b>${b.p.n} · ${b.est}</b><small>${b.txt}</small></div></div>`).join('')}
-        <b class="cond" style="font-size:22px;display:block;margin-top:12px">📍 Movimientos del staff</b>${movs.length ? movs.map(b => `<div class="pedido"><span>📍</span><div><b>${esc(b.texto)}</b><small>${b.hora}</small></div></div>`).join('') : '<div style="color:var(--suave);font-size:13px;padding:6px 0">Cuando alguien avise "Me moví a…", aparece aquí.</div>'}</div></div>`;
+      <div class="rejilla r2"><div class="tarjeta"><b class="cond" style="font-size:24px">Pedidos de los salones</b>${estado.pedidos.slice().reverse().slice(0, 5).map(q => filaPedido(q, true)).join('')}</div>
+      <div class="tarjeta"><b class="cond" style="font-size:24px">Movilizaciones</b>${bs.map(b => `<div class="pedido"><span style="font-size:20px">🚶</span><div><b>${b.p.n} · ${b.est}</b><small>${b.txt}</small></div></div>`).join('')}
+        <b class="cond" style="font-size:22px;display:block;margin-top:12px">Movimientos del staff</b>${movs.length ? movs.map(b => `<div class="pedido"><span>📍</span><div><b>${esc(b.texto)}</b><small>${b.hora}</small></div></div>`).join('') : '<div style="color:var(--suave);font-size:13px;padding:6px 0">Cuando alguien avise "Me moví a…", aparece aquí.</div>'}</div></div>`;
   }
   if (h === ultimoTablero) return;
   const elegido = $('#lugar2') && $('#lugar2').value; ultimoTablero = h; $('#tablero').innerHTML = h;
@@ -85,7 +85,7 @@ function tableroCoordAsistencia() {
   const fuera = leerAvisos().filter(a => a.de === 'asistencia' && a.para !== 'asistencia' && !CERRADO(a));
   return `<div class="tiles">${tile(abiertos.length, 'incidencias por atender', '#ffd23f', 'ir-incidencias', abiertos.length > 0)}${tile(pend.length, 'pedidos de los salones', '#45c8ff', '', pend.length > 0)}${tile(fuera.length, 'casos con Bienestar o Seguridad', '#ff4d5e', '', fuera.length > 0)}${tile(15, 'comisiones con asistente', '#2fd38c', 'ir-cumplimiento')}</div>
     <div class="rejilla r2"><div class="tarjeta"><b class="cond" style="font-size:24px">Incidencias de los asistentes</b>${av.length ? av.slice(0, 6).map(a => filaAviso(a, ACC_COORD)).join('') : '<div style="color:var(--suave);font-size:13px;padding:6px 0">Cuando un asistente reporte un nivel 2 o 3 para Coordinación, aparece aquí al instante.</div>'}</div>
-    <div class="tarjeta"><b class="cond" style="font-size:24px">🙋 Pedidos de los salones</b>${estado.pedidos.slice().reverse().slice(0, 5).map(q => filaPedido(q, true)).join('')}
+    <div class="tarjeta"><b class="cond" style="font-size:24px">Pedidos de los salones</b>${estado.pedidos.slice().reverse().slice(0, 5).map(q => filaPedido(q, true)).join('')}
       ${fuera.length ? `<b class="cond" style="font-size:22px;display:block;margin-top:12px">Escalados a otros equipos</b>${fuera.map(a => filaAviso(a)).join('')}` : ''}</div></div>`;
 }
 function tableroBienestar() {

@@ -2,6 +2,8 @@
 
   /* Los números de las secciones no ayudan a encontrar nada: fuera */
   body.app .titulo-sec .n { display: none; }
+  /* Sin adornos flotando detrás del trabajo: el anillo de la marca solo se ve en la pantalla de entrada */
+  body.app .deco { display: none; }
   body.app .rail a { display: inline-flex; align-items: center; gap: 7px; }
   body.app .rail a span { opacity: 1; margin: 0; }
 

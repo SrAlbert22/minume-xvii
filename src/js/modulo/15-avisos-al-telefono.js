@@ -74,7 +74,7 @@ function pintarBotonPush() {
 function ventanaPush() {
   const v = document.createElement('div'); v.className = 'sos-velo on push-velo'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true');
   const cerrar = () => v.remove();
-  v.innerHTML = `<div class="tarjeta"><b class="cond" style="font-size:28px">📱 Avisos al teléfono</b>
+  v.innerHTML = `<div class="tarjeta"><b class="cond" style="font-size:28px">Avisos al teléfono</b>
     <p>Este teléfono recibe los <b>SOS</b>, el <b>nivel 3</b>, los <b>comunicados urgentes</b> y los <b>mensajes urgentes del chat</b> aunque la página esté cerrada o la pantalla bloqueada.</p>
     <p class="push-paso">Para probarlo: toca «Mandar una prueba», <b>bloquea el teléfono</b> y espera 10 segundos.</p>
     ${esIOS ? '<p class="push-nota">En iPhone suena con el sonido normal de notificaciones (no con la sirena) y solo si MINUME está agregada a la pantalla de inicio.</p>' : '<p class="push-nota">Si no suena: Ajustes del teléfono → Apps → Chrome → Notificaciones → minume-xvii.vercel.app → Sonido activado. Y que el teléfono no esté en «No molestar».</p>'}

@@ -14,7 +14,7 @@ const CODIGOS = {
   'BI-4400': { nombre: 'Subdirección de Bienestar', rol: 'bienestar', area: 'fisico', nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'EP-4400': { nombre: 'Subdirección de Eventos y Protocolo', rol: 'eventos', nivel: 'subdirector', acr: 'ACR-1C0RD' },
 };
-const ROLES = { asistencia: ['🔷 Asistencia', '#45c8ff'], acreditacion: ['🪪 Acreditación', '#a974ff'], seguridad: ['🛡️ Seguridad y Traslado', '#ff4d5e'], traslado: ['🛡️ Seguridad y Traslado', '#ff4d5e'], coordinacion: ['⭐ Coordinación', '#ffd23f'], bienestar: ['💚 Bienestar', '#2fd38c'], eventos: ['🎤 Eventos y Protocolo', '#f472b6'] };
+const ROLES = { asistencia: ['Asistencia', '#45c8ff'], acreditacion: ['Acreditación', '#a974ff'], seguridad: ['Seguridad y Traslado', '#ff4d5e'], traslado: ['Seguridad y Traslado', '#ff4d5e'], coordinacion: ['Coordinación', '#ffd23f'], bienestar: ['Bienestar', '#2fd38c'], eventos: ['Eventos y Protocolo', '#f472b6'] };
 // Niveles (como en la organización): Secretaría General (Coordinación general) → Subdirección (subsecretarios) → Coordinación → voluntarios.
 // Subdirección y coordinación tienen la vista de administración de SU equipo: ven todo su sistema, asignan personas, turnos
 // y refuerzos y editan los datos. El voluntario ve solo lo suyo. El nivel lo pone Coordinación general en cada código.
@@ -45,7 +45,7 @@ async function entrar(cod) {
     u = { nombre: r.nombre, rol: r.rol, comision: r.comision || undefined, area: r.area || undefined, acr: r.acr || undefined, ref: r.ref, nivel: r.nivel || 'voluntario' };
   } else u = CODIGOS[c] || null;
   if (!u) { $('#codError').textContent = 'Ese código no existe o ya caducó. Pídele uno a coordinación.'; return; }
-  if (!SIS.roles.includes(u.rol)) { if (window.MINUME_SALIR) window.MINUME_SALIR(); $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0].split(' ').slice(1).join(' ')}: entra en su propia página.`; return; }
+  if (!SIS.roles.includes(u.rol)) { if (window.MINUME_SALIR) window.MINUME_SALIR(); $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0]}: entra en su propia página.`; return; }
   estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0);
 }
 // Si la sesión vence o coordinación anula el código, se vuelve a pedir
@@ -58,7 +58,7 @@ function aplicarRol() {
   if (!u.acr && CODIGOS[u.codigo]) u.acr = CODIGOS[u.codigo].acr; // sesiones guardadas antes de que existiera el gafete
   const [txt, color] = ROLES[u.rol];
   document.body.classList.toggle('es-dir', esDir());
-  $('#rolChip').textContent = SISTEMA === 'coordinacion' ? '⭐ Dirección · Coordinación general' : u.rol === 'coordinacion' ? `⭐ ${cargoDe(u)}` : esDir() ? `${txt.split(' ')[0]} ${cargoDe(u)}` : `${txt.split(' ')[0]} ${u.nombre.split(' ')[0]}`;   // el nombre del equipo ya sale al lado del logo $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
+  $('#rolChip').textContent = SISTEMA === 'coordinacion' ? 'Dirección · Coordinación general' : u.rol === 'coordinacion' || esDir() ? cargoDe(u) : u.nombre.split(' ')[0];   // el nombre del equipo ya sale al lado del logo $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
   $$('[data-roles]').forEach(el => el.classList.toggle('sin-permiso', !el.dataset.roles.split(' ').includes(u.rol)));
   enlaces.forEach((a, i) => a.classList.toggle('sin-permiso', secciones[i].classList.contains('sin-permiso')));
   if (u.rol === 'asistencia') {

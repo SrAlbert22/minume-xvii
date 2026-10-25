@@ -29,7 +29,7 @@ function personasBien() {
   if (personasCache && personasDe === DELEGADOS.length + staff.length) return personasCache;
   personasDe = DELEGADOS.length + staff.length;
   personasCache = DELEGADOS.map(d => ({ id: d.id, n: d.n, es: 'Delegado', com: d.com, del: d.del || '', col: d.col || '' }))
-    .concat(staff.map(p => ({ id: String(p.ref), n: p.nombre, es: 'Staff', com: '', del: (ROLES[p.rol] || [''])[0].replace(/^\S+\s/, ''), col: '' })));
+    .concat(staff.map(p => ({ id: String(p.ref), n: p.nombre, es: 'Staff', com: '', del: (ROLES[p.rol] || [''])[0], col: '' })));
   personasCache.forEach(p => { p.k = norm(`${p.n} ${p.id} ${p.com} ${p.del} ${p.col}`); });
   return personasCache;
 }
@@ -39,7 +39,7 @@ function personaDeQR(txt) {
   const m = /^M17D\.(D-\d{3,5})\.([A-Z0-9]{6})$/.exec((txt || '').trim());
   if (m) return firma('D.' + m[1]) === m[2] ? personasBien().find(p => p.id === m[1]) || null : null;
   const r = validarQR(txt); if (r.mal && r.nivel === 'rojo') return null;
-  const g = GAFETES[r.id]; return g ? { id: r.id, n: g.n, es: 'Staff', com: g.com || '', del: (ROLES[g.rol] || [''])[0].replace(/^\S+\s/, ''), col: '' } : null;
+  const g = GAFETES[r.id]; return g ? { id: r.id, n: g.n, es: 'Staff', com: g.com || '', del: (ROLES[g.rol] || [''])[0], col: '' } : null;
 }
 
 // ---- Alergias y alertas médicas ----

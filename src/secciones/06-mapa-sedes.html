@@ -10,24 +10,24 @@
         <div class="capa-msg" id="mapaCarga"><div><b>Cargando la maqueta…</b>Unos segundos la primera vez; después abre sin internet.</div></div>
         <div class="capa-msg" id="mapaAviso" hidden><div><b>No se pudo cargar la maqueta 3D</b>Hace falta internet la primera vez. Los pasos de «Cómo llegar» funcionan igual.</div></div>
         <div class="controles">
-          <button id="c3d">🗺️ Ver en 2D</button>
-          <button id="cSalones">🏛️ Salones por dentro</button>
-          <button id="cSeg" class="seg on">🛡️ Seguridad</button>
-          <button id="cVivo" class="vivo" data-roles="seguridad traslado coordinacion">📡 Equipo en vivo</button>
-          <button id="cAdmin" class="admin" hidden>✏️ Editar mapa</button>
+          <button id="c3d">Ver en 2D</button>
+          <button id="cSalones">Salones por dentro</button>
+          <button id="cSeg" class="seg on">Seguridad</button>
+          <button id="cVivo" class="vivo" data-roles="seguridad traslado coordinacion">Equipo en vivo</button>
+          <button id="cAdmin" class="admin" hidden>Editar mapa</button>
         </div>
         <div class="ficha" id="ficha"><b>¿A dónde vas?</b>Toca un lugar de la maqueta o elige desde dónde y hasta dónde.</div>
         <div class="modal" id="modal"><div class="tarjeta" style="width:min(420px,calc(100% - 24px));background:#0c1736;max-height:calc(100% - 24px);overflow:auto">
           <b class="cond" style="font-size:24px" id="pTitulo">Nuevo punto</b>
           <label for="pNombre">¿Qué hay aquí?</label><input id="pNombre" placeholder="Ej.: Mesa de acreditación">
           <label>Tipo</label><div class="cats" id="pIconos"></div>
-          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="boton" id="pGuardar">Guardar</button><button class="boton sec" id="pMover" hidden>🔀 Mover</button><button class="boton sec" id="pBorrar" hidden style="color:#ff8a95">🗑 Borrar</button><button class="boton sec" id="pCancelar">Cancelar</button></div>
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="boton" id="pGuardar">Guardar</button><button class="boton sec" id="pMover" hidden>Mover</button><button class="boton sec" id="pBorrar" hidden style="color:#ff8a95">Borrar</button><button class="boton sec" id="pCancelar">Cancelar</button></div>
         </div></div>
       </div>
       <div class="tarjeta como-llegar">
-        <b class="cond" style="font-size:26px">🧭 Cómo llegar</b>
+        <b class="cond" style="font-size:26px">Cómo llegar</b>
         <label for="rOrigen">Desde</label><select id="rOrigen"></select>
-        <div class="r-cambiar"><button class="mini" id="rCambiar" type="button" title="Invertir">⇅ Invertir</button></div>
+        <div class="r-cambiar"><button class="mini" id="rCambiar" type="button" title="Invertir">Invertir</button></div>
         <label for="rDestino">Hasta</label><select id="rDestino"></select>
         <div class="r-botones"><button class="boton" id="rIr" type="button">Ver la ruta</button><button class="boton sec" id="rMiSalon" type="button">Mi salón</button></div>
         <div class="r-rapidas" id="rRapidas">
@@ -36,7 +36,7 @@
           <button data-o="s-lobby" data-d="malecon-terrace">Sheraton → Malecón Terrace</button>
           <button data-o="j-lobby" data-d="malecon-terrace">Jaragua → Malecón Terrace</button>
         </div>
-        <div class="r-gps"><button class="boton sec" id="rSeguir" type="button">📍 Guíame con el GPS</button><button class="mini" id="rCentrar" type="button">¿Dónde estoy?</button><small id="gpsEstado"></small></div>
+        <div class="r-gps"><button class="boton sec" id="rSeguir" type="button">Guíame con el GPS</button><button class="mini" id="rCentrar" type="button">¿Dónde estoy?</button><small id="gpsEstado"></small></div>
         <div class="r-card" id="rCard" hidden>
           <div class="r-resumen" id="rResumen"></div>
           <ol class="r-pasos" id="rPasos"></ol>

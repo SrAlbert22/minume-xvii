@@ -50,7 +50,7 @@ function verFoto(g) {
   const d = fotoDe(g.id); if (!d) return;
   const v = document.createElement('div'); v.className = 'sos-velo on push-velo foto-velo'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true');
   v.innerHTML = `<div class="tarjeta"><img src="${d}" alt="Foto de ${esc(g.n)}"><b class="cond" style="font-size:26px">${esc(g.n)}</b><p>${esc(g.cargo)}<br>Saludar como <b>${esc(g.trato)}</b> · ${esc(g.puerta)}</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">${puedeFoto() ? `<button class="boton sec" type="button" data-f="cambiar">📷 Cambiar foto</button><button class="boton sec" type="button" data-f="quitar">Quitar foto</button>` : ''}<button class="boton" type="button" data-f="cerrar">Cerrar</button></div></div>`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${puedeFoto() ? `<button class="boton sec" type="button" data-f="cambiar">Cambiar foto</button><button class="boton sec" type="button" data-f="quitar">Quitar foto</button>` : ''}<button class="boton" type="button" data-f="cerrar">Cerrar</button></div></div>`;
   v.addEventListener('click', async e => {
     const b = e.target.closest('[data-f]'); if (!b && e.target !== v) return;
     v.remove();

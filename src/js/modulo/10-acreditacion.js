@@ -66,11 +66,11 @@ function procesarQR(txt) {
   if (r.mal) return resultado(r.nivel, `<b class="grande">${r.nivel === 'rojo' ? '✗ No válido' : '⚠️ Revisa'}</b>${r.mal}${r.id ? `<br><small>Gafete de ${esc(GAFETES[r.id].n)}</small>` : ''}`);
   const g = GAFETES[r.id], ya = estado.acreditados[r.id], sede = g.com ? ASIGNA[g.com] : null;
   const ficha = `${ROLES[g.rol][0]}${g.com ? ` · ${g.com}<br>🏨 ${SEDES[sede[0]].nombre} · ${sede[1]}` : ' · Equipo de la Secretaría'}`;
-  if (ya) return resultado('amarillo', `<b class="grande">⚠️ Ya se acreditó</b>${esc(g.n)} entró a las ${hora(ya.t)} (${esc(ya.por)}).<br>Si está entrando otra vez, está bien. Si son dos personas con el mismo gafete, avisa a Seguridad.`);
+  if (ya) return resultado('amarillo', `<b class="grande">Ya se acreditó</b>${esc(g.n)} entró a las ${hora(ya.t)} (${esc(ya.por)}).<br>Si está entrando otra vez, está bien. Si son dos personas con el mismo gafete, avisa a Seguridad.`);
   const por = estado.usuario ? estado.usuario.nombre : 'Mesa de acreditación';
   estado.acreditados[r.id] = { t: Date.now(), por }; guardar('acreditados', estado.acreditados);
   registrar('🪪 Acreditación', `${g.n} acreditado (${g.com || ROLES[g.rol][0]})`);
-  resultado('verde', `<b class="grande">✓ Bienvenido, ${esc(g.n.split(' ')[0])}</b>${ficha}<br>Acreditado a las ${hora()}.`);
+  resultado('verde', `<b class="grande">Bienvenido, ${esc(g.n.split(' ')[0])}</b>${ficha}<br>Acreditado a las ${hora()}.`);
   pintarLlegadas(); if (estado.usuario && r.id === estado.usuario.acr) pintarGafete();
 }
 $('#simular').onclick = e => {
@@ -152,7 +152,7 @@ function abrirFicha(d, como) {
     ${ya ? `<p style="margin:10px 0 0">Llegó a las ${hora(ya.t)} · ${esc(ya.por)}${ya.sync ? '' : ' · <b>guardado sin internet, se sube al volver la señal</b>'}. Si es otra persona con el mismo QR, avisa a Seguridad.</p><button class="boton sec" id="dCerrar" style="margin-top:12px">Siguiente →</button>`
     : `${como === 'manual' ? '<p style="margin:10px 0 0">Sin QR: pide su identificación o su carné del colegio antes de confirmar.</p>' : ''}
       <div class="entregas"><label><input type="checkbox" id="eGafete" checked> 🪪 Gafete</label><label><input type="checkbox" id="eKit" checked> 🎒 Kit</label><label><input type="checkbox" id="eMat"> 📘 Material</label></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="boton" id="dConfirmar">✓ Confirmar acreditación</button><button class="boton sec" id="dCerrar">Cancelar</button></div>`}`;
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="boton" id="dConfirmar">Confirmar acreditación</button><button class="boton sec" id="dCerrar">Cancelar</button></div>`}`;
   $('#dCerrar').onclick = () => { box.className = 'resultado'; box.textContent = 'Listo para el siguiente delegado.'; $('#dBuscar').value = ''; $('#dResultados').innerHTML = ''; };
   if (!ya) $('#dConfirmar').onclick = () => confirmarDel(d, como);
 }
@@ -163,12 +163,12 @@ function confirmarDel(d, como) {
   guardar('delAcr', estado.delAcr); guardar('colaDel', colaDel);
   registrar('🪪 Delegado', `${d.n} (${d.com}) acreditado${como === 'manual' ? ' a mano' : ''}`);
   const box = $('#dFicha'); box.className = 'resultado verde';
-  box.innerHTML = `<b class="grande">✓ ${esc(d.n.split(' ')[0])} acreditado${on ? '' : ' (sin internet)'}</b>${esc(d.com)} · ${esc(d.del || '')} · ${hora()}<br>${on ? 'Guardado en la nube.' : 'Guardado en este teléfono: se sube solo cuando vuelva el internet.'}`;
+  box.innerHTML = `<b class="grande">${esc(d.n.split(' ')[0])} acreditado${on ? '' : ' (sin internet)'}</b>${esc(d.com)} · ${esc(d.del || '')} · ${hora()}<br>${on ? 'Guardado en la nube.' : 'Guardado en este teléfono: se sube solo cuando vuelva el internet.'}`;
   pitido(true); $('#dBuscar').value = ''; $('#dResultados').innerHTML = ''; pintarDelegados(); pintarTablero();
 }
 function procesarDel(txt) {
   const m = /^M17D\.(D-\d{3,5})\.([A-Z0-9]{6})$/.exec((txt || '').trim()), d = m && DELEGADOS.find(x => x.id === m[1]);
-  if (!m || !d || firma('D.' + m[1]) !== m[2]) { const b = $('#dFicha'); b.className = 'resultado rojo'; b.innerHTML = `<b class="grande">✗ No válido</b>${m ? 'QR inventado o alterado: la firma no coincide.' : 'Este QR no es de un delegado de MINUME XVII.'} Búscalo por nombre y pide su identificación.`; pitido(false); return; }
+  if (!m || !d || firma('D.' + m[1]) !== m[2]) { const b = $('#dFicha'); b.className = 'resultado rojo'; b.innerHTML = `<b class="grande">No válido</b>${m ? 'QR inventado o alterado: la firma no coincide.' : 'Este QR no es de un delegado de MINUME XVII.'} Búscalo por nombre y pide su identificación.`; pitido(false); return; }
   abrirFicha(d, 'qr'); pitido(!estado.delAcr[d.id]);
 }
 crearEscaner($('#video2'), $('#visorMsg2'), $('#bCamara2'), procesarDel);
@@ -181,7 +181,7 @@ $('#simDel').onclick = e => {
 $('#dBuscar').oninput = () => {
   const q = norm($('#dBuscar').value.trim()); if (q.length < 2) { $('#dResultados').innerHTML = ''; return; }
   const r = DELEGADOS.filter(d => norm(`${d.n} ${d.del} ${d.col} ${d.com} ${d.id}`).includes(q)).slice(0, 8);
-  $('#dResultados').innerHTML = r.map(d => `<div class="del-res" data-id="${d.id}"><div><b>${esc(d.n)}</b><small>${esc(d.com)} · ${esc(d.del || '')} · ${esc(d.col || '')}</small></div>${estado.delAcr[d.id] ? '<span class="chip verde">✓ Llegó</span>' : '<span class="chip amarillo">Pendiente</span>'}</div>`).join('') || '<div style="color:var(--suave);font-size:13px;padding:8px 0">No aparece. Revisa cómo se escribe o avisa a coordinación.</div>';
+  $('#dResultados').innerHTML = r.map(d => `<div class="del-res" data-id="${d.id}"><div><b>${esc(d.n)}</b><small>${esc(d.com)} · ${esc(d.del || '')} · ${esc(d.col || '')}</small></div>${estado.delAcr[d.id] ? '<span class="chip verde">Llegó</span>' : '<span class="chip amarillo">Pendiente</span>'}</div>`).join('') || '<div style="color:var(--suave);font-size:13px;padding:8px 0">No aparece. Revisa cómo se escribe o avisa a coordinación.</div>';
 };
 $('#dResultados').onclick = e => { const el = e.target.closest('[data-id]'); if (el) abrirFicha(DELEGADOS.find(d => d.id === el.dataset.id), 'manual'); };
 function pintarDelegados() {

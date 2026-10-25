@@ -89,7 +89,7 @@ function modoApp() {
   // menú de secciones (arriba en tableta, a la izquierda en PC): el mismo ícono y nombre que los botones del inicio
   $$('#rail a').forEach(a => { const id = a.getAttribute('href').slice(1), s = SECCION[id]; if (!s) return; const ins = a.querySelector('.insignia'); a.innerHTML = `${ico(s[0], 18)}<span>${s[1]}</span>`; a.title = s[2]; if (ins) a.append(ins); });
   // «Volver» arriba de cada sección
-  for (const s of seccionesDe()) if (s.id !== 'inicio' && !s.querySelector(':scope > .volver')) s.insertAdjacentHTML('afterbegin', `<button type="button" class="volver" data-ir="inicio">← Volver al inicio</button>`);
+  for (const s of seccionesDe()) if (s.id !== 'inicio' && !s.querySelector(':scope > .volver')) s.insertAdjacentHTML('afterbegin', `<button type="button" class="volver" data-ir="inicio">Volver al inicio</button>`);
   if (window.CHAT_LISTO) pintarChat();
   const h = seccionDeUrl();
   abrirSeccion(SECCION[h] && ids.includes(h) ? h : 'inicio', { historia: false });

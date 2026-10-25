@@ -42,8 +42,8 @@ function queLeToca(p) {
 const turnosDe = cod => COB_PUNTOS.flatMap(pt => pt.turnos.filter(t => t[3].some(([c]) => c === cod)).map(t => ({ pt, t, tarea: (t[3].find(([c]) => c === cod) || [])[1] }))).sort((a, b) => a.t[0] - b.t[0]);
 function turnosHtml(p) {
   const l = turnosDe(p.cob), { min } = cobAhora();
-  const botones = `<div class="sd-turnos-acc">${puedeEditar('turnos') ? `<button class="mini" type="button" data-editar-de="turnos" data-cod="${esc(p.cob)}">✏️ Editar sus turnos</button>` : ''}${puedeEditar('staff') ? `<button class="mini" type="button" data-editar-de="staff" data-cod="${esc(p.cob)}">✏️ Editar sus datos</button>` : ''}</div>`;
-  return `<details class="sd-turnos" data-cob="${esc(p.cob)}"${sd.abiertos.has(p.cob) ? ' open' : ''}><summary>🕒 ${l.length ? `Sus turnos de hoy (${l.length})` : 'Sin turnos asignados'}</summary>
+  const botones = `<div class="sd-turnos-acc">${puedeEditar('turnos') ? `<button class="mini" type="button" data-editar-de="turnos" data-cod="${esc(p.cob)}">Editar sus turnos</button>` : ''}${puedeEditar('staff') ? `<button class="mini" type="button" data-editar-de="staff" data-cod="${esc(p.cob)}">Editar sus datos</button>` : ''}</div>`;
+  return `<details class="sd-turnos" data-cob="${esc(p.cob)}"${sd.abiertos.has(p.cob) ? ' open' : ''}><summary>${l.length ? `Sus turnos de hoy (${l.length})` : 'Sin turnos asignados'}</summary>
     ${l.length ? `<ol>${l.map(({ pt, t, tarea }) => `<li class="${min >= t[0] && min < t[1] ? 'sd-ahora' : t[1] <= min ? 'sd-paso' : ''}"><b>${cobHora(t[0])}–${cobHora(t[1])}</b><span>${esc(pt.id)} · ${esc(pt.n)}${tarea ? `<small>${esc(tarea)}</small>` : ''}</span></li>`).join('')}</ol>` : ''}${botones}</details>`;
 }
 
@@ -87,7 +87,7 @@ function pintarSubdireccion() {
           ${(() => { const t = queLeToca(p); return t.length ? `<ul class="sd-toca">${t.map(([i, x, c]) => `<li class="${c}"><span>${i}</span>${esc(x)}</li>`).join('')}</ul>` : ''; })()}
           ${p.cob && p.cob !== 'DIR-S' ? turnosHtml(p) : ''}
           ${ult ? `<small class="sd-orden">📣 ${esc(ult.que)} · <span class="chip ${EST_ORD[ult.estado][1]}">${EST_ORD[ult.estado][0]}</span> ${horaDR(ult.tE || ult.t)}</small>` : ''}</div>
-          ${!p.yo && p.ref ? `<button class="mini sd-mandar" type="button" data-mandar="${esc(p.ref)}">📣 Mandar</button>` : ''}
+          ${!p.yo && p.ref ? `<button class="mini sd-mandar" type="button" data-mandar="${esc(p.ref)}">Mandar</button>` : ''}
           ${conDatos && !p.sinCodigo ? `<span class="sd-push ${p.avisos ? 'on' : ''}" title="${p.avisos ? 'Tiene los avisos al teléfono activados' : 'No ha activado los avisos al teléfono: los SOS no le suenan con el teléfono bloqueado'}">${p.avisos ? '📱 ✓' : '📱 ✗'}</span>` : ''}</div>`;
       }).join('')}</div></div>`;
   }).join('') : `<p class="cob-sub">${q ? 'Nadie coincide con la búsqueda.' : 'Todavía no hay códigos para tu equipo. Coordinación general los crea en «Datos del evento → Códigos de acceso».'}</p>`);

@@ -87,7 +87,7 @@ function cobConflictos(min) {
 const radioDe = cod => ((estado.cob && estado.cob.radio) || {})[cod] || {};
 function lineaRadio(yo, puedeCamino) {
   const r = radioDe(yo);
-  return `<div class="cob-radio"><button class="mini${r.walkie ? ' on' : ''}" data-cob="walkie">📻 ${r.walkie ? 'Walkie activo desde las ' + cobHora(r.walkie) : 'Ya activé mi walkie-talkie'}</button>${puedeCamino ? `<button class="mini${r.camino ? ' on' : ''}" data-cob="camino">🚶 ${r.camino ? 'Vas en camino desde las ' + cobHora(r.camino) : 'Voy en camino a mi puesto'}</button>` : ''}</div>`;
+  return `<div class="cob-radio"><button class="mini${r.walkie ? ' on' : ''}" data-cob="walkie">${r.walkie ? 'Walkie activo desde las ' + cobHora(r.walkie) : 'Ya activé mi walkie-talkie'}</button>${puedeCamino ? `<button class="mini${r.camino ? ' on' : ''}" data-cob="camino">${r.camino ? 'Vas en camino desde las ' + cobHora(r.camino) : 'Voy en camino a mi puesto'}</button>` : ''}</div>`;
 }
 const COB_EST = { cubierta: ['Cubierto', 'verde'], incompleta: ['Falta gente', 'amarillo'], descubierta: ['Sin nadie', 'rojo'], libre: ['Sin turno ahora', ''] };
 let cobSede = 'todas', cobAbierto = null, cobPlan = null;
@@ -166,7 +166,7 @@ function pintarCobertura() {
   const necesitan = activas.filter(f => f.est !== 'cubierta');
   $('#cobLibres').innerHTML = libres.length ? libres.map(c => {
     const n = cobProximo(c, min);
-    return `<div class="cob-libre"><div><b>${c} · ${esc(cobNombre(c))}</b><small>${COB_STAFF[c][1]} · ${n ? `libre hasta las ${cobHora(n.t[0])} (${n.p.id})` : 'libre el resto del día'}</small></div>${puedeAsignar() && necesitan.length ? necesitan.slice(0, 3).map(f => `<button class="mini" data-cob="asignar" data-p="${f.p.id}" data-cod="${c}">→ ${f.p.id}</button>`).join('') : ''}</div>`;
+    return `<div class="cob-libre"><div><b>${c} · ${esc(cobNombre(c))}</b><small>${COB_STAFF[c][1]} · ${n ? `libre hasta las ${cobHora(n.t[0])} (${n.p.id})` : 'libre el resto del día'}</small></div>${puedeAsignar() && necesitan.length ? necesitan.slice(0, 3).map(f => `<button class="mini" data-cob="asignar" data-p="${f.p.id}" data-cod="${c}">${f.p.id}</button>`).join('') : ''}</div>`;
   }).join('') : '<p class="cob-sub">Todo el staff tiene puesto en este momento.</p>';
 
   // Plan del día

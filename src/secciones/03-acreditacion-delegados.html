@@ -2,12 +2,12 @@
   <section id="delegados" data-roles="acreditacion coordinacion">
     <div class="titulo-sec"><span class="n">01</span><h2>Acreditación de delegados</h2><span class="chip amarillo">NUEVO</span></div>
     <p class="lead">Escanea el QR del delegado, revisa sus datos y confirma. Si se va el internet, sigue funcionando: todo se guarda en el teléfono y se sube solo cuando vuelve la señal.</p>
-    <div class="sync" id="dSync"><span class="punto"></span><b id="dSyncTxt">En línea · todo guardado</b><button id="dOffline" class="sec-mini">📴 Simular sin internet</button></div>
+    <div class="sync" id="dSync"><span class="punto"></span><b id="dSyncTxt">En línea · todo guardado</b><button id="dOffline" class="sec-mini">Simular sin internet</button></div>
     <div class="rejilla r2" style="margin-top:12px">
       <div class="tarjeta">
-        <b class="cond" style="font-size:26px">📷 Escanear QR del delegado</b>
+        <b class="cond" style="font-size:26px">Escanear QR del delegado</b>
         <div class="visor"><video id="video2" playsinline muted></video><div class="mira"></div><div class="visor-msg" id="visorMsg2">La cámara está apagada.</div></div>
-        <button class="boton" id="bCamara2" style="margin-top:12px">📷 Abrir la cámara</button>
+        <button class="boton" id="bCamara2" style="margin-top:12px">Abrir la cámara</button>
         <div class="prueba" id="simDel"><b>Probar sin cámara (solo en esta demo):</b><br><button data-sim="ok">QR de un delegado</button><button data-sim="repetido">Ya acreditado</button><button data-sim="falso">QR inventado</button></div>
         <label for="dBuscar" style="margin-top:16px">🔎 Sin QR: busca por nombre, colegio o delegación</label>
         <input id="dBuscar" placeholder="Ej.: Pérez, Japón, Liceo…" autocomplete="off">
@@ -21,8 +21,8 @@
       </div>
     </div>
     <div class="tarjeta" style="margin-top:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><b class="cond" style="font-size:24px">📋 Lista de delegados</b><div style="color:var(--suave);font-size:13px">Sube la lista oficial (Excel o CSV) con nombre, comisión, delegación y colegio. Cada delegado recibe su QR.</div></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap"><label class="boton sec" for="dArchivo" style="margin:0;cursor:pointer">⬆️ Subir lista</label><input type="file" id="dArchivo" accept=".csv,.xlsx,.xls" hidden><button class="boton sec" id="dPlantilla">⬇️ Plantilla</button></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><b class="cond" style="font-size:24px">Lista de delegados</b><div style="color:var(--suave);font-size:13px">Sube la lista oficial (Excel o CSV) con nombre, comisión, delegación y colegio. Cada delegado recibe su QR.</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><label class="boton sec" for="dArchivo" style="margin:0;cursor:pointer">⬆️ Subir lista</label><input type="file" id="dArchivo" accept=".csv,.xlsx,.xls" hidden><button class="boton sec" id="dPlantilla">Plantilla</button></div></div>
       <div class="respaldo">🗄️ <span id="dFuente">Usando 120 delegados de ejemplo.</span></div>
       <p style="color:var(--suave);font-size:12.5px;margin:10px 0 0">En la versión real, la lista vive en la base de datos (Supabase). Solo Acreditación y Coordinación la pueden ver. El QR de cada delegado va firmado y se puede comprobar sin internet, y si dos mesas acreditan a la misma persona sin señal, al sincronizar se guarda la primera hora y se avisa.</p>
     </div>

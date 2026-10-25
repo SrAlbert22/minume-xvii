@@ -103,8 +103,8 @@ function pintarBannerChat() {
   if (!pend.length || !estado.usuario || (typeof seccionActual !== 'undefined' && seccionActual === 'chat')) { b.hidden = true; return; }
   const [k, r] = pend[0], n = pend.reduce((a, [, x]) => a + x.urgentes, 0), u = r.ultimo && r.ultimo.urgente && !r.ultimo.mio ? r.ultimo : null;
   b.hidden = false;
-  b.innerHTML = `<div class="bo-txt"><b>🚨 Aviso en el chat · ${esc(CANALES_CHAT[k][0])}</b><span>${u ? `${esc(u.nombre.split(' ')[0])}: ${esc(u.texto)}` : `Tienes ${n} aviso${n > 1 ? 's' : ''} sin marcar «Recibido»`}</span>${u && n > 1 ? `<small>y ${n - 1} más sin marcar</small>` : ''}</div>
-    <div class="bo-acc">${u ? `<button class="boton" type="button" data-bc-recibido="${u.id}">✓ Recibido</button>` : ''}<button class="boton sec" type="button" data-bc-ver="${k}">Ver en el chat</button></div>`;
+  b.innerHTML = `<div class="bo-txt"><b>Aviso en el chat · ${esc(CANALES_CHAT[k][0])}</b><span>${u ? `${esc(u.nombre.split(' ')[0])}: ${esc(u.texto)}` : `Tienes ${n} aviso${n > 1 ? 's' : ''} sin marcar «Recibido»`}</span>${u && n > 1 ? `<small>y ${n - 1} más sin marcar</small>` : ''}</div>
+    <div class="bo-acc">${u ? `<button class="boton" type="button" data-bc-recibido="${u.id}">Recibido</button>` : ''}<button class="boton sec" type="button" data-bc-ver="${k}">Ver en el chat</button></div>`;
 }
 $('#bannerChat').addEventListener('click', async e => {
   const v = e.target.closest('[data-bc-ver]');

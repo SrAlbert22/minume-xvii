@@ -30,8 +30,8 @@ function pintarOrdenes() {
   if (!l.length) { b.hidden = true; return; }
   const o = l[0];
   b.hidden = false; b.className = 'banner-orden' + (o.estado === 'nueva' ? ' nueva' : '');
-  b.innerHTML = `<div class="bo-txt"><b>📣 ${esc(o.de)} te manda</b><span>${esc(o.que)}</span><small>${horaDR(o.t)}${o.estado === 'voy' ? ' · vas en camino' : ''}${l.length > 1 ? ` · y ${l.length - 1} más` : ''}</small></div>
-    <div class="bo-acc">${o.estado === 'nueva' ? `<button class="boton" type="button" data-ord="voy" data-id="${o.id}">🚶 Voy en camino</button>` : ''}<button class="boton${o.estado === 'voy' ? '' : ' sec'}" type="button" data-ord="llegue" data-id="${o.id}">✅ Ya llegué</button><button class="boton sec" type="button" data-ord="nopuedo" data-id="${o.id}">No puedo</button></div>`;
+  b.innerHTML = `<div class="bo-txt"><b>${esc(o.de)} te manda</b><span>${esc(o.que)}</span><small>${horaDR(o.t)}${o.estado === 'voy' ? ' · vas en camino' : ''}${l.length > 1 ? ` · y ${l.length - 1} más` : ''}</small></div>
+    <div class="bo-acc">${o.estado === 'nueva' ? `<button class="boton" type="button" data-ord="voy" data-id="${o.id}">Voy en camino</button>` : ''}<button class="boton${o.estado === 'voy' ? '' : ' sec'}" type="button" data-ord="llegue" data-id="${o.id}">Ya llegué</button><button class="boton sec" type="button" data-ord="nopuedo" data-id="${o.id}">No puedo</button></div>`;
 }
 $('#bannerOrden').addEventListener('click', e => {
   const x = e.target.closest('[data-ord]'); if (!x) return;
@@ -44,7 +44,7 @@ function ventanaMandar(p) {
   if (!esDir() || !p || !p.ref) return;
   const rapidos = (SISTEMA === 'seguridad' && typeof COB_PUNTOS !== 'undefined' ? COB_PUNTOS.map(x => `Ve a ${x.id} · ${x.n}`) : []).concat(['Ven a donde estoy', 'Llámame en cuanto puedas', 'Ve a la entrada a apoyar']);
   const v = document.createElement('div'); v.className = 'sos-velo on push-velo'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true');
-  v.innerHTML = `<div class="tarjeta"><b class="cond" style="font-size:28px">📣 Mandar a ${esc(p.nombre.split(' ')[0])}</b>
+  v.innerHTML = `<div class="tarjeta"><b class="cond" style="font-size:28px">Mandar a ${esc(p.nombre.split(' ')[0])}</b>
     <p>Le aparece arriba en su página y le suena en el teléfono. Te va a responder «Voy en camino», «Ya llegué» o «No puedo».</p>
     <label for="ordQue">¿Qué tiene que hacer?</label><textarea id="ordQue" rows="2" maxlength="200" placeholder="Ejemplo: Ve a la entrada del Sheraton a apoyar"></textarea>
     <div class="ord-rapidos">${rapidos.map(t => `<button type="button" class="mini" data-txt="${esc(t)}">${esc(t)}</button>`).join('')}</div>
