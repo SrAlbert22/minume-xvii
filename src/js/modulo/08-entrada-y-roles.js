@@ -39,7 +39,7 @@ async function entrar(cod) {
   const c = (cod || '').trim().toUpperCase(), pre = c.slice(0, 2);
   if (SIS.prefijos && !SIS.prefijos.includes(pre)) { $('#codError').textContent = `Este es el sistema de ${SIS.nombre}: tu código es de otro equipo. Entra desde el Inicio de MINUME.`; return; }
   let u = null;
-  if (window.MINUME_ENTRAR && pre !== 'AC') {
+  if (window.MINUME_ENTRAR) {
     const b = $('#bEntrar'), txt = b.textContent; b.disabled = true; b.textContent = 'Verificando…';
     const r = await window.MINUME_ENTRAR(c);
     b.textContent = txt; b.disabled = false;
