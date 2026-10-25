@@ -10,7 +10,7 @@
 <!--__APP__-->
 <!--__REPORTES__-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>window.MINUME_ENLACES = /*__ENLACES__*/ { asistencia: 'asistencia/index.html', seguridad: 'seguridad/index.html', bienestar: 'bienestar/index.html' };</script>
 <style>
 /* Centro de operaciones: arriba el estado del evento y la entrada; en el centro una columna por equipo con sus datos en vivo y sus atajos; abajo lo que todos consultan (avisos, traslados, comisiones, escalamiento y contactos). */
@@ -19,8 +19,8 @@
   --borde:rgba(120,170,255,.2); --borde2:rgba(120,170,255,.34);
   --texto:#f1f4ff; --suave:#b3c0ee; --tenue:#7f8fc8;
   --asis:#00b5ff; --segu:#e53535; --bien:#00fdef; --oro:#ffd23f; --amar:#ffb547; --rosa:#ffbeff; --azul:#0090fb;
-  --f-tit:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
-  --f-txt:Barlow,'Segoe UI',system-ui,sans-serif; --f-ed:'Libre Baskerville',Georgia,serif;
+  --f-tit:Barlow,'Segoe UI',system-ui,sans-serif;
+  --f-txt:Barlow,'Segoe UI',system-ui,sans-serif; --f-ed:Barlow,'Segoe UI',system-ui,sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -44,6 +44,7 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 .deco .d1{width:520px;right:-170px;top:-120px;opacity:.2}.deco .d2{width:110px;left:2%;top:46%;opacity:.15}.deco .d3{width:280px;left:-90px;bottom:-70px;opacity:.1}
 .autor{text-align:center;margin:6px 0 0;color:var(--tenue);font-size:12px;letter-spacing:.03em}
 .pie-marca{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;margin:28px 0 6px;opacity:.85}.pie-marca img{height:34px;width:auto}
+.pie-marca img,.bv-pie img{max-width:100%;object-fit:contain}
 /* Barra */
 .barra{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 0;padding-top:max(12px,env(safe-area-inset-top,0px));
   background:linear-gradient(var(--fondo) 65%,transparent);backdrop-filter:blur(6px)}
@@ -285,15 +286,274 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
   .caja.entrar::before{display:none}
 }
 .cuenta span,.dia small{display:block;line-height:1.3;margin-top:3px}
+
+/* Bienvenida (26 oct): lo primero que se ve. Cuatro pasos: bienvenida → subsecretaría → rol → código.
+   Paleta de la identidad MXVII: azul noche #07274f, azul #0043c5, celeste #00b5ff, turquesa #00fdef, rojo #e53535 y rosa #ffbeff.
+   Se escribe primero para el teléfono y crece en tres saltos: 600 px (tableta), 900 px (tableta horizontal) y 1200 px (escritorio). */
+.bv{--gut:max(16px,env(safe-area-inset-left,0px));position:fixed;inset:0;z-index:35;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;color:var(--texto);-webkit-overflow-scrolling:touch;
+  background:radial-gradient(900px 640px at 88% 8%,rgba(0,67,197,.85),transparent 62%),radial-gradient(760px 560px at 0% 100%,rgba(0,33,147,.9),transparent 60%),linear-gradient(170deg,#07274f,#06033f 70%)}
+.bv *{min-width:0}
+.bv button{touch-action:manipulation}
+/* Decoración: solo donde hay espacio, nunca encima del texto */
+.bv-deco{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.bv-deco img{position:absolute;display:none}
+.bv-deco .e3{display:block;width:260px;right:-110px;bottom:-90px;opacity:.14}
+.bv-in{position:relative;z-index:1;width:100%;max-width:1200px;min-height:100%;min-height:100dvh;margin:0 auto;display:flex;flex-direction:column;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) var(--gut)}
+/* Cabecera y pasos */
+.bv-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 12px}
+.bv-cab .logo-marca{width:clamp(132px,40vw,250px);height:auto}
+.bv-saltar{flex:none;min-height:44px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.22);color:#d7e3ff;border-radius:99px;padding:0 14px;font-size:13px;font-weight:600;white-space:nowrap}
+.bv-saltar:hover{border-color:var(--asis);color:#fff}
+.bv-saltar .l{display:none}
+.bv-pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;list-style:none;margin:0;padding:0}
+.bv-pasos li{display:flex;flex-direction:column;gap:6px;font-size:0;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7f8fc8}
+.bv-pasos li::before{content:'';height:4px;border-radius:4px;background:rgba(255,255,255,.14);transition:background .35s}
+.bv-pasos li.hecho::before{background:var(--asis)}
+.bv-pasos li.ahora{color:#fff}
+.bv-pasos li.ahora::before{background:linear-gradient(90deg,var(--asis),var(--bien))}
+/* Paneles */
+.bv-panel{flex:1;display:flex;flex-direction:column;justify-content:center;padding:22px 0 26px;animation:bvEntra .45s cubic-bezier(.2,.8,.2,1)}
+.bv-panel[hidden]{display:none}
+.bv-eti{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bien)}
+.bv-eti::before{content:'';flex:none;width:22px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--asis),var(--bien))}
+.bv h1{font:800 clamp(42px,13vw,112px)/.88 var(--f-tit);text-transform:uppercase;letter-spacing:-.01em;margin:14px 0 0;overflow-wrap:break-word}
+.bv h1 span{display:block;background:linear-gradient(90deg,var(--asis),var(--bien));-webkit-background-clip:text;background-clip:text;color:transparent}
+.bv h2{font:800 clamp(30px,8.5vw,62px)/.95 var(--f-tit);text-transform:uppercase;margin:10px 0 8px;text-wrap:balance;overflow-wrap:break-word}
+.bv-ed{font:500 clamp(16px,4.4vw,24px)/1.45 var(--f-ed);color:#d7e3ff;margin:14px 0 0;max-width:34ch}
+.bv-ed b{font-weight:800;letter-spacing:.02em;color:#fff}
+.bv-lead{color:#c3cff5;margin:0;max-width:60ch;font-size:15px}
+.bv-datos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:22px 0 0;border-block:1px solid rgba(255,255,255,.14);padding:12px 0;max-width:720px}
+.bv-datos div{padding:2px 10px;border-left:1px solid rgba(255,255,255,.14)}
+.bv-datos div:first-child{border-left:0;padding-left:0}
+.bv-datos b{display:block;font:800 clamp(19px,5.4vw,30px)/1 var(--f-tit);white-space:nowrap}
+.bv-datos span{display:block;margin-top:3px;font-size:11.5px;line-height:1.3;color:#aab8e6}
+.bv-acciones{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:24px}
+.bv-cta{display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;border:0;border-radius:16px;padding:0 20px;font:800 clamp(16px,4.6vw,19px)/1 var(--f-tit);letter-spacing:.03em;text-transform:uppercase;color:#04121d;background:linear-gradient(90deg,var(--asis),var(--bien));box-shadow:0 18px 40px rgba(0,181,255,.28);transition:transform .15s,box-shadow .2s,opacity .2s}
+.bv-cta:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(0,181,255,.38)}
+.bv-cta:disabled{opacity:.35;filter:saturate(.4);transform:none;box-shadow:none;cursor:default}
+.bv-cta .ic{width:22px;height:22px;stroke-width:2.4}
+.bv-atras{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:44px;margin:-8px 0 2px;background:none;border:0;color:#aab8e6;font-weight:600;font-size:14px;padding:0}
+.bv-atras:hover{color:#fff}
+.bv-atras .ic{width:18px;height:18px;transform:scaleX(-1)}
+.bv-seguir{display:grid;gap:8px;margin-top:20px;max-width:520px}
+.bv-seguir .eti{color:#aab8e6}
+.bv-seguir .abierta{min-height:56px}
+/* Tarjetas para elegir: en el teléfono son filas compactas (ícono a la derecha) */
+.bv-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:18px}
+.bv-op{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:4px;text-align:left;padding:16px 64px 16px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 22%,rgba(10,20,90,.7)),rgba(6,10,70,.75) 70%);transition:transform .18s,border-color .2s,box-shadow .2s}
+.bv-op:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 20px 44px rgba(0,0,30,.4)}
+.bv-op[aria-pressed="true"]{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 40%,transparent),0 20px 44px rgba(0,0,30,.4)}
+.bv-op > img{position:absolute;right:-14px;top:50%;width:72px;transform:translateY(-50%);opacity:.85;transition:transform .5s}
+.bv-op:hover > img{transform:translateY(-50%) rotate(18deg)}
+.bv-op .bv-sig{font:800 12px var(--f-tit);letter-spacing:.14em;color:var(--c);text-transform:uppercase}
+.bv-op b{font:800 22px/1.02 var(--f-tit)}
+.bv-op small{color:#c3cff5;font-size:13px;line-height:1.4}
+.bv-op .bv-marca{position:absolute;right:14px;bottom:14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#04121d;opacity:0;transform:scale(.6);transition:.2s}
+.bv-op[aria-pressed="true"] .bv-marca{opacity:1;transform:none}
+.bv-op .bv-marca .ic{width:16px;height:16px;stroke-width:3}
+.bv-op.ancha{flex-direction:row;align-items:center;gap:14px}
+.bv-op.ancha > img{width:96px;opacity:.45}
+.bv-op.ancha > div{display:flex;flex-direction:column;gap:4px}
+.bv-ico{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+.bv-ico .ic{width:22px;height:22px}
+/* Roles */
+.bv-rol{padding:18px;gap:8px}
+.bv-rol .bv-ico{margin-bottom:4px}
+.bv-rol ul{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:6px}
+.bv-rol li{display:flex;gap:8px;font-size:13.5px;color:#dbe4ff;line-height:1.35}
+.bv-rol li::before{content:'';flex:none;width:7px;height:7px;border-radius:2px;margin-top:6px;background:var(--c);transform:rotate(45deg)}
+.bv-rol .bv-ve{margin-top:4px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8fa0d8}
+/* Código */
+.bv-codigo{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:center}
+.bv-resumen{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.bv-resumen .chip{font-size:12.5px;padding:6px 12px;white-space:normal;border:1px solid color-mix(in srgb,var(--c,#7fa0ff) 50%,transparent);color:var(--c,#c3d0ff);background:color-mix(in srgb,var(--c,#7fa0ff) 12%,transparent)}
+.bv-cambiar{min-height:36px;background:none;border:0;color:#aab8e6;text-decoration:underline;font-size:13px;padding:0 4px}
+.bv-tarjeta{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px;background:linear-gradient(155deg,rgba(0,67,197,.6),rgba(10,4,100,.85) 62%);border:1px solid rgba(0,181,255,.45);box-shadow:0 30px 70px rgba(0,0,30,.45),inset 0 1px 0 rgba(255,255,255,.1)}
+.bv-tarjeta::before{content:'';position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--c,var(--asis)),var(--bien))}
+.bv-tarjeta label{display:block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#aab8e6;margin-bottom:10px}
+.bv-tarjeta input{width:100%;background:rgba(3,6,40,.8);border:1px solid rgba(0,181,255,.4);border-radius:16px;padding:14px 12px;font:800 clamp(24px,7.5vw,36px) var(--f-tit);letter-spacing:.12em;text-transform:uppercase;text-align:center;color:#fff}
+.bv-tarjeta input::placeholder{color:rgba(255,255,255,.25)}
+.bv-tarjeta input:focus{outline:none;border-color:var(--asis);box-shadow:0 0 0 4px rgba(0,181,255,.2)}
+.bv-tarjeta .detecta{justify-content:center;text-align:center;flex-wrap:wrap;min-height:40px}
+.bv-tarjeta .bv-cta{margin-top:4px;width:100%}
+.bv h1:focus,.bv h2:focus{outline:none}
+.bv-tarjeta.sacude{animation:bvSacude .4s}
+.bv-ayuda{color:#aab8e6;font-size:13px;margin:14px 0 0;text-align:center}
+.bv-prueba{margin-top:14px;border:1px dashed rgba(255,210,63,.45);border-radius:14px;padding:10px 12px;font-size:12.5px;color:#e6dcae;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bv-prueba button{min-height:36px;background:none;border:1px solid rgba(255,210,63,.45);color:var(--oro);border-radius:10px;padding:0 10px;font:700 12.5px var(--f-txt);letter-spacing:.04em}
+/* Pie */
+.bv-pie{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);color:#8fa0d8;font-size:12px;text-align:center}
+.bv-pie img{height:24px;width:auto;opacity:.9}
+.bv-pie .bv-pie-l{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+/* El botón «Entrar» de la barra del centro de operaciones */
+.reabrir{min-height:36px;border:1px solid rgba(0,181,255,.5);background:linear-gradient(90deg,rgba(0,144,251,.25),rgba(0,181,255,.15));color:#fff;border-radius:99px;padding:0 14px;font-size:12px;font-weight:700;white-space:nowrap}
+@media (max-width:640px){.barra .der{min-width:0}.reabrir{padding:0 12px}}
+@media (max-width:420px){.barra .reloj{display:none}.barra #sim{padding:6px 8px}}
+
+/* ≥ 600 px: tableta vertical */
+@media (min-width:600px){
+  .bv-in{--gut:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));padding-top:max(18px,env(safe-area-inset-top,0px))}
+  .bv-saltar .l{display:inline}.bv-saltar .c{display:none}
+  .bv-pasos li{font-size:11px}
+  .bv-deco .e1{display:block;width:120px;right:5%;top:16%;opacity:.9;animation:flota 9s ease-in-out infinite}
+  .bv-deco .e3{width:400px;right:-140px;bottom:-120px}
+  .bv:not([data-paso="0"]) .bv-deco .e1{opacity:.22}
+  .bv-panel{padding:34px 0}
+  .bv h1{font-size:clamp(64px,11vw,112px);max-width:12ch}
+  .bv-lead{font-size:16px}
+  .bv-datos div{padding:2px 18px}
+  .bv-datos span{font-size:12.5px}
+  .bv-cta{width:auto}
+  .bv-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  #bvSubs .bv-op:nth-child(5){grid-column:1/-1}
+  .bv-op{padding:20px;min-height:168px}
+  .bv-op > img{top:-16px;right:-16px;width:100px;transform:none}
+  .bv-op:hover > img{transform:rotate(18deg) scale(1.06)}
+  .bv-op b{margin-top:auto;font-size:26px}
+  .bv-op.ancha{grid-column:1/-1;min-height:0;padding-right:120px}
+  .bv-op.ancha b{margin:0}
+  .bv-op.ancha > img{top:50%;width:140px;transform:translateY(-50%)}
+  .bv-op.ancha:hover > img{transform:translateY(-50%) rotate(18deg)}
+  .bv-roles{grid-template-columns:minmax(0,1fr)}
+  .bv-rol{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;align-items:start;min-height:0}
+  .bv-rol > *{grid-column:2}.bv-rol .bv-ico{grid-column:1;grid-row:1/span 5;margin:0}
+  .bv-rol b{margin:0}
+  .bv-tarjeta{padding:28px}
+  .bv-pie{flex-direction:row;justify-content:space-between;text-align:left}
+  .bv-pie img{height:28px}
+}
+/* ≥ 900 px: tableta horizontal y laptops pequeñas */
+@media (min-width:900px){
+  .bv-deco .e2{display:block;width:96px;right:30%;top:22%;animation:flota 11s ease-in-out infinite reverse}
+  .bv-deco .e4{display:block;width:84px;right:22%;bottom:9%;opacity:.5;animation:gira 40s linear infinite}
+  .bv-deco .e5{display:block;width:120px;left:-46px;bottom:7%;opacity:.28}
+  .bv:not([data-paso="0"]) .bv-deco .e2{opacity:.22}
+  .bv h2{font-size:clamp(44px,5vw,62px)}
+  /* cinco equipos en una rejilla de seis: tres arriba y dos abajo */
+  #bvSubs{grid-template-columns:repeat(6,minmax(0,1fr))}
+  #bvSubs .bv-op{grid-column:span 2}
+  #bvSubs .bv-op:nth-child(4),#bvSubs .bv-op:nth-child(5){grid-column:span 3}
+  #bvSubs .bv-op.ancha{grid-column:span 3}
+  .bv-roles{grid-template-columns:repeat(2,minmax(0,1fr));max-width:980px}
+  .bv-rol{display:flex;padding:22px}
+  .bv-rol .bv-ico{margin-bottom:6px}
+  .bv-codigo{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(28px,4vw,56px)}
+  .bv-codigo > div:first-child{align-self:center}
+}
+/* ≥ 1200 px: escritorio, los cinco equipos en una fila */
+@media (min-width:1200px){
+  .bv-deco .e1{width:160px}
+  #bvSubs{grid-template-columns:repeat(10,minmax(0,1fr))}
+  #bvSubs .bv-op,#bvSubs .bv-op:nth-child(4),#bvSubs .bv-op:nth-child(5){grid-column:span 2}
+  #bvSubs .bv-op.ancha{grid-column:span 5}
+  #bvSubs .bv-op{min-height:200px}
+  #bvSubs .bv-op b{font-size:24px}
+  .bv-lead{font-size:17px}
+}
+/* Pantallas bajas (teléfono acostado, laptops con poca altura): menos aire arriba y abajo */
+@media (max-height:620px) and (min-width:600px){
+  .bv-panel{justify-content:flex-start;padding:18px 0}
+  .bv h1{font-size:clamp(48px,8vw,76px)}
+  .bv-datos{margin-top:16px}.bv-acciones{margin-top:18px}
+  .bv-op{min-height:0}#bvSubs .bv-op{min-height:140px}
+  .bv-deco .e1,.bv-deco .e2,.bv-deco .e4{display:none}
+}
+/* Teléfono acostado: todo lo de la bienvenida cabe casi sin desplazarse */
+@media (max-height:480px) and (min-width:600px){
+  .bv-cab{padding-bottom:8px}.bv-panel{padding:12px 0}
+  .bv h1{font-size:44px;margin-top:8px;max-width:none}.bv h1 span{display:inline}
+  .bv h2{font-size:34px}
+  .bv-ed{font-size:15px;margin-top:8px;max-width:60ch}
+  .bv-datos{margin-top:12px;padding:8px 0}.bv-acciones{margin-top:12px}
+  .bv-cta{min-height:48px}
+  #bvSubs .bv-op{min-height:120px}
+}
+@keyframes bvEntra{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes bvSacude{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes flota{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(8deg)}}
+@keyframes gira{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+<div class="bv" id="bv" role="dialog" aria-modal="true" aria-labelledby="bvTit0" data-paso="0">
+  <div class="bv-deco" aria-hidden="true">
+    <img class="e3" src="marca/anillo-pixel.svg" alt=""><img class="e1" src="marca/estrella-roja.svg" alt=""><img class="e2" src="marca/destello-rosa.svg" alt=""><img class="e4" src="marca/circulos.svg" alt=""><img class="e5" src="marca/cruz-azul.svg" alt="">
+  </div>
+  <div class="bv-in">
+    <header class="bv-cab">
+      <img class="logo-marca" src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones">
+      <button class="bv-saltar" id="bvSaltar" type="button"><span class="l">Ver el centro de operaciones</span><span class="c">Ver el centro</span></button>
+    </header>
+    <ol class="bv-pasos" id="bvPasos" aria-label="Pasos para entrar">
+      <li>Bienvenida</li><li>Subsecretaría</li><li>Rol</li><li>Código</li>
+    </ol>
+
+    <section class="bv-panel" data-p="0">
+      <span class="bv-eti">XVII Período de Sesiones · 2026</span>
+      <h1 id="bvTit0">Bienvenido <span>al staff</span></h1>
+      <p class="bv-ed"><b>MINUME</b> de <b>ESTRELLAS</b> · el sistema que conecta a todas las subsecretarías del modelo, en vivo y en un solo lugar.</p>
+      <div class="bv-datos">
+        <div><b>14 – 16</b><span>de noviembre</span></div>
+        <div><b>2 sedes</b><span>Renaissance Jaragua y Sheraton</span></div>
+        <div><b>5</b><span>subsecretarías conectadas</span></div>
+      </div>
+      <div class="bv-acciones">
+        <button class="bv-cta" id="bvEmpezar" type="button">Comenzar <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="bv-seguir" id="bvSeguir"></div>
+    </section>
+
+    <section class="bv-panel" data-p="1" hidden>
+      <button class="bv-atras" type="button" data-ir="0"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Atrás</button>
+      <span class="bv-eti">Paso 1</span>
+      <h2 id="bvTit1">¿De qué subsecretaría eres?</h2>
+      <p class="bv-lead">Elige tu equipo. Si eres de la Secretaría General o administras la plataforma, elige una de las dos últimas opciones.</p>
+      <div class="bv-grid" id="bvSubs"></div>
+    </section>
+
+    <section class="bv-panel" data-p="2" hidden>
+      <button class="bv-atras" type="button" data-ir="1"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Atrás</button>
+      <span class="bv-eti">Paso 2 · <span id="bvSubNombre"></span></span>
+      <h2 id="bvTit2">¿Cuál es tu rol?</h2>
+      <p class="bv-lead">Tu rol decide lo que ves. El código personal lo confirma al entrar. Si eres de la Secretaría General o Administrador, vuelve atrás y elige esa opción.</p>
+      <div class="bv-grid bv-roles" id="bvRoles"></div>
+    </section>
+
+    <section class="bv-panel" data-p="3" hidden>
+      <div class="bv-codigo">
+        <div>
+          <button class="bv-atras" type="button" data-ir="2"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Atrás</button>
+          <span class="bv-eti" id="bvCodEti" style="display:flex;margin-top:8px">Paso 3</span>
+          <h2 id="bvTit3">Tu código personal</h2>
+          <p class="bv-lead" id="bvCodTxt"></p>
+          <div class="bv-resumen" id="bvResumen"></div>
+        </div>
+        <form class="bv-tarjeta" id="bvForm" autocomplete="off">
+          <label for="bvCodigo">Código personal</label>
+          <input id="bvCodigo" placeholder="AS-7KQ2MX" maxlength="11" autocapitalize="characters" spellcheck="false" inputmode="text" autocomplete="one-time-code">
+          <div class="detecta" id="bvDetecta" aria-live="polite"></div>
+          <button class="bv-cta" id="bvEntrar" type="submit" disabled>Entrar al sistema <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <p class="bv-ayuda">¿No tienes código o lo perdiste? Pídeselo a tu coordinación. Cada código es personal y se puede anular.</p>
+          <div class="bv-prueba solo-demo" id="bvPrueba"></div>
+        </form>
+      </div>
+    </section>
+
+    <footer class="bv-pie">
+      <div class="bv-pie-l"><img src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas" style="height:20px"><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD"></div>
+      <span>Diseño y desarrollo: Albert Silvestre</span>
+    </footer>
+  </div>
+</div>
 <div class="deco" aria-hidden="true"><img class="d1" src="marca/anillo-pixel.svg" alt=""></div>
 <div class="envoltura">
   <header class="barra">
     <img class="logo-marca" src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones">
     <div class="marca"><small>Centro de operaciones del staff</small></div>
     <div class="der">
+      <button class="reabrir" id="bReabrir" type="button">Entrar</button>
       <span class="reloj" id="reloj">--:--</span>
       <span class="pastilla" id="red"><span class="pt"></span><span id="redTxt">En línea</span></span>
       <button class="sim solo-demo" id="sim" type="button" aria-pressed="false" title="Muestra la página como si fuera el 15 de noviembre a las 10:20">Simular<span class="largo"> día del evento</span></button>
@@ -443,7 +703,7 @@ const EQUIPOS = {
   coordinacion: { nombre: 'Coordinación general', corto: 'Coordinación', letra: 'C', color: '#0090fb', quienes: 'Ve todo el evento en un solo lugar' }
 };
 // Prefijo del código → sistema. El sistema valida el código completo al entrar.
-const PREFIJOS = { AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], AC: ['acreditacion', 'Acreditación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
+const PREFIJOS = { AD: ['coordinacion', 'Administración de la plataforma'], AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], AC: ['acreditacion', 'Acreditación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
 const PRUEBA = ['AS-4821', 'CO-0001', 'AC-3307', 'SE-1093', 'TR-5570', 'BI-2207', 'BI-3318', 'EP-2603', 'CG-0001'];
 const PRUEBA_SUB = [['SE-4400', 'Seguridad y Traslado'], ['TR-4400', 'Traslado'], ['BI-4400', 'Bienestar'], ['EP-4400', 'Eventos y Protocolo'], ['AC-4400', 'Acreditación']];   // subdirección de prueba de cada equipo
 const ATAJOS = {
@@ -699,7 +959,7 @@ $('#fVentana').addEventListener('submit', e => {
 
 /* ---------- Avisos compartidos (la misma clave que usan los sistemas) ---------- */
 const CLAVE_AVISOS = 'minume.compartido.avisos';
-const EST = { nuevo: ['Enviado', 'amar', '#ffb547'], visto: ['Visto', 'amar', '#ffb547'], camino: ['En camino', '', '#45c8ff'], atencion: ['En atención', '', '#45c8ff'], resuelto: ['Resuelto', 'verde', '#2fd38c'], derivado: ['Derivado al 9-1-1', 'rojo', '#ff4d5e'] };
+const EST = { nuevo: ['Enviado', 'amar', '#ffb547'], visto: ['Visto', 'amar', '#ffb547'], camino: ['En camino', '', '#45c8ff'], atencion: ['En atención', '', '#45c8ff'], resuelto: ['Resuelto', 'verde', '#2fd38c'], derivado: ['Derivado al 911', 'rojo', '#ff4d5e'] };
 const CERRADO = a => a.estado === 'resuelto' || a.estado === 'derivado';
 const leerAvisos = () => leerLS(CLAVE_AVISOS, []);
 const esSOS = a => /^SOS/i.test(a.tipo || '');
@@ -733,7 +993,7 @@ document.addEventListener('click', e => {
     resumen: [[l.length, 'avisos en total'], [abiertos.length, 'abiertos'], [abiertos.filter(esSOS).length, 'SOS activos'], [l.filter(CERRADO).length, 'cerrados']],
     columnas: [{ t: 'Fecha', w: 11, pdf: 20 }, { t: 'Hora', w: 9, pdf: 15 }, { t: 'De', w: 13, pdf: 22 }, { t: 'Para', w: 13, pdf: 22 }, { t: 'Tipo', w: 26 }, { t: 'Detalle', w: 34 }, { t: 'Comisión', w: 10, pdf: 17 }, { t: 'Lugar', w: 18 }, { t: 'Enviado por', w: 18 }, { t: 'Estado', w: 15, pdf: 22 }, { t: 'Atendió', w: 18 }],
     filas: l.map(a => [fechaLocal(new Date(a.t)), hora(a.t), EQUIPOS[a.de]?.corto || a.de, EQUIPOS[a.para]?.corto || a.para, a.tipo, a.texto, a.comision, a.salon ? 'Salón ' + a.salon : a.donde || a.sede, a.por, (EST[a.estado] || EST.nuevo)[0], a.quien]),
-    estadoCol: 9, estado: v => /Resuelto/.test(v) ? 'verde' : /9-1-1/.test(v) ? 'rojo' : /Enviado|Visto/.test(v) ? 'amarillo' : 'azul',
+    estadoCol: 9, estado: v => /Resuelto/.test(v) ? 'verde' : /911/.test(v) ? 'rojo' : /Enviado|Visto/.test(v) ? 'amarillo' : 'azul',
   });
 });
 $('#bPrueba').addEventListener('click', () => {
@@ -860,6 +1120,126 @@ addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstala
 $('#bInstalar').addEventListener('click', async () => { if (!pedidoInstalar) return; pedidoInstalar.prompt(); await pedidoInstalar.userChoice.catch(() => {}); pedidoInstalar = null; $('#bInstalar').hidden = true; });
 addEventListener('scroll', () => $('#subir').classList.toggle('on', scrollY > 600), { passive: true });
 $('#subir').addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+/* ---------- Bienvenida: subsecretaría → rol → código ---------- */
+// Lo primero que ve el staff. En las subsecretarías se elige Voluntario o Coordinación; Secretaría General (SGL)
+// y Administrador no eligen rol: van directo al código. El nivel real lo manda el código (lo pone la Secretaría General).
+const SUBS = {
+  asistencia: { img: 'marca/circulos.svg', sig: 'AS · CO', txt: 'Asistentes de comisión, bienvenida y su coordinación' },
+  acreditacion: { img: 'marca/estrella-azul.svg', sig: 'AC', txt: 'Mesas de acreditación: QR, gafetes y llegada de delegados' },
+  seguridad: { img: 'marca/estrella-roja.svg', sig: 'SE · TR', txt: 'Puntos, turnos, rondas, regionales y SOS' },
+  bienestar: { img: 'marca/arcos-turquesa.svg', sig: 'BI', txt: 'Bienestar físico y emocional: casos, triaje y protocolos' },
+  eventos: { img: 'marca/rombo-coral.svg', sig: 'EP', txt: 'Ceremonias, montajes, invitados y plano de asientos' }
+};
+const ROLES_BV = {
+  voluntario: { nombre: 'Voluntario', color: '#00fdef', ic: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0', txt: 'Ves solo lo que te toca', ve: ['Tu punto, tu turno y tus tareas', 'Las órdenes que te mandan', 'Chat y comunicados de tu equipo'] },
+  coordinacion: { nombre: 'Coordinación', color: '#00b5ff', ic: IC.gente, txt: 'Supervisas tu subsecretaría', ve: ['Todo tu equipo y quién está activo', 'Asignas puntos, turnos y refuerzos', 'Los reportes por día de tu equipo'] }
+};
+// Las dos entradas sin paso de rol: van a Coordinación general, cada una con su prefijo
+const UNICOS = {
+  sgl: { nombre: 'SGL · Secretaría General', titulo: 'Secretaría General', sig: 'SGL · CG', pre: 'CG', color: '#ffbeff', img: 'marca/tablero-azul.svg', ic: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', txt: 'Supervisa todas las subsecretarías y ve todo el movimiento del evento.' },
+  admin: { nombre: 'Administrador', titulo: 'Administrador', sig: 'AD', pre: 'AD', color: '#00fdef', img: 'marca/diagonales-azul.svg', ic: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4', txt: 'Observa cada cosa de la plataforma: entra a todos los paneles, los códigos de acceso y la actividad en vivo.' }
+};
+const PRUEBA_BV = { asistencia: { voluntario: ['AS-4821'], coordinacion: ['CO-0001'] }, acreditacion: { voluntario: ['AC-3307'], coordinacion: ['AC-4400'] }, seguridad: { voluntario: ['SE-1093', 'TR-5570'], coordinacion: ['SE-4400', 'TR-4400'] }, bienestar: { voluntario: ['BI-2207', 'BI-3318'], coordinacion: ['BI-4400'] }, eventos: { voluntario: ['EP-2603'], coordinacion: ['EP-4400'] }, sgl: ['CG-0001'], admin: ['AD-0001'] };
+const ICHECK = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+// bvSub: la subsecretaría, 'sgl' o 'admin'; bvRol: 'voluntario' o 'coordinacion' (solo en las subsecretarías)
+let { sub: bvSub = null, rol: bvRol = null } = leerLS('minume.inicio.eleccion', {});
+if (bvSub === 'coordinacion') bvSub = 'sgl';   // elección guardada con la versión anterior
+if (!SUBS[bvSub] && !UNICOS[bvSub]) bvSub = null;
+if (!ROLES_BV[bvRol]) bvRol = null;
+const esUnico = () => !!UNICOS[bvSub];
+const bvSis = () => esUnico() ? 'coordinacion' : bvSub;
+const prefijosDe = s => Object.keys(PREFIJOS).filter(p => PREFIJOS[p][0] === s && p !== 'AD');
+const prefijosBv = () => esUnico() ? [UNICOS[bvSub].pre] : prefijosDe(bvSub);
+const atrasDesdeCodigo = () => esUnico() ? 1 : 2;
+function bvAbrir(si) {
+  $('#bv').hidden = !si; document.documentElement.style.overflow = si ? 'hidden' : '';
+  try { si ? sessionStorage.removeItem('minume.inicio.centro') : sessionStorage.setItem('minume.inicio.centro', '1'); } catch {}
+  if (si) bvIr(0);
+}
+function bvIr(p) {
+  $('#bv').dataset.paso = p;
+  $$('.bv-panel').forEach(x => x.hidden = +x.dataset.p !== p);
+  $$('#bvPasos li').forEach((li, i) => { li.className = i < p ? 'hecho' : i === p ? 'ahora' : ''; li.toggleAttribute('aria-current', i === p); });
+  $$('#bvPasos li')[2].textContent = p === 3 && esUnico() ? `Rol · ${UNICOS[bvSub].sig.split(' ')[0]}` : 'Rol';
+  $('.bv-panel[data-p="3"] .bv-atras').dataset.ir = atrasDesdeCodigo();
+  if (p === 0) bvSeguir();
+  if (p === 1) bvPintarSubs();
+  if (p === 2) bvPintarRoles();
+  if (p === 3) bvPrepararCodigo();
+  const t = $(`#bvTit${p}`); if (t) { t.tabIndex = -1; t.focus({ preventScroll: true }); }
+  $('#bv').scrollTop = 0; requestAnimationFrame(() => { $('#bv').scrollTop = 0; });
+}
+function bvSeguir() {
+  const l = Object.keys(EQUIPOS).map(s => [s, sesion(s)]).filter(([, u]) => u);
+  $('#bvSeguir').innerHTML = l.length ? `<span class="eti">Ya entraste en este dispositivo</span>` + l.map(([s, u]) => `<button class="abierta" type="button" data-abrir="${s}" style="--c:${EQUIPOS[s].color}"><div><b>Continuar como ${esc(u.nombre)}</b><small>${EQUIPOS[s].nombre}</small></div>${ic('flecha')}</button>`).join('') : '';
+}
+function bvPintarSubs() {
+  $('#bvSubs').innerHTML = Object.entries(SUBS).map(([s, d]) => `<button class="bv-op" type="button" data-sub="${s}" aria-pressed="${bvSub === s}" style="--c:${EQUIPOS[s].color}"><img src="${d.img}" alt=""><span class="bv-sig">${d.sig}</span><b>${EQUIPOS[s].nombre}</b><small>${d.txt}</small><span class="bv-marca">${ICHECK}</span></button>`).join('')
+    + Object.entries(UNICOS).map(([k, d]) => `<button class="bv-op ancha" type="button" data-sub="${k}" aria-pressed="${bvSub === k}" style="--c:${d.color}"><img src="${d.img}" alt=""><span class="bv-ico"><svg class="ic" viewBox="0 0 24 24"><path d="${d.ic}"/></svg></span><div><span class="bv-sig">${d.sig}</span><b>${d.titulo}</b><small>${d.txt}</small></div><span class="bv-marca">${ICHECK}</span></button>`).join('');
+}
+function bvPintarRoles() {
+  $('#bvSubNombre').textContent = EQUIPOS[bvSub].nombre;
+  $('#bvRoles').innerHTML = Object.entries(ROLES_BV).map(([r, d]) => `<button class="bv-op bv-rol" type="button" data-rol="${r}" aria-pressed="${bvRol === r}" style="--c:${d.color}"><span class="bv-ico"><svg class="ic" viewBox="0 0 24 24"><path d="${d.ic}"/></svg></span><b>${d.nombre}</b><small>${d.txt} de ${EQUIPOS[bvSub].corto}</small><span class="bv-ve">Lo que ves</span><ul>${d.ve.map(v => `<li>${v}</li>`).join('')}</ul><span class="bv-marca">${ICHECK}</span></button>`).join('');
+}
+function bvPrepararCodigo() {
+  const s = bvSis(), e = EQUIPOS[s], u = UNICOS[bvSub], r = u || ROLES_BV[bvRol], pre = prefijosBv();
+  const ej = u ? u.pre : bvRol === 'coordinacion' && s === 'asistencia' ? 'CO' : pre[0];
+  $('#bvForm').style.setProperty('--c', u ? u.color : e.color);
+  $('#bvCodEti').textContent = u ? `Paso 2 · ${u.titulo}` : 'Paso 3';
+  $('#bvCodTxt').textContent = `Escribe el código que te dieron. Empieza con ${pre.join(' o ')}, un guion y el resto. Al entrar vas directo a tu panel.`;
+  $('#bvResumen').innerHTML = (u ? '' : `<span class="chip" style="--c:${e.color}">${esc(e.nombre)}</span>`) + `<span class="chip" style="--c:${r.color}">${r.nombre}</span><button class="bv-cambiar" type="button" data-ir="1">Cambiar</button>`;
+  $('#bvCodigo').placeholder = `${ej}-7KQ2MX`; $('#bvCodigo').value = ''; $('#bvDetecta').innerHTML = ''; $('#bvEntrar').disabled = true;
+  const pr = (u ? PRUEBA_BV[bvSub] : (PRUEBA_BV[s] || {})[bvRol]) || [];
+  $('#bvPrueba').hidden = !pr.length;
+  $('#bvPrueba').innerHTML = `<span>Códigos de prueba:</span>` + pr.map(c => `<button type="button" data-c="${c}">${c}</button>`).join('');
+  setTimeout(() => $('#bvCodigo').focus(), 80);
+}
+function bvRevisar() {
+  const i = $('#bvCodigo');
+  i.value = i.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  if (/^[A-Z]{2}[A-Z0-9]/.test(i.value)) i.value = i.value.slice(0, 2) + '-' + i.value.slice(2);
+  const r = detectar(i.value), pre = i.value.slice(0, 2);
+  if (r && r.sis && !prefijosBv().includes(pre)) {
+    const de = pre === 'AD' ? 'Administración' : pre === 'CG' ? 'Secretaría General' : EQUIPOS[r.sis].nombre, elegido = esUnico() ? UNICOS[bvSub].titulo : EQUIPOS[bvSub].nombre;
+    $('#bvDetecta').innerHTML = `<span class="error">Ese código es de ${de}. Elegiste ${elegido}: <button class="bv-cambiar" type="button" data-ir="1">cambiar</button></span>`; $('#bvEntrar').disabled = true; return null;
+  }
+  pintarDetecta($('#bvDetecta'), r);
+  $('#bvEntrar').disabled = !(r && r.completo);
+  return r;
+}
+$('#bvEmpezar').addEventListener('click', () => bvIr(1));
+$('#bvSaltar').addEventListener('click', () => bvAbrir(false));
+$('#bReabrir').addEventListener('click', () => bvAbrir(true));
+$('#bv').addEventListener('click', e => {
+  const ir = e.target.closest('[data-ir]'), ab = e.target.closest('[data-abrir]'), su = e.target.closest('[data-sub]'), ro = e.target.closest('[data-rol]'), pc = e.target.closest('#bvPrueba [data-c]');
+  if (ir) bvIr(+ir.dataset.ir);
+  else if (ab) abrir(ab.dataset.abrir);
+  else if (su) { bvSub = su.dataset.sub; bvIr(esUnico() ? 3 : 2); }
+  else if (ro) { bvRol = ro.dataset.rol; bvIr(3); }
+  else if (pc) { $('#bvCodigo').value = pc.dataset.c; bvRevisar(); $('#bvCodigo').focus(); }
+});
+$('#bvCodigo').addEventListener('input', bvRevisar);
+$('#bvForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const r = bvRevisar();
+  if (!r || !r.completo) { const f = $('#bvForm'); f.classList.remove('sacude'); void f.offsetWidth; f.classList.add('sacude'); $('#bvCodigo').focus(); return; }
+  guardarLS('minume.inicio.eleccion', { sub: bvSub, rol: bvRol });
+  if (!esUnico()) guardarLS('minume.eleccion', { sis: r.sis, rol: bvRol, t: Date.now() });   // el sistema lo compara con el nivel real del código
+  abrir(r.sis, r.codigo);
+});
+addEventListener('keydown', e => { if (e.key !== 'Escape' || $('#bv').hidden || !$('#velo').hidden) return; const p = +$('#bv').dataset.paso; if (p > 0) bvIr(p === 3 ? atrasDesdeCodigo() : p - 1); });
+let bvCentro = false; try { bvCentro = sessionStorage.getItem('minume.inicio.centro') === '1'; } catch {}
+// De vuelta desde un sistema (sin sesión, código que falló o sesión vencida): la bienvenida abre en el código de ese sistema
+const vuelta = new URLSearchParams(location.hash.slice(1));
+if (vuelta.has('volver')) {
+  const s = vuelta.get('volver'), err = vuelta.get('error');
+  try { history.replaceState(null, '', location.pathname + location.search); } catch {}
+  if (s === 'coordinacion') { if (!UNICOS[bvSub]) bvSub = 'sgl'; } else if (SUBS[s]) bvSub = s;
+  bvAbrir(true);
+  if (bvSub) bvIr(esUnico() || bvRol ? 3 : 2);
+  if (err) $('#bvDetecta').innerHTML = `<span class="error">${esc(err)}</span>`;
+} else bvAbrir(!bvCentro);
+
 red(); aplicarConfigInicio(); pintarComisiones(); pintarTodo();
 })();
 </script>

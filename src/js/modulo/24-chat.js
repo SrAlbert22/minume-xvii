@@ -53,13 +53,13 @@ function pintarMensajes(irAbajo) {
     const quien = m.nombre + '|' + m.sistema, seguido = !sep && antes && antes.quien === quien && Date.parse(m.creado) - antes.t < 300000;
     antes = { quien, t: Date.parse(m.creado) };
     const p = colorPersona(quien), equipo = CANALES_CHAT[m.sistema] || CANALES_CHAT.general;
-    const rec = m.urgente ? (m.mio ? `<small class="chat-rec">${m.recibido && m.recibido.length ? `✓ Recibido por ${esc(m.recibido.join(', '))}` : 'Nadie lo ha marcado como recibido todavía'}</small>`
-      : m.yaRecibi ? '<small class="chat-rec">✓ Marcaste recibido</small>' : `<button class="boton chat-recibir" type="button" data-recibir="${m.id}">Recibido</button>`) : '';
+    const rec = m.urgente ? (m.mio ? `<small class="chat-rec">${m.recibido && m.recibido.length ? `✓Recibido por ${esc(m.recibido.join(', '))}` : 'Nadie lo ha marcado como recibido todavía'}</small>`
+      : m.yaRecibi ? '<small class="chat-rec">✓Marcaste recibido</small>' : `<button class="boton chat-recibir" type="button" data-recibir="${m.id}">Recibido</button>`) : '';
     return `${sep}<div class="chat-fila${m.mio ? ' mio' : ''}${seguido ? ' seguido' : ''}" style="--p:${p}">
       ${m.mio ? '' : `<span class="chat-avatar" title="${esc(m.nombre)}">${seguido ? '' : esc(inicialesChat(m.nombre))}</span>`}
       <div class="chat-msg${m.mio ? ' mio' : ''}${m.urgente ? ' urgente' : ''}">
         ${seguido ? '' : m.mio ? '<b class="chat-quien">Tú</b>' : `<b class="chat-quien">${esc(m.nombre)}<span class="chat-equipo" style="--e:${equipo[2]}">${esc(NOMBRE_SIS[m.sistema] || m.sistema)}</span></b>`}
-        ${m.urgente ? '<span class="chat-urge">🚨 URGENTE</span>' : ''}<p>${esc(m.texto)}</p>
+        ${m.urgente ? '<span class="chat-urge">URGENTE</span>' : ''}<p>${esc(m.texto)}</p>
         <small class="chat-hora">${horaCorta(m.creado)}${m.mio ? ` · ${m.vistos ? `visto por ${m.vistos}` : 'enviado'}` : ''}</small>${rec}</div></div>`;
   }).join('') + pend.map(p => `<div class="chat-fila mio"><div class="chat-msg mio pendiente${p.urgente ? ' urgente' : ''}"><p>${esc(p.texto)}</p><small class="chat-hora">${navigator.onLine === false ? 'Sin internet: se envía cuando vuelva' : 'Enviando…'}</small></div></div>`).join('');
   if (abajo) caja.scrollTop = caja.scrollHeight;
@@ -95,7 +95,7 @@ async function resumenChat(avisar) {
 function avisoChat(k, u) {
   if (alertasOn()) { if (u.urgente) { tono(880, .18, .3); setTimeout(() => tono(660, .18, .3), 200); setTimeout(() => tono(880, .25, .3), 400); } else tono(740, .09, .12, 'sine'); }
   vibrar(u.urgente ? [300, 120, 300, 120, 500] : 120);
-  toast(`${u.urgente ? '🚨 ' : '💬 '}${u.nombre.split(' ')[0]} · ${CANALES_CHAT[k][0]}: ${u.texto}`);
+  toast(`${u.urgente ? '' : ''}${u.nombre.split(' ')[0]} · ${CANALES_CHAT[k][0]}: ${u.texto}`);
   if (u.urgente && 'Notification' in window && Notification.permission === 'granted' && document.hidden && !pushActivo()) try { new Notification(`Urgente · ${CANALES_CHAT[k][0]}`, { body: `${u.nombre}: ${u.texto}`, tag: 'chat-' + u.id }); } catch {}
 }
 // Aviso arriba de la página mientras haya mensajes urgentes del chat sin marcar «Recibido» (en el chat mismo no hace falta)

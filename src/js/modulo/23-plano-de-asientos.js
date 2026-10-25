@@ -165,7 +165,7 @@ $('#asFicha').onclick = ev => {
   const est = b.dataset.asf, n = $('#asNombre').value.trim(), nota = $('#asNota').value.trim();
   if (est === 'ocupado' && !n) return $('#asNombre').focus();
   guardarAs(cambiarAs(asSel, est, { n: ['ocupado', 'sentado'].includes(est) ? n : undefined, nota }));
-  if (['ocupado', 'sentado'].includes(est)) registrar('🪑 Asiento', `${asSel} · ${n} (${EST_AS[est][0]})`);
+  if (['ocupado', 'sentado'].includes(est)) registrar('Asiento', `${asSel} · ${n} (${EST_AS[est][0]})`);
   toast(est === 'ocupado' ? `${asSel} asignado a ${n}` : `${asSel}: ${EST_AS[est][0]}`);
   pintarAsientos();
 };

@@ -4,8 +4,8 @@
   .mi-momento { margin: 18px 0 6px; padding: 16px; border-top: 3px solid var(--equipo, #45c8ff); }
   .mm-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .mm-cab small { display: block; color: var(--suave); font-size: 12px; letter-spacing: .02em; }
-  .mm-cab b { display: block; font: 800 26px/1.05 var(--f-tit, 'Barlow Condensed'); color: #fff; text-transform: uppercase; }
-  .mm-reloj { font: 700 15px var(--f-tit, 'Barlow Condensed'); color: var(--suave); white-space: nowrap; }
+  .mm-cab b { display: block; font: 800 26px/1.05 var(--f-tit, Barlow); color: #fff; text-transform: uppercase; }
+  .mm-reloj { font: 700 15px var(--f-tit, Barlow); color: var(--suave); white-space: nowrap; }
 
   /* los 5 momentos en línea, como un recorrido */
   .mm-pasos { list-style: none; margin: 14px 0 12px; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }

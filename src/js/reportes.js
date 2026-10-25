@@ -12,7 +12,7 @@
   const MARCA = { noche: '#0a0464', rey: '#002193', azul: '#0043c5', medio: '#0090fb', celeste: '#00b5ff', turquesa: '#00fdef', rosa: '#ffbeff', rojo: '#e53535' };
   const FRANJA = [MARCA.noche, MARCA.rey, MARCA.azul, MARCA.medio, MARCA.celeste, MARCA.turquesa];
   const LOGO = { blanco: ['marca/minume-xvii-blanco.svg', 750.23 / 83.98], institucional: ['marca/educacion-plerd-color.svg', 395 / 168.28], adorno: ['marca/anillo-turquesa.svg', 289.45 / 286.88] };
-  const LETRAS = { 'BarlowCondensed-ExtraBold': ['Barlow Condensed', 'bold'], 'BarlowCondensed-SemiBold': ['Barlow Condensed', 'normal'], 'Barlow-Regular': ['Barlow', 'normal'], 'Barlow-SemiBold': ['Barlow', 'bold'] };
+  const LETRAS = { 'Barlow-Regular': ['Barlow', 'normal'], 'Barlow-SemiBold': ['Barlow', 'bold'] };
 
   const cargados = {};
   const cargar = src => cargados[src] || (cargados[src] = new Promise((ok, mal) => {
@@ -63,7 +63,7 @@
     await cargarTodo(LIBS.xlsx);
     const wb = new ExcelJS.Workbook(); wb.creator = 'Albert Silvestre'; wb.lastModifiedBy = 'Albert Silvestre'; wb.company = 'MINUME XVII'; wb.created = new Date();
     const n = c.columnas.length, ac = c.color || MARCA.medio, sobreAc = esClaro(ac) ? NAVY : '#FFFFFF', numAc = esClaro(ac) ? NAVY : ac;
-    const TIT = { name: 'Barlow Condensed', family: 2 }, TXT = { name: 'Barlow', family: 2 };
+    const TIT = { name: 'Barlow', family: 2 }, TXT = { name: 'Barlow', family: 2 };
     const ws = wb.addWorksheet(sinEmoji(c.titulo).replace(/[\\/?*[\]:]/g, '').slice(0, 31) || 'Reporte', {
       views: [{ showGridLines: false }],
       pageSetup: { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: { left: .4, right: .4, top: .5, bottom: .6, header: .2, footer: .3 } },
@@ -122,7 +122,7 @@
     const { jsPDF } = window.jspdf, doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
     doc.setProperties({ title: paraPdf(c.titulo), subject: 'MINUME XVII', author: 'Albert Silvestre', creator: 'MINUME XVII · Albert Silvestre' });
     if (ttf) for (const [n, [fam, est]] of Object.entries(LETRAS)) { doc.addFileToVFS(n + '.ttf', ttf[n]); doc.addFont(n + '.ttf', fam, est); }
-    const TIT = ttf ? 'Barlow Condensed' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
+    const TIT = ttf ? 'Barlow' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
     const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), ac = rgb(c.color || MARCA.medio), navy = rgb(NAVY), suave = rgb(SUAVE);
     const sobreAc = esClaro(c.color) ? navy : [255, 255, 255];
     const cabecera = () => {
@@ -132,7 +132,7 @@
       if (adorno) { doc.saveGraphicsState(); doc.setGState(new doc.GState({ opacity: .35 })); doc.addImage(adorno.data, 'PNG', W - 26, -16, 40, 40 / adorno.prop, 'adorno', 'FAST'); doc.restoreGraphicsState(); }
       if (logo) doc.addImage(logo.data, 'PNG', 12, 7, 64, 64 / logo.prop, 'logo', 'FAST');
       else { doc.setFont(TIT, 'bold'); doc.setFontSize(16); doc.setTextColor(255, 255, 255); doc.text('MINUME XVII', 12, 13); }
-      doc.setFont(TIT, 'normal'); doc.setFontSize(10.5); doc.setTextColor(...rgb(MARCA.celeste)); doc.text(paraPdf(c.equipo || '').toUpperCase(), 12, 20.5, { charSpace: .3 });
+      doc.setFont(TIT, 'bold'); doc.setFontSize(10.5); doc.setTextColor(...rgb(MARCA.celeste)); doc.text(paraPdf(c.equipo || '').toUpperCase(), 12, 20.5, { charSpace: .3 });
       doc.setFont(TXT, 'normal'); doc.setFontSize(8.5); doc.setTextColor(214, 224, 255);
       doc.text(paraPdf(fechaTxt()), W - 32, 12, { align: 'right' }); doc.text(paraPdf(c.nota || 'Datos de ejemplo'), W - 32, 17, { align: 'right' });
       // franja de colores de la marca
@@ -187,7 +187,7 @@
     const { jsPDF } = window.jspdf, doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
     doc.setProperties({ title: 'Expediente ' + paraPdf(e.codigo), subject: 'MINUME XVII · Bienestar', author: 'Albert Silvestre', creator: 'MINUME XVII · Albert Silvestre' });
     if (ttf) for (const [n, [fam, est]] of Object.entries(LETRAS)) { doc.addFileToVFS(n + '.ttf', ttf[n]); doc.addFont(n + '.ttf', fam, est); }
-    const TIT = ttf ? 'Barlow Condensed' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
+    const TIT = ttf ? 'Barlow' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
     const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 14, navy = rgb(NAVY), suave = rgb(SUAVE), tinta = rgb(TINTA), linea = rgb(LINEA);
     const pc = rgb(e.prioColor || MARCA.medio);
     // cabecera de la marca
@@ -196,7 +196,7 @@
     if (adorno) { doc.saveGraphicsState(); doc.setGState(new doc.GState({ opacity: .35 })); doc.addImage(adorno.data, 'PNG', W - 24, -14, 36, 36 / adorno.prop, 'adorno', 'FAST'); doc.restoreGraphicsState(); }
     if (logo) doc.addImage(logo.data, 'PNG', M, 6.5, 56, 56 / logo.prop, 'logo', 'FAST');
     else { doc.setFont(TIT, 'bold'); doc.setFontSize(16); doc.setTextColor(255, 255, 255); doc.text('MINUME XVII', M, 13); }
-    doc.setFont(TIT, 'normal'); doc.setFontSize(10); doc.setTextColor(...rgb(MARCA.celeste)); doc.text('SUBSECRETARÍA DE BIENESTAR', M, 19.5, { charSpace: .3 });
+    doc.setFont(TIT, 'bold'); doc.setFontSize(10); doc.setTextColor(...rgb(MARCA.celeste)); doc.text('SUBSECRETARÍA DE BIENESTAR', M, 19.5, { charSpace: .3 });
     doc.setFont(TXT, 'normal'); doc.setFontSize(8.2); doc.setTextColor(214, 224, 255);
     doc.text('Documento confidencial', W - 28, 11, { align: 'right' }); doc.text(paraPdf(fechaTxt()), W - 28, 16, { align: 'right' });
     FRANJA.forEach((col, i) => { doc.setFillColor(...rgb(col)); doc.rect(W * i / FRANJA.length, 24, W / FRANJA.length + .2, 1.4, 'F'); });

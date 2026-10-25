@@ -5,11 +5,11 @@
   .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
   .tile { border-radius: 18px; padding: 14px 16px; background: var(--panel); border: 1px solid var(--borde); border-top: 3px solid var(--c, var(--equipo)); cursor: pointer; }
-  .tile b { font: 800 34px 'Barlow Condensed'; display: block; line-height: 1; color: #fff; }
+  .tile b { font: 800 34px Barlow; display: block; line-height: 1; color: #fff; }
   .tile small { color: var(--suave); font-size: 12.5px; }
   .tile.alerta { background: rgba(255, 77, 94, .12); border-color: rgba(255, 77, 94, .5); }
   .turno { border-left: 4px solid var(--equipo); }
-  .turno .hora-grande { font: 800 40px 'Barlow Condensed'; color: var(--equipo); line-height: 1; }
+  .turno .hora-grande { font: 800 40px Barlow; color: var(--equipo); line-height: 1; }
   .necesito { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
   .necesito button { border: 1px solid var(--borde); background: rgba(255, 255, 255, .03); color: var(--texto); border-radius: 14px; padding: 12px 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
   .necesito button span { display: block; font-size: 22px; margin-bottom: 4px; }
@@ -18,7 +18,7 @@
   .mini { border: 1px solid var(--borde); background: rgba(255, 255, 255, .05); color: var(--texto); border-radius: 99px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: 700; flex: none; }
   .mini.on { background: var(--equipo); color: #04121d; border-color: var(--equipo); }
   .niveles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-  .niveles button { border-radius: 14px; padding: 14px 8px; border: 2px solid transparent; font: 800 18px 'Barlow Condensed'; cursor: pointer; color: #fff; opacity: .45; }
+  .niveles button { border-radius: 14px; padding: 14px 8px; border: 2px solid transparent; font: 800 18px Barlow; cursor: pointer; color: #fff; opacity: .45; }
   .niveles button.on { opacity: 1; border-color: #fff; }
   .bus-fila { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--borde); }
   .bus-fila .estados { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
@@ -40,7 +40,7 @@
   .por-comision { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   @media (max-width: 520px) { .por-comision { grid-template-columns: repeat(2, 1fr); } }
   .por-comision div { border: 1px solid var(--borde); border-radius: 12px; padding: 8px 10px; font-size: 12px; color: var(--suave); }
-  .por-comision b { color: #fff; font: 800 15px 'Barlow Condensed'; display: block; }
+  .por-comision b { color: #fff; font: 800 15px Barlow; display: block; }
   .por-comision i { display: block; height: 4px; border-radius: 9px; background: var(--verde); margin-top: 5px; }
   /* Mapa editable: tipos de punto */
   .boton[hidden] { display: none; }
@@ -55,3 +55,6 @@
   .pin.punto { cursor: pointer; }
   .pin.punto.editando { outline: 2px dashed var(--amarillo); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  /* Sin emojis: los huecos donde iba uno se ocultan, y en las filas queda un punto del color del equipo */
+  .perm-ic:empty, .ob-modos button span:empty, .necesito button span:empty, .datos-ic:empty, .canal .ic:empty { display: none; }
+  .pedido > span:empty { width: 10px; height: 10px; border-radius: 50%; background: var(--equipo); align-self: center; flex: none; }

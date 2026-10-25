@@ -16,7 +16,7 @@ $('#b3').onclick = () => { $('#flujo').style.display = 'none'; pintarPanel(); $(
 
 function aplicarComision() {
   const [sede, salon] = ASIGNA[estado.comision];
-  $('#miChip').hidden = false; $('#miChip').innerHTML = `🔷 <b style="font:inherit">${estado.comision}</b><span class="largo"> · ${SEDES[sede].corto} · ${salon}</span>`;
+  $('#miChip').hidden = false; $('#miChip').innerHTML = `<b style="font:inherit">${estado.comision}</b><span class="largo"> · ${SEDES[sede].corto} · ${salon}</span>`;
   elegirSede(sede, true);
   pintarPanel(); pintarTraslado(); pintarRanking();
 }
@@ -54,5 +54,5 @@ $('#lItems').onclick = e => {
   const i = +it.dataset.i, m = estado.marcas[listaVista] = estado.marcas[listaVista] || [];
   m.includes(i) ? m.splice(m.indexOf(i), 1) : m.push(i);
   guardar('marcas', estado.marcas); pintarListas(); pintarPanel(); pintarRanking();
-  if (m.length === LISTAS[listaVista].length) toast('🎉 ¡Checklist completo!');
+  if (m.length === LISTAS[listaVista].length) toast('¡Checklist completo!');
 };

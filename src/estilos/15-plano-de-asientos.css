@@ -1,12 +1,12 @@
   /* MINUME XVII · Albert Silvestre */
   /* Plano de asientos */
   .as-resumen { margin-bottom: 12px; }
-  .as-titulo b { font: 800 24px 'Barlow Condensed'; display: block; }
+  .as-titulo b { font: 800 24px Barlow; display: block; }
   .as-titulo small { color: var(--suave); font-size: 13px; }
   .as-cifras { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 0 10px; }
   .as-cifras span { display: flex; align-items: baseline; gap: 6px; color: var(--suave); font-size: 13px; }
   .as-cifras i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); align-self: center; }
-  .as-cifras b { color: var(--texto); font: 800 22px 'Barlow Condensed'; }
+  .as-cifras b { color: var(--texto); font: 800 22px Barlow; }
   .as-herr { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
   .as-modos { margin: 0; }
   .as-modos button i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
@@ -34,7 +34,7 @@
   .as-ficha { position: sticky; top: 130px; }
   .as-f-cab { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
   .as-f-cab small { display: block; font-size: 12.5px; margin-top: 2px; }
-  .as-cod { font: 800 22px 'Barlow Condensed'; background: rgba(69, 200, 255, .14); color: var(--cian); padding: 6px 10px; border-radius: 12px; }
+  .as-cod { font: 800 22px Barlow; background: rgba(69, 200, 255, .14); color: var(--cian); padding: 6px 10px; border-radius: 12px; }
   .as-f-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   @media (max-width: 900px) {
     .as-rejilla { grid-template-columns: 1fr; }

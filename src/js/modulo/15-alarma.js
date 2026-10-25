@@ -48,7 +48,7 @@ function alarmaSOS(a) {
   notificar(`${$('#alEti').textContent}: ${$('#alTit').textContent}`, lugar);
 }
 function cerrarAlarma() { if (alActual) borrarNotificaciones(['sos-' + alActual.id]); $('#alarma').hidden = true; document.body.classList.remove('en-alarma'); sirena(false); clearInterval(alVib); vibrar(0); alActual = null; }
-$('#alVoy').onclick = () => { if (alActual) { cambiarAviso(alActual.id, 'camino'); toast('Avisaste que vas en camino'); registrar('🚨 Voy en camino', `${alActual.tipo} · ${alActual.salon ? 'Salón ' + alActual.salon : alActual.donde || ''}`); pintarTablero(); pintarCasos(); } cerrarAlarma(); };
+$('#alVoy').onclick = () => { if (alActual) { cambiarAviso(alActual.id, 'camino'); toast('Avisaste que vas en camino'); registrar('Voy en camino', `${alActual.tipo} · ${alActual.salon ? 'Salón ' + alActual.salon : alActual.donde || ''}`); pintarTablero(); pintarCasos(); } cerrarAlarma(); };
 $('#alMapa').onclick = () => { const a = alActual; cerrarAlarma(); $('#mapa').scrollIntoView(); if (a && a.salon) setTimeout(() => mostrarSalon(a.salon, a.comision && ASIGNA[a.comision] ? ASIGNA[a.comision][0] : ''), 300); };
 $('#alCerrar').onclick = cerrarAlarma;
 // si el navegador no dejó sonar la sirena (nadie había tocado la página), el primer toque la arranca

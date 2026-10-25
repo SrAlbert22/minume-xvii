@@ -2,12 +2,16 @@
   /* Entrada con código */
   .entrada { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 18px; overflow: auto; background: radial-gradient(900px 600px at 20% 0%, #15306e 0%, transparent 60%), #040817; }
   .entrada.oculta { display: none; }
+  /* Llegando desde el Inicio con el código: solo «Entrando…» mientras el servidor lo verifica */
+  .entrada.entrando .ent-caja { display: none; }
+  .entrada.entrando::after { content: 'Entrando a tu panel…'; font: 700 20px Barlow, sans-serif; color: #fff; letter-spacing: .02em; padding: 18px 28px 18px 62px; border-radius: 99px; border: 1px solid rgba(0, 181, 255, .45); background: rgba(10, 20, 60, .7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='%2300b5ff' stroke-width='3' stroke-dasharray='40 20' stroke-linecap='round'/%3E%3C/svg%3E") 22px center / 26px no-repeat; animation: ent-pulso 1.2s ease-in-out infinite; }
+  @keyframes ent-pulso { 50% { opacity: .65; } }
   .ent-caja { width: min(960px, 100%); display: grid; grid-template-columns: 1fr 1.05fr; border-radius: 28px; overflow: hidden; border: 1px solid var(--borde); box-shadow: 0 40px 120px rgba(0, 0, 0, .55); animation: ent-sube .5s ease-out; margin: auto; }
   .ent-marca { position: relative; padding: 36px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; background: radial-gradient(520px 320px at 0% 0%, color-mix(in srgb, var(--equipo) 42%, transparent), transparent 70%), linear-gradient(160deg, #0e1f4f, #070f2a); }
   .ent-marca::after { content: ""; position: absolute; right: -90px; bottom: -90px; width: 280px; height: 280px; border-radius: 50%; border: 42px solid color-mix(in srgb, var(--equipo) 16%, transparent); pointer-events: none; }
   .ent-top { display: flex; gap: 12px; align-items: center; } .ent-top .logo { background: var(--equipo); color: #04121d; }
-  .ent-top b { display: block; font: 800 20px/1 'Barlow Condensed'; letter-spacing: .03em; } .ent-top small { color: #c3cdee; font-size: 12.5px; }
-  .ent-titulo { font: 800 clamp(36px, 5vw, 52px)/.95 'Barlow Condensed'; margin: 22px 0 0; text-wrap: balance; }
+  .ent-top b { display: block; font: 800 20px/1 Barlow; letter-spacing: .03em; } .ent-top small { color: #c3cdee; font-size: 12.5px; }
+  .ent-titulo { font: 800 clamp(36px, 5vw, 52px)/.95 Barlow; margin: 22px 0 0; text-wrap: balance; }
   .ent-marca p { color: #c9d3f2; margin: 0; line-height: 1.6; max-width: 40ch; }
   .ent-puntos { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 12px; position: relative; z-index: 1; }
   .ent-puntos li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #e3e9ff; line-height: 1.45; }
@@ -15,12 +19,12 @@
   .ent-autor { display: block; margin-top: 4px; color: #7f8fc8; font-size: 11.5px; letter-spacing: .02em; }
   .ent-pie { margin-top: auto; padding-top: 18px; color: #9aa8cc; font-size: 12.5px; position: relative; z-index: 1; }
   .ent-form { padding: 36px; display: flex; flex-direction: column; background: #0a1431; }
-  .ent-form h3 { font: 800 34px/1 'Barlow Condensed'; margin: 12px 0 4px; }
+  .ent-form h3 { font: 800 34px/1 Barlow; margin: 12px 0 4px; }
   .ent-form .chip { align-self: flex-start; }
   .ent-volver { color: var(--suave); font-size: 13px; font-weight: 600; text-decoration: none; align-self: flex-start; margin-bottom: 14px; }
   .ent-volver:hover { color: #fff; }
   .ent-campo { position: relative; }
-  .codigo { width: 100%; font: 800 32px 'Barlow Condensed'; letter-spacing: 8px; text-align: center; text-transform: uppercase; padding: 14px 44px; border-radius: 16px; transition: border-color .2s, box-shadow .2s; }
+  .codigo { width: 100%; font: 800 32px Barlow; letter-spacing: 8px; text-align: center; text-transform: uppercase; padding: 14px 44px; border-radius: 16px; transition: border-color .2s, box-shadow .2s; }
   .codigo:focus { outline: none; border-color: var(--equipo); box-shadow: 0 0 0 4px color-mix(in srgb, var(--equipo) 22%, transparent); }
   .ent-ok { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--verde); display: grid; }
   .ent-detecta { min-height: 20px; margin-top: 8px; font-size: 13px; color: var(--suave); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -44,4 +48,21 @@
   .rol-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--borde); flex: none; white-space: nowrap; }
   .salir { background: none; border: 1px solid var(--borde); color: var(--suave); border-radius: 99px; padding: 6px 10px; cursor: pointer; font-size: 12px; flex: none; }
   .sin-permiso { display: none !important; }
+  /* Voluntario: ve solo lo que le toca. Lo de todo el equipo (cifras, listas de todos, alertas generales) es de la dirección */
+  .es-vol .solo-dir { display: none !important; }
+  .adm-paneles { margin-bottom: 14px; border-top: 3px solid var(--equipo); }
+  .adm-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin-top: 10px; }
+  .adm-lista .boton { justify-content: center; text-align: center; text-decoration: none; }
+  .es-vol .cob-arriba, .es-vol .cob-abajo { grid-template-columns: 1fr; }
+  .vol-cab { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .vol-lista { display: grid; gap: 8px; margin-top: 8px; }
+  .vol-fila { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: rgba(5, 10, 26, .35); border: 1px solid var(--borde); }
+  .vol-fila.ahora { border-color: color-mix(in srgb, var(--equipo) 60%, transparent); background: color-mix(in srgb, var(--equipo) 10%, rgba(5, 10, 26, .35)); }
+  .vol-fila.pasado { opacity: .5; }
+  .vol-fila .h { font: 800 18px/1 Barlow; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .vol-fila b { display: block; font-size: 14px; overflow-wrap: anywhere; }
+  .vol-fila small { display: block; color: var(--suave); font-size: 12.5px; overflow-wrap: anywhere; }
+  .vol-vacio { color: var(--suave); font-size: 13.5px; padding: 6px 0; }
+  .vol-acc { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  @media (max-width: 520px) { .vol-fila { grid-template-columns: minmax(0, 1fr); gap: 4px; } .vol-acc .boton { flex: 1 1 100%; justify-content: center; } }
   @media (max-width: 620px) { .rol-chip { display: none; } .salir { padding: 6px 8px; } }

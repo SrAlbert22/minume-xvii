@@ -34,7 +34,7 @@ function pintarGafete() {
   $('#gDet').textContent = g.com ? `${g.com} · ${SEDES[sede[0]].nombre} · ${sede[1]}` : 'Equipo de la Secretaría · todas las sedes';
   $('#gId').textContent = u.acr;
   $('#gafete').classList.toggle('ok', !!acr);
-  $('#gEstado').className = 'chip ' + (acr ? 'verde' : 'amarillo'); $('#gEstado').textContent = acr ? `✓ Acreditado · ${hora(acr.t)}` : 'Pendiente';
+  $('#gEstado').className = 'chip ' + (acr ? 'verde' : 'amarillo'); $('#gEstado').textContent = acr ? `✓Acreditado · ${hora(acr.t)}` : 'Pendiente';
   pintarQR(true);
 }
 let qrVentana = null;
@@ -64,13 +64,13 @@ function pitido(bien) { try { audio = audio || new AudioContext(); const o = aud
 function resultado(nivel, html) { const r = $('#resultado'); r.className = 'resultado ' + nivel; r.innerHTML = html; pitido(nivel === 'verde'); try { navigator.vibrate && navigator.vibrate(nivel === 'verde' ? 80 : [60, 60, 60]); } catch {} }
 function procesarQR(txt) {
   const r = validarQR(txt);
-  if (r.mal) return resultado(r.nivel, `<b class="grande">${r.nivel === 'rojo' ? '✗ No válido' : '⚠️ Revisa'}</b>${r.mal}${r.id ? `<br><small>Gafete de ${esc(GAFETES[r.id].n)}</small>` : ''}`);
+  if (r.mal) return resultado(r.nivel, `<b class="grande">${r.nivel === 'rojo' ? '✗No válido' : 'Revisa'}</b>${r.mal}${r.id ? `<br><small>Gafete de ${esc(GAFETES[r.id].n)}</small>` : ''}`);
   const g = GAFETES[r.id], ya = estado.acreditados[r.id], sede = g.com ? ASIGNA[g.com] : null;
-  const ficha = `${ROLES[g.rol][0]}${g.com ? ` · ${g.com}<br>🏨 ${SEDES[sede[0]].nombre} · ${sede[1]}` : ' · Equipo de la Secretaría'}`;
+  const ficha = `${ROLES[g.rol][0]}${g.com ? ` · ${g.com}<br>${SEDES[sede[0]].nombre} · ${sede[1]}` : ' · Equipo de la Secretaría'}`;
   if (ya) return resultado('amarillo', `<b class="grande">Ya se acreditó</b>${esc(g.n)} entró a las ${hora(ya.t)} (${esc(ya.por)}).<br>Si está entrando otra vez, está bien. Si son dos personas con el mismo gafete, avisa a Seguridad.`);
   const por = estado.usuario ? estado.usuario.nombre : 'Mesa de acreditación';
   estado.acreditados[r.id] = { t: Date.now(), por }; guardar('acreditados', estado.acreditados);
-  registrar('🪪 Acreditación', `${g.n} acreditado (${g.com || ROLES[g.rol][0]})`);
+  registrar('Acreditación', `${g.n} acreditado (${g.com || ROLES[g.rol][0]})`);
   resultado('verde', `<b class="grande">Bienvenido, ${esc(g.n.split(' ')[0])}</b>${ficha}<br>Acreditado a las ${hora()}.`);
   pintarLlegadas(); if (estado.usuario && r.id === estado.usuario.acr) pintarGafete();
 }
@@ -97,10 +97,10 @@ function crearEscaner(vid, msg, boton, alLeer) {
       vid.srcObject = flujo; await vid.play(); msg.style.display = 'none';
       if ('BarcodeDetector' in window) { try { detector = new BarcodeDetector({ formats: ['qr_code'] }); } catch { detector = null; } }
       if (!detector) await cargarJsQR();
-      boton.textContent = '⏹ Cerrar la cámara'; leer();
+      boton.textContent = 'Cerrar la cámara'; leer();
     } catch { cerrar(); apagado('No se pudo abrir la cámara (permiso negado o no hay cámara). Usa los botones de prueba.'); }
   }
-  function cerrar() { if (flujo) flujo.getTracks().forEach(t => t.stop()); flujo = null; vid.srcObject = null; boton.textContent = '📷 Abrir la cámara'; apagado('La cámara está apagada.'); }
+  function cerrar() { if (flujo) flujo.getTracks().forEach(t => t.stop()); flujo = null; vid.srcObject = null; boton.textContent = 'Abrir la cámara'; apagado('La cámara está apagada.'); }
   async function leer() {
     if (!flujo) return; let txt = null;
     try {
@@ -137,26 +137,26 @@ function pintarSync() {
   const on = enLinea(), n = colaDel.length;
   $('#dSync').classList.toggle('off', !on);
   $('#dSyncTxt').textContent = on ? (n ? `Subiendo ${n}…` : 'En línea · todo guardado en la nube') : `Sin internet · ${n} guardada${n === 1 ? '' : 's'} en este teléfono`;
-  $('#dOffline').textContent = simOffline ? '📶 Volver a tener internet' : '📴 Simular sin internet';
+  $('#dOffline').textContent = simOffline ? 'Volver a tener internet' : 'Simular sin internet';
 }
 function sincronizar() {
   pintarSync(); if (!enLinea() || !colaDel.length) return;
   const n = colaDel.length;
-  setTimeout(() => { colaDel.forEach(id => { if (estado.delAcr[id]) estado.delAcr[id].sync = true; }); colaDel = []; guardar('colaDel', colaDel); guardarAcr(); pintarDelegados(); pintarTablero(); toast(`☁️ Volvió el internet: se subieron ${n} acreditación${n === 1 ? '' : 'es'}`); }, 1300);
+  setTimeout(() => { colaDel.forEach(id => { if (estado.delAcr[id]) estado.delAcr[id].sync = true; }); colaDel = []; guardar('colaDel', colaDel); guardarAcr(); pintarDelegados(); pintarTablero(); toast(`Volvió el internet: se subieron ${n} acreditación${n === 1 ? '' : 'es'}`); }, 1300);
 }
 addEventListener('online', sincronizar); addEventListener('offline', pintarSync);
-$('#dOffline').onclick = () => { simOffline = !simOffline; if (simOffline) { pintarSync(); toast('📴 Sin internet: puedes seguir acreditando'); } else sincronizar(); };
+$('#dOffline').onclick = () => { simOffline = !simOffline; if (simOffline) { pintarSync(); toast('Sin internet: puedes seguir acreditando'); } else sincronizar(); };
 function abrirFicha(d, como) {
   fichaDel = d; const ya = estado.delAcr[d.id], a = ASIGNA[d.com], nom = (COMISIONES.find(c => c[0] === d.com) || [d.com, ''])[1];
   const box = $('#dFicha'); box.className = 'resultado ficha-del ' + (ya ? 'amarillo' : 'verde');
-  box.innerHTML = `<b class="grande">${ya ? '⚠️ Ya está acreditado' : como === 'qr' ? '✓ QR válido' : '🔎 Encontrado en la lista'}</b>
-    <div style="font:800 28px 'Barlow Condensed';color:#fff;margin:6px 0 8px;line-height:1.05">${esc(d.n)}</div>
+  box.innerHTML = `<b class="grande">${ya ? 'Ya está acreditado' : como === 'qr' ? '✓QR válido' : 'Encontrado en la lista'}</b>
+    <div style="font:800 28px Barlow;color:#fff;margin:6px 0 8px;line-height:1.05">${esc(d.n)}</div>
     <div class="fila"><span>Comisión</span><b>${esc(d.com)}${nom ? ` · <small style="font-weight:500">${esc(nom)}</small>` : ''}</b></div>
     <div class="fila"><span>Delegación</span><b>${esc(d.del || '—')}</b></div><div class="fila"><span>Colegio</span><b>${esc(d.col || '—')}</b></div>
     <div class="fila"><span>Sede · salón</span><b>${a ? `${SEDES[a[0]].nombre} · ${a[1]}` : 'Por confirmar'}</b></div><div class="fila"><span>ID</span><b>${d.id}</b></div>
     ${ya ? `<p style="margin:10px 0 0">Llegó a las ${hora(ya.t)} · ${esc(ya.por)}${ya.sync ? '' : ' · <b>guardado sin internet, se sube al volver la señal</b>'}. Si es otra persona con el mismo QR, avisa a Seguridad.</p><button class="boton sec" id="dCerrar" style="margin-top:12px">Siguiente →</button>`
     : `${como === 'manual' ? '<p style="margin:10px 0 0">Sin QR: pide su identificación o su carné del colegio antes de confirmar.</p>' : ''}
-      <div class="entregas"><label><input type="checkbox" id="eGafete" checked> 🪪 Gafete</label><label><input type="checkbox" id="eKit" checked> 🎒 Kit</label><label><input type="checkbox" id="eMat"> 📘 Material</label></div>
+      <div class="entregas"><label><input type="checkbox" id="eGafete" checked> Gafete</label><label><input type="checkbox" id="eKit" checked> Kit</label><label><input type="checkbox" id="eMat"> Material</label></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="boton" id="dConfirmar">Confirmar acreditación</button><button class="boton sec" id="dCerrar">Cancelar</button></div>`}`;
   $('#dCerrar').onclick = () => { box.className = 'resultado'; box.textContent = 'Listo para el siguiente delegado.'; $('#dBuscar').value = ''; $('#dResultados').innerHTML = ''; };
   if (!ya) $('#dConfirmar').onclick = () => confirmarDel(d, como);
@@ -166,7 +166,7 @@ function confirmarDel(d, como) {
   estado.delAcr[d.id] = { t: Date.now(), por: estado.usuario ? estado.usuario.nombre : 'Mesa', sync: on, manual: como === 'manual', gafete: $('#eGafete').checked, kit: $('#eKit').checked, material: $('#eMat').checked };
   if (!on) colaDel.push(d.id);
   guardarAcr(); guardar('colaDel', colaDel);
-  registrar('🪪 Delegado', `${d.n} (${d.com}) acreditado${como === 'manual' ? ' a mano' : ''}`);
+  registrar('Delegado', `${d.n} (${d.com}) acreditado${como === 'manual' ? ' a mano' : ''}`);
   const box = $('#dFicha'); box.className = 'resultado verde';
   box.innerHTML = `<b class="grande">${esc(d.n.split(' ')[0])} acreditado${on ? '' : ' (sin internet)'}</b>${esc(d.com)} · ${esc(d.del || '')} · ${hora()}<br>${on ? 'Guardado en la nube.' : 'Guardado en este teléfono: se sube solo cuando vuelva el internet.'}`;
   pitido(true); $('#dBuscar').value = ''; $('#dResultados').innerHTML = ''; pintarDelegados(); pintarTablero();

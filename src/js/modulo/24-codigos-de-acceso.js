@@ -1,7 +1,7 @@
 // MINUME XVII · Códigos de acceso del staff (solo Coordinación general) · Albert Silvestre
 // ---------- Códigos de acceso del staff (solo Coordinación general) ----------
 // Los crea el servidor: el código completo se muestra una sola vez y en la base solo queda cifrado.
-const TIPOS_CODIGO = [['AS', 'Asistente de comisión'], ['CO', 'Coordinación de Asistencia'], ['AC', 'Acreditación'], ['SE', 'Seguridad y Traslado (SE)'], ['TR', 'Seguridad y Traslado (TR)'], ['BI', 'Bienestar'], ['EP', 'Eventos y Protocolo'], ['CG', 'Dirección (Coordinación general)']];
+const TIPOS_CODIGO = [['AS', 'Asistente de comisión'], ['CO', 'Coordinación de Asistencia'], ['AC', 'Acreditación'], ['SE', 'Seguridad y Traslado (SE)'], ['TR', 'Seguridad y Traslado (TR)'], ['BI', 'Bienestar'], ['EP', 'Eventos y Protocolo'], ['CG', 'Dirección (Coordinación general)'], ['AD', 'Administración de la plataforma']];
 const puedeCodigos = () => !!window.MINUME_RPC && SISTEMA === 'coordinacion' && estado.usuario && estado.usuario.rol === 'coordinacion';
 let listaCodigos = null;
 const esCodPrueba = k => k.creado_por === 'Prueba' || String(k.ref || '').startsWith('demo-');
@@ -36,7 +36,7 @@ $('#codCrear').onclick = async () => {
     $('#codNuevo').hidden = false;
     $('#codNuevo').innerHTML = `<b>${esc(r.nombre)}</b><span class="cod-grande">${esc(r.codigo)}</span><small>Cópialo y entrégaselo en persona o por mensaje privado. Por seguridad no se vuelve a mostrar.</small><button class="mini" type="button" id="codCopiar">Copiar</button>`;
     $('#codCopiar').onclick = () => navigator.clipboard.writeText(r.codigo).then(() => toast('Código copiado'));
-    $('#codNombre').value = ''; registrar('🔑 Código', `Nuevo código para ${r.nombre}`); pintarCodigos(true);
+    $('#codNombre').value = ''; registrar('Código', `Nuevo código para ${r.nombre}`); pintarCodigos(true);
   } catch (e) { toast(e.message || 'No se pudo crear el código'); }
   b.disabled = false;
 };
@@ -59,6 +59,6 @@ document.addEventListener('click', async e => {
   e.target.disabled = true; let ok = 0, error = '';
   for (const k of l) { try { await window.MINUME_RPC('minume_codigo_activo', { p_id: k.id, p_activo: false }); ok++; } catch (er) { error = er.message || 'No se pudo'; break; } }
   toast(error ? `Se anularon ${ok}. Se detuvo: ${error}` : `Se anularon los ${ok} códigos de prueba`);
-  if (ok) registrar('🔑 Códigos', `Se anularon ${ok} códigos de prueba`);
+  if (ok) registrar('Códigos', `Se anularon ${ok} códigos de prueba`);
   pintarCodigos(true);
 });

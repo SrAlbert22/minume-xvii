@@ -38,7 +38,7 @@
   .qr-grande { position: fixed; inset: 0; z-index: 70; background: #fff; display: none; place-items: center; text-align: center; padding: 24px; color: #04121d; cursor: pointer; }
   .qr-grande.on { display: grid; }
   .qr-grande #qrG { width: min(86vw, 70vh); aspect-ratio: 1; margin: 0 auto; } .qr-grande #qrG svg { width: 100%; height: 100%; display: block; }
-  .qr-grande b { font: 800 34px 'Barlow Condensed'; display: block; margin-top: 10px; } .qr-grande small { color: #55607a; font-size: 13px; }
+  .qr-grande b { font: 800 34px Barlow; display: block; margin-top: 10px; } .qr-grande small { color: #55607a; font-size: 13px; }
   #capaVivo3d { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
   .pin.vivo3d { padding: 4px 10px 4px 4px; border-width: 2px; }
   .pin.vivo3d i { width: 24px; height: 24px; color: #04121d; font-weight: 800; font-size: 10.5px; }

@@ -4,15 +4,15 @@
   .cadena > div { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 14px; background: rgba(255, 255, 255, .03); }
   .cadena > div.tu { border-color: var(--equipo); background: color-mix(in srgb, var(--equipo) 12%, transparent); }
   .cadena b { display: block; } .cadena small { color: var(--suave); font-size: 12.5px; }
-  .cadena .av { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font: 800 16px 'Barlow Condensed'; background: rgba(47, 123, 255, .18); flex: none; }
+  .cadena .av { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font: 800 16px Barlow; background: rgba(47, 123, 255, .18); flex: none; }
   .momentos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
   .momento { border: 1px solid var(--borde); border-radius: 16px; padding: 12px; background: rgba(255, 255, 255, .03); cursor: pointer; }
-  .momento b { font: 800 22px 'Barlow Condensed'; color: var(--equipo); display: block; letter-spacing: 1px; }
+  .momento b { font: 800 22px Barlow; color: var(--equipo); display: block; letter-spacing: 1px; }
   .momento p { margin: 4px 0 0; font-size: 12.5px; color: var(--suave); line-height: 1.45; }
   .momento.on { border-color: var(--equipo); box-shadow: inset 0 0 0 1px var(--equipo); background: color-mix(in srgb, var(--equipo) 10%, transparent); }
   .momento.on b::after { content: ' · ahora'; font: 700 11px 'Inter'; letter-spacing: 0; color: var(--suave); }
   @media (max-width: 900px) { .momentos { grid-template-columns: repeat(2, 1fr); } }
-  .regla .ico.letra { font: 800 22px 'Barlow Condensed'; color: var(--equipo); }
+  .regla .ico.letra { font: 800 22px Barlow; color: var(--equipo); }
   .no-hacer { margin: 8px 0 0; padding-left: 20px; color: var(--suave); font-size: 13.5px; line-height: 1.55; }
   .no-hacer li { margin-bottom: 6px; } .no-hacer li::marker { content: '×  '; color: var(--rojo); font-weight: 900; }
   .ciclo { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
@@ -31,5 +31,5 @@
   .estatus.resuelto { background: rgba(47, 211, 140, .18); color: var(--verde); } .estatus.pendiente { background: rgba(255, 210, 63, .18); color: var(--amarillo); } .estatus.escalado { background: rgba(255, 77, 94, .18); color: #ff8a95; }
   .impacto { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; } .impacto.bajo { background: var(--verde); } .impacto.moderado { background: var(--amarillo); } .impacto.alto { background: var(--rojo); }
   .extra-lista { margin-top: 14px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .03); font-size: 13.5px; color: #d7def5; }
-  .extra-lista b.t { display: block; font: 700 18px 'Barlow Condensed'; color: #fff; margin-bottom: 4px; }
-  .frase { text-align: center; } .frase b { font: 700 clamp(22px, 3vw, 30px)/1.2 'Barlow Condensed'; display: block; }
+  .extra-lista b.t { display: block; font: 700 18px Barlow; color: #fff; margin-bottom: 4px; }
+  .frase { text-align: center; } .frase b { font: 700 clamp(22px, 3vw, 30px)/1.2 Barlow; display: block; }

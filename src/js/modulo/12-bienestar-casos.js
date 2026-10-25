@@ -8,16 +8,16 @@ $('#bVerPunto').onclick = () => { $('#mapa').scrollIntoView(); if (!capas.seg) a
 pintarKit();
 $('#tablero').onclick = e => {
   const b = e.target.closest('[data-acc]'); if (!b || !b.dataset.acc) return; const a = b.dataset.acc;
-  if (a.startsWith('ir-')) { const id = a.slice(3); $('#' + id).scrollIntoView(); if (id === 'mapa' && !capas.vivo && ['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol)) setTimeout(() => activarCapa('vivo'), 400); return; }
+  if (a.startsWith('ir-')) { const id = a.slice(3); $('#' + id).scrollIntoView(); if (id === 'mapa' && !capas.vivo && !esVol() && ['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol)) setTimeout(() => activarCapa('vivo'), 400); return; }
   if (a === 'ruta') { $('#mapa').scrollIntoView(); setTimeout(() => $('#rMiSalon').click(), 400); return; }
   if (a === 'necesito') {
     const [ic, n] = NECESITO[+b.dataset.i], sal = (ASIGNA[estado.comision] || [])[1] || '—';
     estado.pedidos.push({ id: 'q' + Date.now(), ic, que: n, salon: sal, com: estado.comision || '—', por: estado.usuario.nombre, t: Date.now(), est: 'pendiente' });
-    guardar('pedidos', estado.pedidos); registrar('🙋 Pedido', `${n} · Salón ${sal}`); toast(`${ic} Le llegó a coordinación: ${n} para el Salón ${sal}`); pintarTablero(); return;
+    guardar('pedidos', estado.pedidos); registrar('Pedido', `${n} · Salón ${sal}`); toast(`${ic} Le llegó a coordinación: ${n} para el Salón ${sal}`); pintarTablero(); return;
   }
   if (a === 'lugar2') return avisarLugar($('#lugar2').value);
   if (a === 'aviso') { cambiarAviso(b.dataset.id, b.dataset.e); toast(`Marcado: ${EST_AVISO[b.dataset.e][0]} · lo ve quien lo envió`); pintarTablero(); pintarCasos(); return; }
-  if (a === 'nivel') { estado.codigoAlerta = b.dataset.k; guardar('codigoAlerta', estado.codigoAlerta); registrar('🛡️ Código', `Código ${NIVEL[b.dataset.k][0]} activado`); toast(`Todo el staff ve ahora el código ${NIVEL[b.dataset.k][0]}`); pintarTablero(); pintarBienvenida(); return; }
+  if (a === 'nivel') { estado.codigoAlerta = b.dataset.k; guardar('codigoAlerta', estado.codigoAlerta); registrar('Código', `Código ${NIVEL[b.dataset.k][0]} activado`); toast(`Todo el staff ve ahora el código ${NIVEL[b.dataset.k][0]}`); pintarTablero(); pintarBienvenida(); return; }
   if (a === 'bus') { estado.busEstado[b.dataset.id] = b.dataset.e; guardar('busEstado', estado.busEstado); toast(`${EQUIPO.find(p => p.id === b.dataset.id).n}: ${b.dataset.e} · lo ve todo el staff`); pintarTablero(); return; }
   if (a === 'ver-salon') {
     const [se, sal] = ASIGNA[b.dataset.c]; $('#mapa').scrollIntoView();

@@ -7,6 +7,7 @@ const CODIGOS = {
   'TR-5570': { nombre: 'Ana Rosario', rol: 'traslado', acr: 'ACR-5T7WX' },
   'CO-0001': { nombre: 'Beatriz Pérez', rol: 'coordinacion', acr: 'ACR-1C0RD' },
   'CG-0001': { nombre: 'Coordinación general', rol: 'coordinacion', acr: 'ACR-1C0RD' },
+  'AD-0001': { nombre: 'Administración de la plataforma', rol: 'coordinacion', admin: true, nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'EP-2603': { nombre: 'Paola Ventura', rol: 'eventos', acr: 'ACR-1C0RD' },
   'BI-2207': { nombre: 'Sofía Matos', rol: 'bienestar', area: 'fisico', acr: 'ACR-8B1EN' },
   'BI-3318': { nombre: 'Marcos Peña', rol: 'bienestar', area: 'emocional', acr: 'ACR-8B1EN' },
@@ -23,21 +24,24 @@ const ROLES = { asistencia: ['Asistencia', '#45c8ff'], acreditacion: ['Acreditac
 // y refuerzos y editan los datos. El voluntario ve solo lo suyo. El nivel lo pone Coordinación general en cada código.
 const NIVELES = { voluntario: 'Voluntario', coordinacion: 'Coordinación', subdirector: 'Subdirección' };
 const esDir = () => !!estado.usuario && (estado.usuario.rol === 'coordinacion' || ['coordinacion', 'subdirector', 'direccion'].includes(estado.usuario.nivel));
-const cargoDe = u => SISTEMA === 'coordinacion' ? 'Dirección' : u.nivel === 'subdirector' || u.nivel === 'direccion' ? 'Subdirección' : u.nivel === 'coordinacion' || u.rol === 'coordinacion' ? 'Coordinación' : '';
+// Voluntario: cualquiera sin nivel de dirección en el sistema de su equipo (la Secretaría General siempre ve todo)
+const esVol = () => !!estado.usuario && !esDir() && SISTEMA !== 'coordinacion';
+const cargoDe = u => u.admin ? 'Administración' : SISTEMA === 'coordinacion' ? 'Dirección' : u.nivel === 'subdirector' || u.nivel === 'direccion' ? 'Subdirección' : u.nivel === 'coordinacion' || u.rol === 'coordinacion' ? 'Coordinación' : '';
 // Cada sistema solo deja entrar a sus equipos y solo muestra sus códigos de prueba
-$$('#entrada .prueba button').forEach(b => { if (!SIS.roles.includes(CODIGOS[b.dataset.c].rol) || (SIS.prefijos && !SIS.prefijos.includes(b.dataset.c.slice(0, 2)))) b.remove(); });
+$$('#entrada .prueba button').forEach(b => { if ((CODIGOS[b.dataset.c].admin && SISTEMA !== 'coordinacion') || !SIS.roles.includes(CODIGOS[b.dataset.c].rol) || (SIS.prefijos && !SIS.prefijos.includes(b.dataset.c.slice(0, 2)))) b.remove(); });
 if (SISTEMA !== 'todo') {
   document.title = `${SIS.nombre} · MINUME XVII`; $$('.cab .logo, #entrada .logo').forEach(l => l.textContent = SIS.letra);
   $('.cab small').textContent = SIS.nombre; document.documentElement.style.setProperty('--equipo', SIS.color);
   $('#entTxt').textContent = `Esta es la página de ${SIS.nombre}. Entra con tu código personal: la página sabe quién eres y qué te toca.`;
   $('#entSis').textContent = SIS.nombre; $('#entTitulo').textContent = SIS.nombre;
+  if (SIS.prefijos) $('#codigo').placeholder = `${SIS.prefijos[0]}-7KQ2MX`;
   $('.aviso-demo').textContent = `DEMO · ${SIS.nombre} · MINUME XVII · Sistema independiente: comparte solo la base de datos con los otros equipos · Datos de ejemplo`;
 }
 estado.usuario = leer('usuario', null);
 // El código se verifica en el servidor (Supabase). Solo los códigos de prueba de la demo sin base de datos se revisan aquí.
 async function entrar(cod) {
   const c = (cod || '').trim().toUpperCase(), pre = c.slice(0, 2);
-  if (SIS.prefijos && !SIS.prefijos.includes(pre)) { $('#codError').textContent = `Este es el sistema de ${SIS.nombre}: tu código es de otro equipo. Entra desde el Inicio de MINUME.`; return; }
+  if (SIS.prefijos && !SIS.prefijos.includes(pre) && pre !== 'AD') { $('#codError').textContent = `Este es el sistema de ${SIS.nombre}: tu código es de otro equipo. Entra desde el Inicio de MINUME.`; return; }
   let u = null;
   if (window.MINUME_ENTRAR) {
     const b = $('#bEntrar'), txt = b.textContent; b.disabled = true; b.textContent = 'Verificando…';
@@ -45,23 +49,35 @@ async function entrar(cod) {
     b.textContent = txt; b.disabled = false;
     if (r.sinRed) { $('#codError').textContent = 'Sin internet. Para entrar la primera vez en este teléfono hace falta conexión.'; return; }
     if (r.error) { $('#codError').textContent = r.error; return; }
-    u = { nombre: r.nombre, rol: r.rol, comision: r.comision || undefined, area: r.area || undefined, acr: r.acr || undefined, ref: r.ref, nivel: r.nivel || 'voluntario' };
+    u = { nombre: r.nombre, rol: r.rol, comision: r.comision || undefined, area: r.area || undefined, acr: r.acr || undefined, ref: r.ref, nivel: r.nivel || 'voluntario', admin: r.prefijo === 'AD' || undefined };
   } else u = CODIGOS[c] || null;
   if (!u) { $('#codError').textContent = 'Ese código no existe o ya caducó. Pídele uno a coordinación.'; return; }
+  // Administración entra a cualquier subsecretaría con la vista de su dirección
+  if (u.admin && SISTEMA !== 'coordinacion' && SISTEMA !== 'todo') u = { ...u, rol: SISTEMA === 'asistencia' ? 'coordinacion' : SIS.roles[0], nivel: 'subdirector' };
   if (!SIS.roles.includes(u.rol)) { if (window.MINUME_SALIR) window.MINUME_SALIR(); $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0]}: entra en su propia página.`; return; }
-  estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0);
+  estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0); avisarEleccion();
+}
+// En la bienvenida del Inicio la persona dice su rol; si el nivel real de su código es otro, se lo decimos (el nivel lo manda el código)
+function avisarEleccion() {
+  let el = null; try { el = JSON.parse(localStorage.getItem('minume.eleccion')); localStorage.removeItem('minume.eleccion'); } catch {}
+  if (!el || Date.now() - el.t > 15 * 60e3 || (SISTEMA !== 'todo' && el.sis !== SISTEMA)) return;
+  const dir = esDir();
+  const msg = el.rol === 'voluntario' && dir ? `Tu código es de ${cargoDe(estado.usuario) || 'coordinación'}: supervisas todo tu equipo.`
+    : el.rol === 'coordinacion' && !dir ? 'Tu código es de voluntario: ves solo lo que te toca. Si coordinas, pídele a la Secretaría General que suba tu nivel.' : '';
+  if (msg) setTimeout(() => toast(msg), 700);
 }
 // Si la sesión vence o coordinación anula el código, se vuelve a pedir
 addEventListener('minume-yo', e => { const u = estado.usuario, y = e.detail || {}; if (!u || !y.nivel || u.nivel === y.nivel) return; const antes = u.nivel; u.nivel = y.nivel; guardar('usuario', u); aplicarRol(); if (antes) toast(y.nivel === 'voluntario' ? 'Tu acceso cambió a voluntario' : `Ahora tienes el panel de ${NIVELES[y.nivel] || 'administración'}`); });
-addEventListener('minume-sesion-vencida', () => { if (!estado.usuario) return; estado.usuario = null; guardar('usuario', null); aplicarRol(); toast('Tu sesión venció o tu código fue anulado. Vuelve a entrar con tu código.'); });
+addEventListener('minume-sesion-vencida', () => { if (!estado.usuario) return; estado.usuario = null; guardar('usuario', null); if (INICIO_MINUME) return irAlInicio('Tu sesión venció o tu código fue anulado. Vuelve a entrar con tu código.'); aplicarRol(); toast('Tu sesión venció o tu código fue anulado. Vuelve a entrar con tu código.'); });
 function aplicarRol() {
   const u = estado.usuario;
   $('#entrada').classList.toggle('oculta', !!u);
-  if (!u) return;
+  // Sin sesión no hay formulario aquí: se entra desde la bienvenida del Inicio (salvo que venga con su código en la dirección)
+  if (!u) { if (INICIO_MINUME && !location.hash.startsWith('#entrar=')) irAlInicio(); return; }
   if (!u.acr && CODIGOS[u.codigo]) u.acr = CODIGOS[u.codigo].acr; // sesiones guardadas antes de que existiera el gafete
   const [txt, color] = ROLES[u.rol];
-  document.body.classList.toggle('es-dir', esDir());
-  $('#rolChip').textContent = SISTEMA === 'coordinacion' ? 'Dirección · Coordinación general' : u.rol === 'coordinacion' || esDir() ? cargoDe(u) : u.nombre.split(' ')[0];   // el nombre del equipo ya sale al lado del logo $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
+  document.body.classList.toggle('es-dir', esDir()); document.body.classList.toggle('es-vol', esVol());
+  $('#rolChip').textContent = u.admin ? 'Administración' : SISTEMA === 'coordinacion' ? 'Dirección · Coordinación general' : u.rol === 'coordinacion' || esDir() ? cargoDe(u) : u.nombre.split(' ')[0];   // el nombre del equipo ya sale al lado del logo $('#rolChip').style.color = color; $('#rolChip').style.borderColor = color + '88';
   $$('[data-roles]').forEach(el => el.classList.toggle('sin-permiso', !el.dataset.roles.split(' ').includes(u.rol)));
   enlaces.forEach((a, i) => a.classList.toggle('sin-permiso', secciones[i].classList.contains('sin-permiso')));
   if (u.rol === 'asistencia') {
@@ -70,17 +86,26 @@ function aplicarRol() {
     elegida = estado.comision; paso(2); $$('.comi').forEach(x => x.classList.toggle('on', x.dataset.c === estado.comision)); paso(3); aplicarComision();
   }
   document.documentElement.style.setProperty('--equipo', color);
-  const H = (HERO_SIS[SISTEMA] || {})[u.rol] || HERO[u.rol];
+  const H = u.admin ? ['Administración', SISTEMA === 'coordinacion' ? 'ADMINISTRACIÓN DE LA PLATAFORMA' : `ADMINISTRACIÓN · ${SIS.nombre.toUpperCase()}`, 'Observas cada cosa de la plataforma: todas las subsecretarías, sus paneles, los códigos de acceso y la actividad en vivo.'] : (HERO_SIS[SISTEMA] || {})[u.rol] || HERO[u.rol];
   if (SISTEMA !== 'todo' && SISTEMA !== 'asistencia') { $('#bitacora h2').textContent = 'Bitácora del equipo'; $('#bitacora .lead').textContent = 'Lo importante del día: qué pasó, qué se hizo, con quién y cómo quedó. Toca el estatus para cambiarlo.'; }
-  $('.hero .chip').textContent = `${txt} · MINUME XVII`; $('.hero h1').textContent = H[0]; $('.hero .sub').textContent = H[1]; $('.hero .lead').textContent = H[2];
+  $('.hero .chip').textContent = `${txt} · MINUME XVII`; $('.hero h1').textContent = H[0]; $('.hero .sub').textContent = esVol() && u.rol !== 'asistencia' ? `${txt.toUpperCase()} · VOLUNTARIO` : H[1]; $('.hero .lead').textContent = esVol() && u.rol !== 'asistencia' ? 'Aquí ves solo lo que te toca: tu puesto, tus turnos y tus tareas. Lo demás lo coordina tu subdirección.' : H[2];
   $('#miPanel').hidden = true; $('#flujo').style.display = '';
   reordenar(u.rol);
   if ($('#cAdmin')) $('#cAdmin').hidden = !esDir();
   if (window.NAV_LISTA) modoApp();
-  if (!capasListas) { capasListas = true; ({ seguridad: ['vivo'], traslado: ['vivo'], coordinacion: ['vivo'] }[u.rol] || []).forEach(c => { if (!capas[c]) activarCapa(c); }); if (u.rol === 'acreditacion') mostrarLugar('j-lobby', 'Acreditación · Lobby del Jaragua'); }
-  pintarCompartir(); setTimeout(iniciarMapaVivo, 150); setTimeout(pedirPermisosAlEntrar, 900); espia(); pintarGafete(); pintarLlegadas(); pintarBienvenida(); pintarTablero(); pintarDelegados(); pintarCasos(); pintarCobertura(); pintarNuevas();
+  if (!capasListas) { capasListas = true; (esVol() ? [] : { seguridad: ['vivo'], traslado: ['vivo'], coordinacion: ['vivo'] }[u.rol] || []).forEach(c => { if (!capas[c]) activarCapa(c); }); if (u.rol === 'acreditacion') mostrarLugar('j-lobby', 'Acreditación · Lobby del Jaragua'); }
+  pintarPaneles(); pintarCompartir(); setTimeout(iniciarMapaVivo, 150); espia(); pintarGafete(); pintarLlegadas(); pintarBienvenida(); pintarTablero(); pintarDelegados(); pintarCasos(); pintarCobertura(); pintarNuevas();
 }
 let capasListas = false;
+// Administración: abre el panel de dirección de cada subsecretaría con su mismo código
+function pintarPaneles() {
+  let c = $('#admPaneles'); const u = estado.usuario;
+  if (!u || !u.admin || INICIO_MINUME !== '../') { if (c) c.remove(); return; }
+  if (!c) { c = document.createElement('div'); c.id = 'admPaneles'; c.className = 'tarjeta adm-paneles'; $('#tablero').before(c); }
+  const sis = [['coordinacion', 'Coordinación general'], ['asistencia', 'Asistencia'], ['acreditacion', 'Acreditación'], ['seguridad', 'Seguridad y Traslado'], ['bienestar', 'Bienestar'], ['eventos', 'Eventos y Protocolo']];
+  c.innerHTML = `<b class="cond" style="font-size:24px">Paneles de la plataforma</b><p class="cob-sub">Entra al panel de dirección de cada subsecretaría con tu mismo código.</p>
+    <div class="adm-lista">${sis.map(([s, n]) => `<a class="boton${s === SISTEMA ? '' : ' sec'}" href="../${s}/#entrar=${encodeURIComponent(u.codigo)}"${s === SISTEMA ? ' aria-current="page"' : ''}>${n}</a>`).join('')}</div>`;
+}
 const HERO = {
   asistencia: ['Asistencia', 'EQUIPO DE ASISTENCIA DE COMISIÓN', 'Que tu comisión esté lista, acompañada y funcionando. Aquí ves tu turno, cómo llegar a tu salón y pides lo que falte con un toque.'],
   acreditacion: ['Acreditación', 'EQUIPO DE ACREDITACIÓN', 'Recibe a cada delegado: escanea su QR, revisa sus datos y confirma. Funciona aunque se vaya el internet.'],
@@ -107,8 +132,17 @@ const ORDEN_SIS = {
   seguridad: { seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'], traslado: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'objetos', 'programa', 'bitacora'] },
   coordinacion: { coordinacion: ['inicio', 'chat', 'datos', 'rendimiento', 'comunicados', 'comisiones-vivo', 'eventos', 'invitados', 'asientos', 'cobertura', 'rondas', 'atenciones', 'objetos', 'programa', 'mapa', 'ubicacion', 'seguridad', 'traslado', 'incidencias', 'bitacora'] },
 };
+// El voluntario ve solo sus tareas: su puesto y turnos, lo que le asignan y cómo hacerlo. Nada de listas de todo el equipo.
+const ORDEN_VOL = {
+  asistencia: ['inicio', 'chat', 'comunicados', 'mi-comision', 'empieza', 'listas', 'sesion', 'incidencias', 'programa', 'bolsillo', 'mapa'],
+  acreditacion: ['inicio', 'chat', 'comunicados', 'delegados', 'programa', 'mapa'],
+  seguridad: ['inicio', 'chat', 'comunicados', 'cobertura', 'rondas', 'traslado', 'seguridad', 'programa', 'mapa'],
+  traslado: ['inicio', 'chat', 'comunicados', 'cobertura', 'traslado', 'seguridad', 'programa', 'mapa'],
+  bienestar: ['inicio', 'chat', 'comunicados', 'cobertura', 'casos', 'protocolos', 'punto', 'programa', 'mapa'],
+  eventos: ['inicio', 'chat', 'comunicados', 'cobertura', 'eventos', 'programa', 'mapa'],
+};
 function reordenar(rol) {
-  const main = $('main'), rail = $('#rail'), base = (ORDEN_SIS[SISTEMA] || {})[rol] || ORDEN[rol];
+  const main = $('main'), rail = $('#rail'), base = (esVol() && ORDEN_VOL[rol]) || (ORDEN_SIS[SISTEMA] || {})[rol] || ORDEN[rol];
   // La dirección de cada equipo suma «Reportes» (solo de su equipo); el voluntario no lo ve
   let orden = esDir() && $('#reportes') && !base.includes('reportes') ? [...base.slice(0, 3), 'reportes', ...base.slice(3)] : base;
   // La subdirección y la coordinación de cada equipo tienen su panel, justo después del inicio
@@ -123,9 +157,12 @@ function reordenar(rol) {
 $('#bEntrar').onclick = () => entrar($('#codigo').value);
 $('#codigo').addEventListener('keydown', e => { if (e.key === 'Enter' && !$('#bEntrar').disabled) entrar($('#codigo').value); });
 // Entrada: escribe el guion solo, reconoce el equipo por las dos letras y avisa si el código es de otro sistema
-const EQUIPO_PREF = { AS: 'Asistente de comisión', CO: 'Coordinación de Asistencia', SE: 'Seguridad y Traslado', TR: 'Seguridad y Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
-const SIS_PREF = { AS: 'asistencia', CO: 'asistencia', AC: 'acreditacion', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', EP: 'eventos', CG: 'coordinacion' };
+const EQUIPO_PREF = { AD: 'Administración de la plataforma', AS: 'Asistente de comisión', CO: 'Coordinación de Asistencia', SE: 'Seguridad y Traslado', TR: 'Seguridad y Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
+const SIS_PREF = { AD: 'coordinacion', AS: 'asistencia', CO: 'asistencia', AC: 'acreditacion', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', EP: 'eventos', CG: 'coordinacion' };
 const INICIO_MINUME = window.MINUME_INICIO || '';
+// Vuelve a la bienvenida del Inicio en el paso del código de este sistema; si algo falló, lo dice ahí
+function irAlInicio(error) { location.replace(`${INICIO_MINUME}#volver=${SISTEMA}${error ? '&error=' + encodeURIComponent(error) : ''}`); }
+if (!INICIO_MINUME) $('#entrada').classList.remove('entrando');   // con Inicio, mientras se verifica el código solo se ve «Entrando a tu panel…»
 if (INICIO_MINUME) { $('#entVolver').href = INICIO_MINUME; $('#entVolver').hidden = false; }
 function revisarCodigo() {
   const i = $('#codigo'); let v = i.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -133,7 +170,7 @@ function revisarCodigo() {
   if (i.value !== v) i.value = v;
   $('#codError').textContent = '';
   const pre = v.slice(0, 2), completo = /^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(v), eq = EQUIPO_PREF[pre];
-  const deAqui = !SIS.prefijos || SIS.prefijos.includes(pre);
+  const deAqui = !SIS.prefijos || SIS.prefijos.includes(pre) || pre === 'AD';
   let h = 'Son dos letras de tu equipo, un guion y el resto de tu código. Ejemplo: ' + (SIS.prefijos ? SIS.prefijos[0] : 'AS') + '-7KQ2MX.';
   if (pre.length === 2 && !eq) h = '<i style="background:var(--rojo)"></i>Esas dos letras no son de ningún equipo.';
   else if (eq && deAqui) h = `<i style="background:var(--verde)"></i>${eq}${completo ? '' : ' · falta el resto del código'}`;
@@ -150,4 +187,4 @@ addEventListener('online', redEntrada); addEventListener('offline', redEntrada);
 addEventListener('scroll', () => $('#subir').classList.toggle('on', scrollY > 600), { passive: true });
 $('#subir').onclick = () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 $$('#entrada .prueba button').forEach(b => b.onclick = () => { $('#codigo').value = b.dataset.c; revisarCodigo(); entrar(b.dataset.c); });
-$('#bSalir').onclick = () => { dejarCompartir(); if (window.MINUME_SALIR) window.MINUME_SALIR(); try { Object.keys(localStorage).filter(k => k.startsWith(PREF)).forEach(k => localStorage.removeItem(k)); } catch {} location.reload(); };
+$('#bSalir').onclick = () => { dejarCompartir(); if (window.MINUME_SALIR) window.MINUME_SALIR(); try { Object.keys(localStorage).filter(k => k.startsWith(PREF)).forEach(k => localStorage.removeItem(k)); } catch {} if (INICIO_MINUME) irAlInicio(); else location.replace(location.pathname); };   // sin el código en la dirección: si no, volvía a entrar solo

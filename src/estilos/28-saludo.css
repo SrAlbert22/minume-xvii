@@ -1,0 +1,36 @@
+  /* MINUME XVII · Saludo del inicio después de entrar · Albert Silvestre */
+  /* Una tarjeta con quién eres, qué te toca y una sola acción principal. El título grande, los contadores y la tarjeta «Hola» ya no se ven. */
+  body.app #inicio .hero { display: none; }
+  .saludo { position: relative; overflow: hidden; margin: 6px 0 18px; padding: clamp(18px, 3vw, 28px); border-radius: 22px; border: 1px solid color-mix(in srgb, var(--c) 35%, var(--borde));
+    background: radial-gradient(420px 220px at 100% 0%, color-mix(in srgb, var(--c) 22%, transparent), transparent 70%), linear-gradient(160deg, rgba(0, 67, 197, .35), rgba(10, 4, 100, .55)); }
+  .saludo::before { content: ''; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, var(--c), var(--m-turquesa, #00fdef)); }
+  .saludo-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .saludo-top .chip { color: var(--c); border-color: color-mix(in srgb, var(--c) 55%, transparent); }
+  .saludo-dia { font-size: 12.5px; font-weight: 700; color: var(--suave); letter-spacing: .02em; }
+  .saludo h2 { font: 800 clamp(28px, 4.2vw, 44px)/1.05 Barlow, sans-serif; margin: 14px 0 6px; letter-spacing: -.01em; }
+  .saludo h2 span { color: var(--c); }
+  .saludo p { margin: 0; color: #d3dcf7; font-size: 15px; line-height: 1.5; max-width: 60ch; }
+  .saludo-acc { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .saludo-acc .boton { min-height: 48px; padding: 0 20px; display: inline-flex; align-items: center; gap: 8px; }
+  .saludo-perm { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px 14px; align-items: center; margin-top: 18px; padding: 12px 14px; border-radius: 16px; background: rgba(5, 10, 40, .45); border: 1px dashed rgba(0, 181, 255, .4); }
+  .saludo-perm b { display: block; font-size: 14px; }
+  .saludo-perm small { display: block; color: var(--suave); font-size: 12.5px; }
+  .saludo-perm-b { display: flex; gap: 8px; flex-wrap: wrap; }
+  .saludo-perm .mini { min-height: 38px; }
+  .saludo-x { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--borde); background: none; color: var(--suave); font-size: 20px; line-height: 1; cursor: pointer; }
+  .saludo-x:hover { color: #fff; border-color: var(--c); }
+  /* Atajos: cuatro a la vista y el resto con «Ver todas las secciones» */
+  .accesos .acceso.extra { display: none; }
+  .accesos.todas .acceso.extra { display: grid; }
+  .accesos-mas { margin-top: 10px; background: none; border: 1px solid var(--borde); color: var(--suave); border-radius: 99px; padding: 9px 16px; font: 700 13px Barlow, sans-serif; cursor: pointer; }
+  .accesos-mas:hover { color: #fff; border-color: var(--equipo); }
+  @media (max-width: 560px) {
+    .saludo { border-radius: 18px; }
+    .accesos .acceso { min-height: 92px; }
+    body.app .accesos .accesos-g { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .saludo-acc .boton { flex: 1 1 auto; justify-content: center; }
+    .saludo-perm { grid-template-columns: minmax(0, 1fr) auto; }
+    .saludo-perm-b { grid-column: 1 / -1; grid-row: 2; }
+    .saludo-perm-b .mini { flex: 1 1 auto; }
+  }
+  @media (min-width: 761px) { body.app .accesos .accesos-g { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

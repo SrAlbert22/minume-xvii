@@ -99,7 +99,7 @@ $('#miMomento').addEventListener('click', e => {
   if (a === 'llegue') {
     const ll = leer('llegadas', {}), t = ahoraMs(); ll[hoyDR()] = t; guardar('llegadas', ll);
     const primero = Math.min(...misTurnosHoy().map(x => minutos(x.de))), dif = primero - partesDR(new Date(t)).min;
-    registrar('🏁 Llegada al salón', `${miSalon() || 'Salón'} · ${dif >= 0 ? dif + ' min antes de su turno' : -dif + ' min tarde'}`);
+    registrar('Llegada al salón', `${miSalon() || 'Salón'} · ${dif >= 0 ? dif + ' min antes de su turno' : -dif + ' min tarde'}`);
     toast(dif >= 0 ? `Llegada anotada: ${dif} min antes de tu turno` : `Llegada anotada: ${-dif} min después del inicio de tu turno`);
     pintarMomento();
   }

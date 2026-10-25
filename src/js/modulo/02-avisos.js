@@ -3,7 +3,7 @@
 // Lo único que comparten los tres sistemas. En la versión real es una tabla "avisos" en la misma base de Supabase,
 // con tiempo real; en esta demo viaja por el navegador (abre los sistemas en el mismo navegador para verlo).
 const CLAVE_AVISOS = 'minume.compartido.avisos';
-const EST_AVISO = { nuevo: ['Enviado', 'amarillo'], visto: ['Visto', 'amarillo'], camino: ['En camino', ''], atencion: ['En atención', ''], resuelto: ['Resuelto', 'verde'], derivado: ['Derivado al 9-1-1', 'rojo'] };
+const EST_AVISO = { nuevo: ['Enviado', 'amarillo'], visto: ['Visto', 'amarillo'], camino: ['En camino', ''], atencion: ['En atención', ''], resuelto: ['Resuelto', 'verde'], derivado: ['Derivado al 911', 'rojo'] };
 const NOMBRE_SIS = { asistencia: 'Asistencia', seguridad: 'Seguridad', bienestar: 'Bienestar', eventos: 'Eventos y Protocolo', coordinacion: 'Coordinación' };
 const CERRADO = a => a.estado === 'resuelto' || a.estado === 'derivado';
 function leerAvisos() { try { return JSON.parse(localStorage.getItem(CLAVE_AVISOS) || '[]'); } catch { return []; } }

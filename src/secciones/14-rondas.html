@@ -3,10 +3,10 @@
   <section id="rondas" data-roles="seguridad coordinacion">
     <div class="titulo-sec"><span class="n">00</span><h2>Rondas</h2><span class="chip amarillo">NUEVO</span></div>
     <p class="lead">Quien hace la ronda marca cada punto por el que pasa y anota si encontró algo. Dirección ve qué ruta está atrasada, qué punto se saltó y qué incidencias hubo. Al marcar cada punto, el GPS comprueba que la persona estaba ahí. Las rutas son de ejemplo.</p>
-    <div class="tiles" id="rnTiles"></div>
+    <div class="tiles solo-dir" id="rnTiles"></div>
     <div id="rnActiva"></div>
     <div class="rejilla r2" id="rnRutas" style="margin-top:14px"></div>
-    <div class="tarjeta" style="margin-top:14px">
+    <div class="tarjeta solo-dir" style="margin-top:14px">
       <div class="cob-cab"><b class="cond" style="font-size:24px">Rondas de hoy</b><button class="boton sec ed-abrir" type="button" data-editar="rutas" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Editar rutas</button><span style="margin-left:auto"><div class="exp-btns" data-exportar="rondas"><button class="boton sec exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="boton sec exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div></span></div>
       <div id="rnHist"></div>
     </div>

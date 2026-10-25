@@ -8,7 +8,7 @@ function empezarCompartir(m) {
   if (m === 'cierre') { const d = new Date(); d.setHours(19, 0, 0, 0); if (d < new Date()) d.setDate(d.getDate() + 1); hasta = +d; } else hasta = Date.now() + m * 60000;
   estado.compartir = { hasta }; guardar('compartir', estado.compartir);
   iniciarGps();
-  pintarCompartir(); toast('📡 Estás compartiendo tu ubicación en vivo');
+  pintarCompartir(); toast('Estás compartiendo tu ubicación en vivo');
 }
 // Escucha el GPS del teléfono (también al volver a abrir la página si la persona seguía compartiendo)
 function iniciarGps() {
@@ -25,35 +25,9 @@ function iniciarGps() {
 }
 if (compartiendo()) iniciarGps();
 
-// ---------- Al entrar: pedir la ubicación y las alertas de una vez ----------
-// Pedido en la reunión del 21 de octubre: que nadie tenga que ir a Cobertura o a «En vivo» para hacerlo.
-// Sale una vez al día (o cuando falta alguno de los dos), como el permiso que pide el teléfono.
-function pedirPermisosAlEntrar() {
-  if (!estado.usuario || $('#permisos')) return;
-  const conUbicacion = !!$('#ubicacion') && !$('#ubicacion').classList.contains('sin-permiso');
-  const faltaUbic = conUbicacion && !compartiendo(), faltaAlertas = !alertasOn();
-  let hoy; try { hoy = hoyDR(); } catch { hoy = ''; }
-  if ((!faltaUbic && !faltaAlertas) || leer('permisosDia', '') === hoy) return;
-  const v = document.createElement('div'); v.id = 'permisos'; v.className = 'permisos'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-labelledby', 'permTit');
-  const pintar = () => {
-    const u = conUbicacion && compartiendo(), a = alertasOn();
-    v.innerHTML = `<div class="permisos-caja"><span class="chip">Antes de empezar</span><h3 id="permTit">Dos cosas para tu turno</h3>
-      <p>Así el equipo te encuentra si hace falta y los SOS suenan en tu teléfono. Lo puedes apagar cuando quieras.</p>
-      ${conUbicacion ? `<button type="button" class="perm-op${u ? ' hecho' : ''}" data-perm="ubic"><span class="perm-ic">📡</span><span><b>${u ? 'Compartiendo tu ubicación' : 'Compartir mi ubicación'}</b><small>${u ? 'Se apaga sola al cierre del día. Solo la ve el staff autorizado.' : 'Hasta el cierre de hoy. Solo la ve el staff autorizado.'}</small></span><span class="perm-ok">${u ? '✓' : 'Activar'}</span></button>` : ''}
-      <button type="button" class="perm-op${a ? ' hecho' : ''}" data-perm="alertas"><span class="perm-ic">🔔</span><span><b>${a ? 'Alertas activas' : 'Activar las alertas'}</b><small>Los SOS y los urgentes van a sonar en este teléfono, aunque esté bloqueado.</small></span><span class="perm-ok">${a ? '✓' : 'Activar'}</span></button>
-      <div class="permisos-pie"><button type="button" class="boton" data-perm="listo">${(u || !conUbicacion) && a ? 'Listo, empezar' : 'Ahora no'}</button></div></div>`;
-  };
-  pintar();
-  v.addEventListener('click', e => {
-    const b = e.target.closest('[data-perm]'); if (!b) return;
-    if (b.dataset.perm === 'ubic' && !compartiendo()) empezarCompartir('cierre');
-    else if (b.dataset.perm === 'alertas' && !alertasOn()) activarAlertas();
-    else if (b.dataset.perm === 'listo') { guardar('permisosDia', hoy); v.remove(); return; }
-    pintar();
-  });
-  document.body.appendChild(v);
-  setTimeout(() => { const b = v.querySelector('.perm-op:not(.hecho)') || v.querySelector('.boton'); if (b) b.focus(); }, 50);
-}
+// ---------- Al entrar: la ubicación y las alertas ----------
+// Ya no es una ventana que tapa la pantalla: es una franja dentro del saludo del inicio (pintarSaludo) que se puede cerrar.
+const ubicacionDisponible = () => !!$('#ubicacion') && !$('#ubicacion').classList.contains('sin-permiso');
 function dejarCompartir() { if (reloj_gps !== null && navigator.geolocation) navigator.geolocation.clearWatch(reloj_gps); reloj_gps = null; estado.compartir = null; guardar('compartir', null); pintarCompartir(); }
 $('#duraciones').onclick = e => { const b = e.target.closest('button'); if (b) empezarCompartir(b.dataset.m === 'cierre' ? 'cierre' : +b.dataset.m); };
 $('#bDejar').onclick = () => { dejarCompartir(); toast('Dejaste de compartir tu ubicación'); };
@@ -74,13 +48,13 @@ const LUGARES = MAPA.lugares.filter(l => l.tipo !== 'referencia' && l.id !== 'gr
 estado.lugar = leer('lugar', null);
 const lugarActual = () => estado.lugar && Date.now() - estado.lugar.t < 2 * 3600e3 ? LUGARES.find(l => l.id === estado.lugar.id) : null;
 const opcionesLugar = () => '<option value="">Elige dónde estás…</option>' + LUGARES.map(l => `<option value="${l.id}"${lugarActual() && estado.lugar.id === l.id ? ' selected' : ''}>${l.n}</option>`).join('');
-function textoLugar() { const l = lugarActual(); if (!l) return 'Todavía no has avisado dónde estás.'; const m = Math.round((Date.now() - estado.lugar.t) / 60000); return `📍 Avisaste: ${l.n} · ${m < 1 ? 'ahora mismo' : 'hace ' + m + ' min'}`; }
+function textoLugar() { const l = lugarActual(); if (!l) return 'Todavía no has avisado dónde estás.'; const m = Math.round((Date.now() - estado.lugar.t) / 60000); return `Avisaste: ${l.n} · ${m < 1 ? 'ahora mismo' : 'hace ' + m + ' min'}`; }
 function avisarLugar(id) {
   const l = LUGARES.find(x => x.id === id); if (!l) return toast('Elige un lugar de la lista');
   estado.lugar = { id, t: Date.now() }; guardar('lugar', estado.lugar);
-  registrar('📍 Me moví', `${estado.usuario ? estado.usuario.nombre : 'Alguien'} → ${l.n}`);
+  registrar('Me moví', `${estado.usuario ? estado.usuario.nombre : 'Alguien'} → ${l.n}`);
   $('#lugar').innerHTML = opcionesLugar(); $('#lugarTxt').textContent = textoLugar(); pintarCompartir();
-  toast(`📍 Coordinación ya sabe que estás en: ${l.n}`); pintarTablero();
+  toast(`Coordinación ya sabe que estás en: ${l.n}`); pintarTablero();
 }
 $('#lugar').innerHTML = opcionesLugar(); $('#lugarTxt').textContent = textoLugar();
 $('#bLugar').onclick = () => avisarLugar($('#lugar').value);
@@ -126,7 +100,7 @@ function iniciarMapaVivo() {
   if (!estado.usuario || !['seguridad', 'traslado', 'coordinacion'].includes(estado.usuario.rol)) return;
   if (esperaVivo) return esperaVivo;
   esperaVivo = cargarLibs().then(() => { visorVivo = crearVisor($('#mapaVivo'), { capaHTML: $('#vivoMarcas') }); return visorVivo.iniciar(VISTA_TODO); }).then(() => {
-    for (const [k, xy] of Object.entries(SEDES_XY)) { const el = document.createElement('div'); el.innerHTML = `<span class="marca-sede">${k === 'malecon' ? '⛺' : '🏨'} ${SEDES[k].corto}</span>`; visorVivo.marca('sede:' + k, xy, el, k === 'malecon' ? 12 : 48); }
+    for (const [k, xy] of Object.entries(SEDES_XY)) { const el = document.createElement('div'); el.innerHTML = `<span class="marca-sede">${k === 'malecon' ? '' : ''} ${SEDES[k].corto}</span>`; visorVivo.marca('sede:' + k, xy, el, k === 'malecon' ? 12 : 48); }
     visorVivo.ruta(MAPA.rutas['jaragua-sheraton'].nodos.map(n => MAPA.xy[n]));
     EQUIPO.forEach(p => hace[p.id] = 3 + Math.floor(Math.random() * 30));
     setInterval(() => { if (seVe($('#mapaVivo'))) actualizarVivo(); }, 1000); actualizarVivo();
@@ -169,11 +143,11 @@ function actualizarVivo() {
     if (x.yo) hace.yo = 0; else hace[x.p.id] = (hace[x.p.id] + 1) % 45;
     const sede = sedeMasCerca(x.pos), nom = SEDES[sede[0]].corto;
     const donde = x.mov ? `Caminando · a ${Math.round(sede[1])} m de ${nom}` : `Quieto · ${nom}`;
-    const dondeF = (x.lugar ? `📍 En ${x.lugar} · confirmado` : donde) + (x.yo && x.acc ? ` · ±${x.acc} m` : '');
+    const dondeF = (x.lugar ? `En ${x.lugar} · confirmado` : donde) + (x.yo && x.acc ? ` · ±${x.acc} m` : '');
     filas.push({ x, donde: dondeF, lejos: !x.lugar && sede[1] > 250 });
   }
   $('#vivoCuenta').textContent = `${todos.length} compartiendo`;
-  const alertas = filas.filter(f => f.lejos).map(f => `<div class="alerta-vivo" data-id="${f.x.p.id}">⚠️ <div><b>${esc(f.x.p.n)}</b> está fuera de la zona de su sede (${f.donde.split('· ')[1] || ''}). <span style="color:var(--suave)">Toca para verlo.</span></div></div>`);
+  const alertas = filas.filter(f => f.lejos).map(f => `<div class="alerta-vivo" data-id="${f.x.p.id}"><div><b>${esc(f.x.p.n)}</b> está fuera de la zona de su sede (${f.donde.split('· ')[1] || ''}). <span style="color:var(--suave)">Toca para verlo.</span></div></div>`);
   $('#vivoAlertas').innerHTML = alertas.join('');
   if (Date.now() - ultimaLista > 1800) {
     ultimaLista = Date.now();

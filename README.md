@@ -14,6 +14,22 @@ Páginas para el staff de MINUME XVII (14 al 16 de noviembre, Renaissance Jaragu
 
 Todos se instalan en el teléfono como app y abren sin internet si ya se entró una vez.
 
+## Bienvenida del Inicio
+
+Lo primero que se ve al abrir el Inicio son cuatro pasos con la identidad MXVII: **bienvenida → subsecretaría → rol → código**.
+
+- **Subsecretaría**: Asistencia, Acreditación, Seguridad y Traslado, Bienestar, Eventos y Protocolo, o **Secretaría General**.
+- **Rol** (solo en las subsecretarías): Voluntario (ve solo lo que le toca) o Coordinación (supervisa su subsecretaría).
+- **Secretaría General** no elige rol: su único rol es SGL, entra con código CG y supervisa todas las subsecretarías y todo el movimiento.
+- Responsive escrito primero para el teléfono, con saltos en 600, 900 y 1200 px y ajustes para pantallas bajas (teléfono acostado).
+- **Código**: solo acepta códigos de la subsecretaría elegida. Lo que se ve dentro lo decide el nivel real del código; si no coincide con el rol elegido, el sistema lo avisa al entrar (`minume.eleccion`).
+- **Voluntario** (`esVol()`, clase `es-vol`): menú corto con solo sus tareas (`ORDEN_VOL`) y un Inicio «lo que te toca»: su puesto y tarea de ahora, sus turnos de hoy y, según el equipo, sus regionales, su ronda, los casos que atiende o los eventos a su cargo (su nombre en «Responsable»). Lo de todo el equipo (cifras, listas de todos los puntos, libres para reforzar, historial de rondas, lista de alergias, expedientes, invitados, bitácora, ubicación en vivo) lleva `solo-dir` y no le sale. Las alertas (SOS, comunicados, órdenes) le siguen llegando.
+- **Administrador** (código `AD-`): como Secretaría General, no elige rol. Entra a Coordinación general con permisos de todo y tiene «Paneles de la plataforma» para abrir el panel de dirección de cada subsecretaría con su mismo código. **Antes de usarlo**, ejecuta en el SQL Editor la sección «Administración de la plataforma (códigos AD-)» del final de `supabase/esquema.sql` (agrega el prefijo y el código de prueba AD-0001).
+- **Entrada directa**: los sistemas ya no tienen pantalla de código propia. Al poner el código en la bienvenida, el sistema muestra «Entrando a tu panel…» y abre el panel. Si se abre un sistema sin sesión, si el código falla, si la sesión vence o al tocar «Salir», vuelve a la bienvenida del Inicio en el paso del código de ese sistema (`#volver=<sistema>&error=…`). Cada sistema guarda su propia sesión (`minume.sesion.token.<sistema>`), así que entrar o salir de uno no cierra los otros en el mismo teléfono.
+- **Una sola tipografía**: todo usa Barlow (páginas, mapa, PDF y Excel). Sin emojis: los marcadores del mapa llevan la inicial de su categoría.
+- **Inicio de cada panel** (después de entrar): una sola tarjeta de saludo (`pintarSaludo`, `28-saludo.css`) con el rol, cuántos días faltan o qué día del evento es, una línea de lo que ve, el botón principal de su equipo y Chat. Los permisos de alertas y ubicación son una franja dentro del saludo que se puede cerrar (ya no hay ventana al entrar). Debajo, 4 atajos y «Ver todas las secciones».
+- «Ver el centro de operaciones» cierra la bienvenida en esa pestaña y el botón «Entrar» de arriba la vuelve a abrir.
+
 ## Mapa de las sedes
 
 - Foto satelital real (Esri World Imagery) con los edificios en 3D a partir de los contornos de OpenStreetMap.

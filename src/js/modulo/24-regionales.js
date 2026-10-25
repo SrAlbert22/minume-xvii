@@ -8,9 +8,9 @@
 //   «regextra» = delegados agregados el mismo día por el encargado, y los que se quitan ({ id, quita }).
 // Lo principal (pedido del 25 de octubre) es confirmar la regional entera con un toque: «Llegó», «En camino» o «En espera».
 // Se guarda en regpase[día][regional][momento].estado = { v, t, por }. La lista por delegado queda como opción.
-const ESTADOS_REG = { llego: ['✅', 'Llegó', 'verde'], camino: ['🚶', 'En camino', 'amarillo'], espera: ['⏳', 'En espera', ''] };
+const ESTADOS_REG = { llego: ['', 'Llegó', 'verde'], camino: ['', 'En camino', 'amarillo'], espera: ['', 'En espera', ''] };
 const CLAVE_REGPASE = 'regpase', CLAVE_REGEXTRA = 'regextra';
-const MOMENTOS_REG = { manana: ['☀️ Mañana', 'bajar al lobby'], noche: ['🌙 Noche', 'regreso al hotel'] };
+const MOMENTOS_REG = { manana: ['Mañana', 'bajar al lobby'], noche: ['Noche', 'regreso al hotel'] };
 let regMomento = null, regAbierta = null, regBuscar = '';
 const momentoAhora = () => partesDR(ahoraEvento()).min < 15 * 60 ? 'manana' : 'noche';
 const mismoNombre = (a, b) => !!sinAcentos(a) && sinAcentos(a) === sinAcentos(b);
@@ -59,7 +59,7 @@ function pintarRegionales(forzar) {
       const pct = e.lista.length ? Math.round(e.abajo.length * 100 / e.lista.length) : 0;
       return `<div class="reg-item ${e.k}${regAbierta === r.id ? ' on' : ''}"><button class="reg-card ${e.k}" type="button" data-reg="${r.id}">
         <span class="reg-num">${esc(r.id.slice(1))}</span><div class="reg-info"><b>${esc(r.n)}${r.zona ? ` · ${esc(r.zona)}` : ''}</b>
-        <small>${r.enc ? '👤 ' + esc(r.enc) : '<span style="color:#ff8a95">Sin encargado</span>'}</small>
+        <small>${r.enc ? '' + esc(r.enc) : '<span style="color:#ff8a95">Sin encargado</span>'}</small>
         ${e.abajo.length ? `<span class="reg-barra"><i style="width:${pct}%"></i></span><small>${e.abajo.length} de ${e.lista.length} delegados marcados</small>` : ''}</div>
         <span class="chip ${TONO_REG[e.k]}">${e.txt}</span></button>${botonesReg(r, e)}</div>`;
     }).join('');
@@ -93,8 +93,8 @@ function pintarRegionales(forzar) {
     ${puede ? `<details class="reg-agregar"${e.lista.length ? '' : ' open'}><summary>+ Agregar delegado</summary>
       <div class="reg-agregar-f"><input id="regNuevoN" placeholder="Nombre y apellido" autocomplete="off"><select id="regNuevoCom"><option value="">Comisión (si la sabes)</option>${COMISIONES.map(([c]) => `<option>${esc(c)}</option>`).join('')}</select><button class="boton sec" type="button" id="regNuevoOk">Agregar</button></div>
       <small class="cob-sub">Úsalo si el delegado no está en la lista oficial. Queda guardado para los demás días.</small></details>
-      ${e.ok ? `<div class="cob-ok">✓ ${e.ok.n < e.ok.total ? `Confirmaste con ${e.ok.total - e.ok.n} faltando` : 'Regional completa'} a las ${horaDR(e.ok.t)}${e.ok.por ? ' · ' + esc(e.ok.por) : ''}</div><button class="mini" type="button" data-reg-acc="reabrir">Corregir</button>`
-        : e.lista.length ? `<button class="boton" type="button" data-reg-acc="completa" style="margin-top:12px">${e.faltan.length ? `Confirmar regional (faltan ${e.faltan.length})` : '✅ Confirmar regional completa'}</button>` : ''}`
+      ${e.ok ? `<div class="cob-ok">✓${e.ok.n < e.ok.total ? `Confirmaste con ${e.ok.total - e.ok.n} faltando` : 'Regional completa'} a las ${horaDR(e.ok.t)}${e.ok.por ? ' · ' + esc(e.ok.por) : ''}</div><button class="mini" type="button" data-reg-acc="reabrir">Corregir</button>`
+        : e.lista.length ? `<button class="boton" type="button" data-reg-acc="completa" style="margin-top:12px">${e.faltan.length ? `Confirmar regional (faltan ${e.faltan.length})` : 'Confirmar regional completa'}</button>` : ''}`
       : '<p class="cob-sub">Solo el encargado de esta regional y la dirección marcan la lista.</p>'}</details>`;
 }
 
@@ -105,7 +105,7 @@ $('#traslado').addEventListener('click', e => {
     const rg = REGIONALES.find(x => x.id === rap.dataset.id); if (!rg || !puedeMarcarReg(rg)) return;
     const mo = regMomento || momentoAhora(), v = rap.dataset.regEstado, ya = paseDe(rg.id, mo).estado || {}, quitar = ya.t && ya.v === v;
     guardarPase(rg.id, mo, s => { s.estado = quitar ? { v: '', t: 0 } : { v, t: ahoraMs(), por: yoNombre() }; });
-    if (!quitar) { registrar('🧑‍🤝‍🧑 Regional', `${rg.n} · ${MOMENTOS_REG[mo][0].slice(3)}: ${ESTADOS_REG[v][1]}`, { area: 'Traslado' }); toast(`${rg.n}: ${ESTADOS_REG[v][1]}`); }
+    if (!quitar) { registrar('Regional', `${rg.n} · ${MOMENTOS_REG[mo][0].slice(3)}: ${ESTADOS_REG[v][1]}`, { area: 'Traslado' }); toast(`${rg.n}: ${ESTADOS_REG[v][1]}`); }
     pintarRegionales(); return;
   }
   const card = e.target.closest('[data-reg]');
@@ -123,13 +123,13 @@ $('#traslado').addEventListener('click', e => {
   if (q) {
     const del = delegadosDe(r.id).find(x => x.id === q.dataset.quitarDel); if (!del || !confirm(`¿Quitar a ${del.n} de la lista de ${r.n}?`)) return;
     const l = leerComp(CLAVE_REGEXTRA, []); l.push({ id: nuevoId('q'), quita: del.id, por: yoNombre(), t: ahoraMs() }); guardarComp(CLAVE_REGEXTRA, l);
-    registrar('🧑‍🤝‍🧑 Regional', `${del.n} salió de la lista de ${r.n}`); pintarRegionales(); return;
+    registrar('Regional', `${del.n} salió de la lista de ${r.n}`); pintarRegionales(); return;
   }
   if (e.target.id === 'regNuevoOk') {
     const n = ($('#regNuevoN').value || '').trim(); if (!n) return $('#regNuevoN').focus();
     if (delegadosDe(r.id).some(x => mismoNombre(x.n, n))) return toast(`${n} ya está en la lista`);
     const l = leerComp(CLAVE_REGEXTRA, []); l.push({ id: nuevoId('d'), reg: r.id, n, com: $('#regNuevoCom').value, por: yoNombre(), t: ahoraMs() }); guardarComp(CLAVE_REGEXTRA, l);
-    registrar('🧑‍🤝‍🧑 Regional', `${n} agregado a ${r.n}`); toast(`${n} quedó en la lista de ${r.n}`); pintarRegionales();
+    registrar('Regional', `${n} agregado a ${r.n}`); toast(`${n} quedó en la lista de ${r.n}`); pintarRegionales();
     setTimeout(() => { const i = $('#regNuevoN'); if (i) { i.closest('details').open = true; i.focus(); } }, 30); return;
   }
   const a = e.target.closest('[data-reg-acc]'); if (!a) return;
@@ -137,8 +137,8 @@ $('#traslado').addEventListener('click', e => {
   const est = estadoReg(r, mom);
   if (est.faltan.length && !confirm(`Faltan ${est.faltan.length}: ${est.faltan.map(x => x.n).join(', ')}.\n¿Confirmar la regional igual? La dirección verá quién falta.`)) return;
   guardarPase(r.id, mom, s => { s.ok = { t: ahoraMs(), por: yoNombre(), n: est.abajo.length, total: est.lista.length }; });
-  registrar('🧑‍🤝‍🧑 Regional', `${r.n} · ${MOMENTOS_REG[mom][0].slice(3)}: ${est.abajo.length} de ${est.lista.length}${est.faltan.length ? ` · faltan ${est.faltan.map(x => x.n).join(', ')}` : ' · completa'}`, est.faltan.length ? { estatus: 'pendiente', area: 'Traslado' } : { area: 'Traslado' });
-  toast(est.faltan.length ? 'Confirmada: la dirección ya ve quién falta' : '✅ Regional completa');
+  registrar('Regional', `${r.n} · ${MOMENTOS_REG[mom][0].slice(3)}: ${est.abajo.length} de ${est.lista.length}${est.faltan.length ? ` · faltan ${est.faltan.map(x => x.n).join(', ')}` : ' · completa'}`, est.faltan.length ? { estatus: 'pendiente', area: 'Traslado' } : { area: 'Traslado' });
+  toast(est.faltan.length ? 'Confirmada: la dirección ya ve quién falta' : 'Regional completa');
   pintarRegionales();
 });
 $('#traslado').addEventListener('input', e => { if (e.target.id === 'regBuscar') { regBuscar = e.target.value; const pos = e.target.selectionStart; pintarRegionales(true); const i = $('#regBuscar'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } } });

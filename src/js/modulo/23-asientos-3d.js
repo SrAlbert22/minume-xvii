@@ -95,6 +95,6 @@ function colorear3D() {
 $('#as3d').onclick = () => {
   const ver = $('#as3dCaja').hidden;
   $('#as3dCaja').hidden = !ver; $('#asPlano').hidden = ver; $('#as3d').classList.toggle('on', ver); $('#asZoom').hidden = ver;
-  $('#as3d').textContent = ver ? '🗺️ Ver el plano' : '🧊 Ver en 3D';
+  $('#as3d').textContent = ver ? 'Ver el plano' : 'Ver en 3D';
   if (ver) abrir3D().catch(() => { toast('No se pudo abrir la vista 3D (hace falta internet la primera vez)'); $('#as3d').click(); });
 };

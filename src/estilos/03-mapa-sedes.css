@@ -10,14 +10,14 @@
   .capa-marcas { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
   .marca3d { position: absolute; left: 0; top: 0; pointer-events: auto; will-change: transform; }
   .capa-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--suave); padding: 30px; background: rgba(5, 10, 26, .75); z-index: 4; }
-  .capa-msg b { color: var(--texto); font: 800 26px 'Barlow Condensed'; display: block; }
+  .capa-msg b { color: var(--texto); font: 800 26px Barlow; display: block; }
   .controles { position: absolute; top: 12px; left: 12px; display: flex; gap: 7px; flex-wrap: wrap; max-width: calc(100% - 70px); z-index: 3; }
   .controles button { background: rgba(5, 10, 26, .85); border: 1px solid var(--borde); color: var(--texto); padding: 8px 12px; border-radius: 99px; font-weight: 600; font-size: 12.5px; cursor: pointer; backdrop-filter: blur(8px); }
   .controles button.on { background: var(--azul); border-color: var(--azul); }
   .controles button.admin.on { background: var(--amarillo); color: #1d1500; }
   .controles button.seg.on { background: var(--rojo); border-color: var(--rojo); }
   .ficha { position: absolute; left: 12px; bottom: 12px; max-width: min(340px, calc(100% - 24px)); background: rgba(5, 10, 26, .9); border: 1px solid var(--borde); border-radius: 16px; padding: 12px 14px; backdrop-filter: blur(10px); z-index: 3; font-size: 13px; color: var(--suave); }
-  .ficha b { font: 800 21px 'Barlow Condensed'; display: block; color: var(--texto); }
+  .ficha b { font: 800 21px Barlow; display: block; color: var(--texto); }
   .ficha .mini { margin-top: 8px; }
   .modal { position: absolute; inset: 0; background: rgba(0, 0, 0, .45); display: none; place-items: center; z-index: 6; }
   .modal.on { display: grid; }
@@ -57,7 +57,7 @@
   #rSeguir.on { background: #3b8bff; border-color: #3b8bff; color: #fff; }
   .r-card { margin-top: 14px; border-top: 1px solid var(--borde); padding-top: 12px; }
   .r-resumen { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
-  .r-resumen b { font: 800 34px 'Barlow Condensed'; color: #c58bff; }
+  .r-resumen b { font: 800 34px Barlow; color: #c58bff; }
   .r-resumen span { color: var(--suave); font-size: 13px; }
   .r-resumen .r-dest { width: 100%; color: var(--texto); font-weight: 700; font-size: 14px; }
   .r-pasos { margin: 10px 0 0; padding: 0; list-style: none; counter-reset: paso; }

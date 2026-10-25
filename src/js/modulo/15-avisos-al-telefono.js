@@ -19,7 +19,7 @@ async function borrarNotificaciones(etiquetas) {
 // El botón «✓ Recibido» de la notificación funciona con la página cerrada: el service worker usa la misma sesión
 let sesionSW = null;
 function sesionAlServiceWorker() {
-  let t = null; try { t = localStorage.getItem('minume.sesion.token'); } catch {}
+  let t = null; try { t = localStorage.getItem(window.MINUME_TOKEN_CLAVE || 'minume.sesion.token'); } catch {}
   if (t === sesionSW || !('caches' in window)) return; sesionSW = t;
   caches.open('minume-sesion').then(c => t ? c.put('/__minume_sesion', new Response(t)) : c.delete('/__minume_sesion')).catch(() => {});
 }

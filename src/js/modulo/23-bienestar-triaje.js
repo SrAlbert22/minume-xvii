@@ -2,9 +2,9 @@
 // ---------- Bienestar: casos y cola de triaje ----------
 // Cada caso es una atención en la lista protegida (solo Bienestar y Coordinación general la leen) con prioridad,
 // categoría y estado. Los avisos que escalan otros equipos esperan arriba hasta que alguien les hace el triaje;
-// al cerrarse el caso, quien lo reportó ve «Resuelto» o «Derivado al 9-1-1», pero nunca los datos de salud.
+// al cerrarse el caso, quien lo reportó ve «Resuelto» o «Derivado al 911», pero nunca los datos de salud.
 const PRIO = {
-  emergencia: { n: 'Emergencia', d: 'Llamar al 9-1-1', c: '#ff3b4e', r: 4 },
+  emergencia: { n: 'Emergencia', d: 'Llamar al 911', c: '#ff3b4e', r: 4 },
   urgente: { n: 'Urgente', d: 'Atender ya', c: '#ff8a3d', r: 3 },
   prioritaria: { n: 'Prioritaria', d: 'En menos de 20 min', c: '#ffd23f', r: 2 },
   rutina: { n: 'Rutinaria', d: 'Puede esperar', c: '#2fd38c', r: 1 },
@@ -138,10 +138,13 @@ function pintarCasos() {
   $('#trAlCuenta').textContent = al.length;
   if (!escribiendo($('#trAlergiasCaja'))) $('#trAlLista').innerHTML = al.length ? al.slice().sort((a, b) => a.nombre.localeCompare(b.nombre)).map(a => `<div class="tr-al"><div><b>${esc(a.nombre)}</b><small>${esc(a.que)}${a.com ? ' · ' + esc(a.com) : ''}</small></div><button class="mini" type="button" data-al-quitar="${a.id}" aria-label="Quitar la alerta de ${esc(a.nombre)}">Quitar</button></div>`).join('') : '<p class="cob-sub">No hay alergias registradas todavía.</p>';
   if (escribiendo($('#trCola'))) return;
-  const { casos, reportes, abiertos } = colaTriaje();
+  const { casos, reportes } = colaTriaje();
+  // el voluntario ve los reportes nuevos (para tomarlos), los casos sin encargado y los que atiende él
+  const esMio = x => !esVol() || !x.encargado || sinAcentos(x.encargado) === sinAcentos(yoNombre());
+  const abiertos = colaTriaje().abiertos.filter(esMio);
   let h;
   if (trVer === 'activos') h = reportes.map(tarjetaReporte).join('') + abiertos.map(tarjetaCaso).join('') || '<div class="tr-vacio"><b>No hay casos activos</b><span>Cuando un equipo escale un caso a Bienestar, aparece aquí al instante.</span></div>';
-  else { const hoy = hoyDR(), l = casos.filter(x => x.sale && diaDR(x.sale) === hoy).sort((a, b) => b.sale - a.sale); h = l.map(tarjetaCaso).join('') || '<div class="tr-vacio"><b>Todavía no se ha cerrado ningún caso hoy</b></div>'; }
+  else { const hoy = hoyDR(), l = casos.filter(x => x.sale && diaDR(x.sale) === hoy && (!esVol() || (x.encargado && esMio(x)))).sort((a, b) => b.sale - a.sale); h = l.map(tarjetaCaso).join('') || '<div class="tr-vacio"><b>Todavía no se ha cerrado ningún caso hoy</b></div>'; }
   $('#trCola').innerHTML = h;
   pedirFotosBien(casos.filter(x => !x.sale || trVer === 'cerrados').map(x => x.id), () => pintarCasos());
 }
@@ -149,7 +152,7 @@ function pintarCasos() {
 // ---- Cambios desde la cola ----
 function pasoCaso(x, est) { x.est = est; (x.hist = x.hist || []).push([est, ahoraMs(), yoNombre()]); if (est === 'atencion') x.encargado = yoNombre(); }
 function cerrarAvisoDeCaso(x) {
-  if (x.aviso) cambiarAviso(x.aviso, x.salida === 'Derivado al 9-1-1' ? 'derivado' : 'resuelto');
+  if (x.aviso) cambiarAviso(x.aviso, /Derivado al 9-?1-?1/.test(x.salida || '') ? 'derivado' : 'resuelto');
 }
 $('#trCola').addEventListener('change', e => {
   const s = e.target.closest('[data-tr-prio]'); if (!s) return;
@@ -168,13 +171,13 @@ $('#trCola').addEventListener('click', async e => {
   const x = leerAtenciones().find(y => y.id === id); if (!x) return;
   if (a === 'foto') { const f = fotoBien(x.id); return f ? verFotoBien(x) : pedirFoto(async d => { await subirFotoBien(x.id, d); toast('Foto guardada en el expediente'); pintarCasos(); }); }
   if (a === 'exp') return exportarExpedienteCaso(x);
-  if (a === 'paso') { pasoCaso(x, b.dataset.e); guardarBienItem(x); if (x.aviso) cambiarAviso(x.aviso, 'atencion'); registrar('💚 Caso', `${codigoDe(x)}: ${PASOS_CASO.find(([k]) => k === b.dataset.e)[1]}`); pintarCasos(); pintarTablero(); return; }
+  if (a === 'paso') { pasoCaso(x, b.dataset.e); guardarBienItem(x); if (x.aviso) cambiarAviso(x.aviso, 'atencion'); registrar('Caso', `${codigoDe(x)}: ${PASOS_CASO.find(([k]) => k === b.dataset.e)[1]}`); pintarCasos(); pintarTablero(); return; }
   if (a === 'cerrar') { trCerrando = x.id; pintarCasos(); setTimeout(() => $('#trSal') && $('#trSal').focus(), 30); return; }
   if (a === 'cerrar-ok') {
     x.sale = ahoraMs(); x.salida = $('#trSal').value; x.hizo = $('#trHizo').value.trim(); trCerrando = null;
     (x.hist = x.hist || []).push(['Cerrado: ' + x.salida, x.sale, yoNombre()]); guardarBienItem(x); cerrarAvisoDeCaso(x);
-    if (x.salida === 'Derivado al 9-1-1' && !x.ambulancia) avisarEmergencia(x);
-    registrar('💚 Caso cerrado', `${codigoDe(x)} · ${x.motivo} · ${x.salida}`);
+    if (/Derivado al 9-?1-?1/.test(x.salida || '') && !x.ambulancia) avisarEmergencia(x);
+    registrar('Caso cerrado', `${codigoDe(x)} · ${x.motivo} · ${x.salida}`);
     toast(`Caso ${codigoDe(x)} cerrado`); pintarCasos(); pintarTablero(); pintarAtenciones();
   }
 });
@@ -185,7 +188,7 @@ $('#trEscanear').onclick = () => ventanaCaso({ escanear: true });
 // Emergencia: Seguridad y Coordinación reciben un SOS para abrir paso a la ambulancia (sin datos de salud)
 function avisarEmergencia(x) {
   if (x.ambulancia) return; x.ambulancia = true; guardarBienItem(x);
-  enviarAviso('seguridad', { tipo: 'SOS · Emergencia de salud', texto: 'Bienestar llamó al 9-1-1: abrir paso a la ambulancia', comision: x.com || '', donde: x.donde || '', sede: '', por: yoNombre() });
+  enviarAviso('seguridad', { tipo: 'SOS · Emergencia de salud', texto: 'Bienestar llamó al 911: abrir paso a la ambulancia', comision: x.com || '', donde: x.donde || '', sede: '', por: yoNombre() });
 }
 
 // ---- Alertas médicas ----
@@ -227,7 +230,7 @@ function ventanaCaso({ aviso = null, escanear = false }) {
     <div class="tr-bloque"><div class="tr-paso"><span>1</span>¿Quién es?</div><div id="ncQuien"></div></div>
     <div class="tr-bloque"><div class="tr-paso"><span>2</span>¿Qué le pasa?</div><div class="tr-areas">${Object.entries(AREA_TXT).map(([k, [n, d]]) => `<button type="button" data-area="${k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div><div id="ncMotivos" class="tr-motivos"></div></div>
     <div class="tr-bloque"><div class="tr-paso"><span>3</span>¿Qué tan grave es?</div><div class="tr-prios">${Object.entries(PRIO).reverse().map(([k, p]) => `<button type="button" data-prio="${k}" style="--p:${p.c}"><b>${p.n}</b><small>${p.d}</small></button>`).join('')}</div>
-      <div id="ncEmerg" class="tr-emerg" hidden><b>Llama al 9-1-1 ahora</b><span>Al abrir el caso, Seguridad y Coordinación reciben la alerta para abrir paso a la ambulancia.</span><a class="boton" href="tel:911">${trIco('tel', 16)} Llamar al 9-1-1</a></div></div>
+      <div id="ncEmerg" class="tr-emerg" hidden><b>Llama al 911 ahora</b><span>Al abrir el caso, Seguridad y Coordinación reciben la alerta para abrir paso a la ambulancia.</span><a class="boton" href="tel:911">${trIco('tel', 16)} Llamar al 911</a></div></div>
     <div class="tr-bloque"><div class="tr-paso"><span>4</span>¿Dónde está?</div><input id="ncDonde" placeholder="Salón, pasillo o punto de bienestar" value="${esc(nc.donde)}"><div id="ncLugares" class="tr-motivos"></div>
       <label for="ncNotas">Qué se ve (opcional)</label><textarea id="ncNotas" rows="2" placeholder="Corto: qué le pasa y desde cuándo">${esc(nc.notas)}</textarea>
       <div class="tr-foto-fila"><button class="boton sec" type="button" data-n="foto">${trIco('foto', 16)} Foto para el expediente</button><span id="ncFotoTxt" class="cob-sub">Opcional. Ayuda a reconocer a la persona.</span></div></div>
@@ -292,7 +295,7 @@ function ventanaCaso({ aviso = null, escanear = false }) {
       if (aviso) cambiarAviso(aviso.id, 'atencion');
       if (x.prio === 'emergencia') avisarEmergencia(x);
       if (nc.foto) subirFotoBien(x.id, nc.foto);
-      registrar('💚 Caso abierto', `${x.codigo} · ${PRIO[x.prio].n} · ${x.motivo}`);
+      registrar('Caso abierto', `${x.codigo} · ${PRIO[x.prio].n} · ${x.motivo}`);
       cerrar(); trVer = 'activos'; toast(`Caso ${x.codigo} abierto · ${PRIO[x.prio].n}`); pintarCasos(); pintarTablero(); pintarAtenciones();
     }
   });
@@ -332,7 +335,7 @@ Escribe BORRAR para confirmar.`) || '').trim().toUpperCase() !== 'BORRAR') retur
   let fotosMal = 0;
   if (window.MINUME_RPC) for (const x of casos) { try { await window.MINUME_RPC('minume_foto_borrar', { p_clave: claveFotoBien(x.id) }); fotos.delete(claveFotoBien(x.id)); } catch { fotosMal++; } }
   guardarComp('atenciones', []);
-  registrar('💚 Datos de salud', `Se borraron ${casos.length} casos y ${l.length - casos.length} alertas`);
+  registrar('Datos de salud', `Se borraron ${casos.length} casos y ${l.length - casos.length} alertas`);
   b.disabled = false; pintarCasos(); pintarAtenciones(); pintarTablero();
   toast(fotosMal ? `Casos borrados. ${fotosMal} fotos no se pudieron borrar: vuelve a intentarlo con internet.` : 'Listo: se borraron todos los datos de salud');
 };

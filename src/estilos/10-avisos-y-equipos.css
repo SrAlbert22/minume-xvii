@@ -7,7 +7,7 @@
   @keyframes latido { 50% { box-shadow: 0 0 0 8px rgba(255, 77, 94, .05); } }
   .pedido .estados { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
   .caso { border-top: 4px solid var(--amarillo); } .caso.nuevo { border-top-color: var(--rojo); } .caso.camino, .caso.atencion { border-top-color: var(--cian); } .caso.resuelto { border-top-color: var(--verde); opacity: .75; } .caso.derivado { border-top-color: #ff8a95; }
-  .espera { text-align: center; min-width: 58px; } .espera b { font: 800 34px 'Barlow Condensed'; display: block; line-height: 1; } .espera small { color: var(--suave); font-size: 11px; }
+  .espera { text-align: center; min-width: 58px; } .espera b { font: 800 34px Barlow; display: block; line-height: 1; } .espera small { color: var(--suave); font-size: 11px; }
   .lista-simple { margin: 8px 0 0; padding-left: 18px; color: var(--suave); font-size: 13.5px; line-height: 1.7; }
 
   /* Color de cada equipo */

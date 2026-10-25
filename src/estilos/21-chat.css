@@ -62,5 +62,5 @@
     .chat-fila { max-width: 92%; }
     .chat-avatar { width: 30px; height: 30px; font-size: 12px; }
     .chat-urgente span { display: none; } .chat-urgente { padding: 0 10px; }
-    .chat-urgente::after { content: '🚨'; }
+    .chat-urgente::after { content: ''; }
   }

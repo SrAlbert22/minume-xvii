@@ -9,6 +9,8 @@ setInterval(() => { if (!estado.usuario || document.hidden) return; pintarProgra
 pintarListas(); pintarBitacora(); pintarRanking(); pintarTraslado(); elegirSede('todas');
 if (estado.nombre) $('#nombre').value = estado.nombre;
 if (estado.comision && (!estado.usuario || estado.usuario.rol === 'asistencia')) { elegida = estado.comision; paso(3); aplicarComision(); $$('.comi').forEach(x => x.classList.toggle('on', x.dataset.c === estado.comision)); $$('.etapa').forEach(x => x.classList.toggle('on', x.dataset.e === estado.etapa)); }
+// Persona guardada pero sin sesión en el servidor (por ejemplo, de la versión con una sola sesión para todos): vuelve a entrar
+if (estado.usuario && window.MINUME_TIENE_SESION && !window.MINUME_TIENE_SESION()) { estado.usuario = null; guardar('usuario', null); }
 aplicarRol(); pintarCompartir(); pintarCasos();
 // Entrada desde el Inicio de MINUME: #entrar=CODIGO/seccion entra con ese código; #seccion lleva directo a esa parte
 const irDesdeHash = () => {
@@ -18,7 +20,14 @@ const irDesdeHash = () => {
     ir = m[2] || '';
     try { history.replaceState(null, '', urlSeccion(ir)); } catch {}
     const c = m[1].toUpperCase();
-    if (!estado.usuario || estado.usuario.codigo !== c) { $('#codigo').value = c; return Promise.resolve(entrar(c)).then(() => abrirDesdeEnlace(ir)); }
+    // Viene de la bienvenida del Inicio: entra directo, sin mostrar el formulario (solo sale si el código falla).
+    // Siempre se verifica otra vez: así la sesión es fresca y es la de ese código.
+    $('#codigo').value = c; $('#entrada').classList.add('entrando');
+    return Promise.resolve(entrar(c)).then(() => {
+      if (!estado.usuario && INICIO_MINUME) return irAlInicio($('#codError').textContent || 'No se pudo entrar. Revisa tu código.');
+      if (!INICIO_MINUME) $('#entrada').classList.remove('entrando');
+      abrirDesdeEnlace(ir);
+    });
   }
   abrirDesdeEnlace(ir);
 };

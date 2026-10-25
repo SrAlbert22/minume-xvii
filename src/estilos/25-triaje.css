@@ -15,14 +15,14 @@
   @media (prefers-reduced-motion: reduce) { .tr-urgente { animation: none; } }
   .tr-caso-cab { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
   .tr-reporte .tr-caso-cab { grid-template-columns: 1fr auto; }
-  .tr-av { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: #0d1a45; border: 1px solid var(--borde); color: #cfe0ff; font: 800 17px 'Barlow Condensed'; overflow: hidden; padding: 0; cursor: pointer; }
+  .tr-av { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: #0d1a45; border: 1px solid var(--borde); color: #cfe0ff; font: 800 17px Barlow; overflow: hidden; padding: 0; cursor: pointer; }
   .tr-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tr-quien { min-width: 0; }
   .tr-quien small { display: block; color: var(--suave); font-size: 11.5px; letter-spacing: .02em; }
-  .tr-quien b { display: block; font: 700 21px/1.1 'Barlow Condensed'; color: #fff; overflow-wrap: anywhere; }
+  .tr-quien b { display: block; font: 700 21px/1.1 Barlow; color: #fff; overflow-wrap: anywhere; }
   .tr-quien span { display: block; color: var(--suave); font-size: 12.5px; margin-top: 1px; }
   .tr-min { text-align: right; line-height: 1; }
-  .tr-min b { font: 800 26px 'Barlow Condensed'; color: #fff; display: block; }
+  .tr-min b { font: 800 26px Barlow; color: #fff; display: block; }
   .tr-min small { color: var(--suave); font-size: 11px; }
   .tr-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--texto); }
   .tr-prio { background: var(--p); color: #10091f; font-weight: 800; border-radius: 6px; padding: 2px 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
@@ -45,7 +45,7 @@
   .tr-cierre { display: grid; gap: 6px; border-top: 1px solid var(--borde); padding-top: 10px; }
   .tr-cierre label { margin: 0; }
   .tr-vacio { grid-column: 1 / -1; border: 1px dashed var(--borde); border-radius: 14px; padding: 22px; text-align: center; color: var(--suave); display: grid; gap: 4px; }
-  .tr-vacio b { color: var(--texto); font: 700 20px 'Barlow Condensed'; }
+  .tr-vacio b { color: var(--texto); font: 700 20px Barlow; }
   .tr-punto { width: 10px; height: 10px; border-radius: 3px; background: var(--p); flex: none; margin-top: 5px; }
 
   .tr-alergias { margin-top: 16px; border-top: 3px solid #ff6b7a; }
@@ -60,10 +60,10 @@
   .tr-velo .tarjeta.tr-hoja { max-width: 600px; width: 100%; padding: 0; margin: 4vh auto; display: block; overflow: hidden; }
   .tr-hoja-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--borde); background: #050b2c; position: sticky; top: 0; z-index: 1; }
   .tr-hoja-cab small { display: block; color: var(--suave); font-size: 12px; }
-  .tr-hoja-cab b { font: 800 26px/1 'Barlow Condensed'; color: #fff; }
+  .tr-hoja-cab b { font: 800 26px/1 Barlow; color: #fff; }
   .tr-x { background: none; border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; width: 40px; height: 40px; display: grid; place-items: center; cursor: pointer; }
   .tr-bloque { padding: 14px 16px; border-bottom: 1px solid var(--borde); }
-  .tr-paso { display: flex; align-items: center; gap: 8px; font: 700 18px 'Barlow Condensed'; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .03em; }
+  .tr-paso { display: flex; align-items: center; gap: 8px; font: 700 18px Barlow; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .03em; }
   .tr-paso span { width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; background: var(--m-celeste, #00b5ff); color: #06033f; font-size: 15px; }
   .tr-buscar { display: flex; gap: 8px; }
   .tr-buscar input { flex: 1; min-width: 0; }
@@ -78,12 +78,12 @@
   .tr-escaner video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tr-escaner .visor-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; color: #cfe0ff; font-size: 13px; }
   .tr-persona { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; background: rgba(0, 181, 255, .08); border: 1px solid rgba(0, 181, 255, .35); border-radius: 12px; padding: 10px; }
-  .tr-persona b { display: block; color: #fff; font: 700 20px/1.1 'Barlow Condensed'; }
+  .tr-persona b { display: block; color: #fff; font: 700 20px/1.1 Barlow; }
   .tr-persona small { color: var(--suave); font-size: 12.5px; }
   .tr-areas, .tr-prios { display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); }
   .tr-prios { grid-template-columns: repeat(2, 1fr); }
   .tr-areas button, .tr-prios button { text-align: left; background: rgba(255, 255, 255, .03); border: 1px solid var(--borde); border-radius: 12px; padding: 11px 12px; color: var(--texto); cursor: pointer; min-height: 62px; }
-  .tr-areas button b, .tr-prios button b { display: block; font: 700 19px/1.1 'Barlow Condensed'; color: #fff; }
+  .tr-areas button b, .tr-prios button b { display: block; font: 700 19px/1.1 Barlow; color: #fff; }
   .tr-areas button small, .tr-prios button small { color: var(--suave); font-size: 12px; }
   .tr-areas button.on { border-color: var(--m-celeste, #00b5ff); background: rgba(0, 181, 255, .14); }
   .tr-prios button { border-left: 5px solid var(--p); }
@@ -91,7 +91,7 @@
   .tr-motivos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .tr-motivos .mini { padding: 8px 11px; font-size: 12.5px; }
   .tr-emerg { margin-top: 10px; background: rgba(255, 59, 78, .14); border: 1px solid rgba(255, 59, 78, .55); border-radius: 12px; padding: 12px; display: grid; gap: 6px; }
-  .tr-emerg b { color: #ff9aa4; font: 800 20px 'Barlow Condensed'; text-transform: uppercase; }
+  .tr-emerg b { color: #ff9aa4; font: 800 20px Barlow; text-transform: uppercase; }
   .tr-emerg span { font-size: 13px; color: #ffd5da; }
   .tr-emerg .boton { justify-content: center; background: #e53535; color: #fff; text-decoration: none; }
   .tr-foto-fila { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }

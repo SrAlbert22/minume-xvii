@@ -13,7 +13,7 @@ function leerComis() {
 function guardarComi(c, cambios, motivo) {
   const o = leerComis(), prev = o[c] || { est: 'por-empezar', total: totalDel(c), pres: 0 };
   o[c] = { ...prev, ...cambios, t: ahoraMs(), por: yoNombre() }; guardarComp('comisiones', o);
-  if (motivo) registrar('🏛️ Comisión', `${c}: ${motivo}`);
+  if (motivo) registrar('Comisión', `${c}: ${motivo}`);
   pintarComisVivo(true);
 }
 function pintarComisVivo(forzar) {

@@ -37,6 +37,12 @@ const EST_EV = { pendiente: ['Por montar', '#8a96b8'], montaje: ['Montando', '#f
 const PASOS_EV = ['pendiente', 'montaje', 'listo', 'curso', 'fin'];
 const BOTON_EV = { pendiente: 'Empezar montaje', montaje: 'Ya está listo', listo: 'Empezó el evento', curso: 'Terminó' };
 const PROBLEMAS_EV = ['Sonido o micrófono', 'Pantalla o luces', 'Mesas o sillas', 'Falta personal', 'Invitado o protocolo', 'Otro'];
+// Los eventos de los que la persona es responsable (su nombre está en «resp»): es lo único que ve el voluntario
+const misEventos = () => {
+  const u = estado.usuario; if (!u) return [];
+  const n = sinAcentos(u.nombre), pn = n.split(' ')[0];
+  return EV_LISTA.filter(e => { const r = sinAcentos(e.resp); return r.includes(n) || (pn.length > 2 && r.split(/[^a-zñ]+/).includes(pn)); });
+};
 const leerEv = () => leerComp('eventos', {});
 const leerInv = () => leerComp('invitados', {});
 const estEv = e => leerEv()[e.id] || { est: 'pendiente', checks: [] };
@@ -70,10 +76,11 @@ function pintarEventos() {
   const { dia } = partesDR(ahoraEvento());
   if (!evDia) evDia = DIAS_PROG.some(([d]) => d === dia) ? dia : '2026-11-15';
   $('#evDias').innerHTML = DIAS_PROG.map(([d, t]) => `<button data-d="${d}" class="${d === evDia ? 'on' : ''}">${t}${d === dia ? ' · hoy' : ''}</button>`).join('');
-  const lista = EV_LISTA.filter(e => e.dia === evDia).sort((a, b) => aMinutos(a.i) - aMinutos(b.i));
+  const mios = esVol() ? misEventos().map(e => e.id) : null;
+  const lista = EV_LISTA.filter(e => e.dia === evDia && (!mios || mios.includes(e.id))).sort((a, b) => aMinutos(a.i) - aMinutos(b.i));
   const st = lista.map(estEv);
   $('#evResumen').innerHTML = `<span class="chip verde">${st.filter(s => s.est === 'curso').length} en curso</span><span class="chip">${st.filter(s => s.est === 'listo').length} listos</span><span class="chip amarillo">${st.filter(s => s.est === 'montaje').length} montando</span>${st.some(s => s.problema) ? `<span class="chip rojo">${st.filter(s => s.problema).length} con problema</span>` : ''}<span class="chip">${st.filter(s => s.est === 'fin').length} terminados</span>`;
-  $('#evLista').innerHTML = lista.map(tarjetaEv).join('') || '<p class="cob-sub">No hay eventos este día.</p>';
+  $('#evLista').innerHTML = lista.map(tarjetaEv).join('') || (mios ? `<p class="cob-sub">${mios.length ? 'Este día no tienes eventos a tu cargo.' : 'Todavía no tienes eventos a tu cargo. Cuando tu coordinación te ponga como responsable de uno, aparece aquí.'}</p>` : '<p class="cob-sub">No hay eventos este día.</p>');
 }
 $('#evDias').onclick = e => { const b = e.target.closest('[data-d]'); if (!b) return; evDia = b.dataset.d; pintarEventos(); };
 $('#evLista').onclick = e => {
@@ -81,7 +88,7 @@ $('#evLista').onclick = e => {
   const ev = EV_LISTA.find(x => x.id === b.dataset.id), s = estEv(ev), a = b.dataset.ev;
   if (a === 'avanzar') {
     const sig = PASOS_EV[PASOS_EV.indexOf(s.est) + 1]; guardarEv(ev.id, { est: sig });
-    registrar('🎤 Evento', `${ev.n}: ${EST_EV[sig][0]}`); toast(`${ev.n}: ${EST_EV[sig][0].toLowerCase()}`);
+    registrar('Evento', `${ev.n}: ${EST_EV[sig][0]}`); toast(`${ev.n}: ${EST_EV[sig][0].toLowerCase()}`);
   } else if (a === 'atras') guardarEv(ev.id, { est: PASOS_EV[Math.max(0, PASOS_EV.indexOf(s.est) - 1)] });
   else if (a === 'check') { const c = new Set(s.checks || []), n = +b.dataset.n; c.has(n) ? c.delete(n) : c.add(n); guardarEv(ev.id, { checks: [...c] }); if (c.size === (EV_LISTA_MONTAJE[ev.tipo] || []).length) toast('Lista completa: toca «Ya está listo»'); }
   else if (a === 'problema') { evProblema = evProblema === ev.id ? null : ev.id; pintarEventos(); setTimeout(() => $('#evNota') && $('#evNota').scrollIntoView({ block: 'nearest' }), 30); return; }
@@ -89,8 +96,8 @@ $('#evLista').onclick = e => {
     const nota = ($('#evNota') && $('#evNota').value.trim()) || '';
     guardarEv(ev.id, { problema: { tipo: b.dataset.t, nota, t: ahoraMs(), por: yoNombre() } }); evProblema = null;
     enviarAviso('coordinacion', { tipo: `Evento · ${b.dataset.t}`, texto: `${ev.n}${nota ? ': ' + nota : ''}`, donde: ev.lugar, sede: '', por: yoNombre() });
-    registrar('⚠️ Problema en evento', `${ev.n} · ${b.dataset.t}${nota ? ': ' + nota : ''}`); toast('Coordinación ya sabe del problema');
-  } else if (a === 'resuelto') { guardarEv(ev.id, { problema: null }); registrar('✅ Problema resuelto', ev.n); toast('Marcado como resuelto'); }
+    registrar('Problema en evento', `${ev.n} · ${b.dataset.t}${nota ? ': ' + nota : ''}`); toast('Coordinación ya sabe del problema');
+  } else if (a === 'resuelto') { guardarEv(ev.id, { problema: null }); registrar('Problema resuelto', ev.n); toast('Marcado como resuelto'); }
   pintarEventos(); pintarInvitados();
 };
 
@@ -127,7 +134,7 @@ $('#invLista').onclick = e => {
   const st = leerInv(), g = INV_LISTA.find(x => x.id === b.dataset.id), a = b.dataset.inv;
   st[g.id] = a === 'limpiar' ? { est: null, t: ahoraMs(), por: yoNombre() } : { est: a, t: ahoraMs(), por: yoNombre() };
   guardarComp('invitados', st);
-  if (a === 'llego') { registrar('🎤 Invitado llegó', `${g.n} · ${g.cargo}`); toast(`${g.trato} ya llegó`); }
+  if (a === 'llego') { registrar('Invitado llegó', `${g.n} · ${g.cargo}`); toast(`${g.trato} ya llegó`); }
   if (a === 'sentado') toast(`${g.n} está en su lugar`);
   pintarInvitados();
 };

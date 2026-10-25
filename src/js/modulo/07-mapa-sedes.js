@@ -541,8 +541,8 @@ const miSalon = () => estado.comision && ASIGNA[estado.comision] ? ASIGNA[estado
 const BOTON_CAPA = { seg: '#cSeg', vivo: '#cVivo', admin: '#cAdmin', tresd: '#c3d', salones: '#cSalones' };
 function activarCapa(c) {
   capas[c] = !capas[c]; $(BOTON_CAPA[c]).classList.toggle('on', capas[c]);
-  if (c === 'tresd' && usaEsquema()) { $('#c3d').innerHTML = capas.tresd ? '🗺️ Ver en 2D' : '🧊 Ver en 3D'; $('#c3d').classList.remove('on'); mostrarEsquema(!capas.tresd); }
-  else if (c === 'tresd') { $('#c3d').innerHTML = capas.tresd ? '🗺️ Ver en 2D' : '🧊 Ver en 3D'; $('#c3d').classList.remove('on'); if (!capas.tresd && !capas.salones) { capas.salones = true; $('#cSalones').classList.add('on'); if (mapa) mapa.verTechos(false); } }
+  if (c === 'tresd' && usaEsquema()) { $('#c3d').innerHTML = capas.tresd ? 'Ver en 2D' : 'Ver en 3D'; $('#c3d').classList.remove('on'); mostrarEsquema(!capas.tresd); }
+  else if (c === 'tresd') { $('#c3d').innerHTML = capas.tresd ? 'Ver en 2D' : 'Ver en 3D'; $('#c3d').classList.remove('on'); if (!capas.tresd && !capas.salones) { capas.salones = true; $('#cSalones').classList.add('on'); if (mapa) mapa.verTechos(false); } }
   if (c === 'tresd' && !usaEsquema() && mapa && mapa.listo) { mapa.modo2d(!capas.tresd); mapa.volar(VISTAS[estado.sede] || VISTAS.todas, 900); }
   if (c === 'salones' && mapa) mapa.verTechos(!capas.salones);
   if (c === 'vivo') pintarVivoMapa();
@@ -553,11 +553,11 @@ $('#cSeg').onclick = () => activarCapa('seg'); $('#cVivo').onclick = () => activ
 
 // ---------- Puntos que agrega coordinación (acreditación, baños, salidas…) ----------
 const CATS = {
-  acreditacion: ['Acreditación', '🪪', '#a974ff'], movilidad: ['Movilización', '🚶', '#ff9a3c'], eventos: ['Eventos', '🎤', '#2f7bff'],
-  seguridad: ['Seguridad', '🛡️', '#ff4d5e', 'seg'], salida: ['Salida de emergencia', '🟩', '#2fd38c', 'seg'], salud: ['Primeros auxilios', '⛑️', '#ff4d5e', 'seg'],
-  encuentro: ['Punto de encuentro', '🟢', '#2fd38c', 'seg'], info: ['Información', 'ℹ️', '#45c8ff'], banos: ['Baños', '🚻', '#45c8ff'],
-  pasillo: ['Pasillo', '🚧', '#ffb547'], puesto: ['Puesto del staff', '👮', '#e53535'],
-  comida: ['Comida', '🍽️', '#ffd23f'], agua: ['Agua', '💧', '#45c8ff'], prensa: ['Prensa', '📰', '#9aa8cc'], otro: ['Otro', '📍', '#9aa8cc'],
+  acreditacion: ['Acreditación', 'A', '#a974ff'], movilidad: ['Movilización', 'M', '#ff9a3c'], eventos: ['Eventos', 'E', '#2f7bff'],
+  seguridad: ['Seguridad', 'S', '#ff4d5e', 'seg'], salida: ['Salida de emergencia', 'X', '#2fd38c', 'seg'], salud: ['Primeros auxilios', '+', '#ff4d5e', 'seg'],
+  encuentro: ['Punto de encuentro', 'P', '#2fd38c', 'seg'], info: ['Información', 'i', '#45c8ff'], banos: ['Baños', 'B', '#45c8ff'],
+  pasillo: ['Pasillo', 'P', '#ffb547'], puesto: ['Puesto del staff', 'S', '#e53535'],
+  comida: ['Comida', 'C', '#ffd23f'], agua: ['Agua', 'A', '#45c8ff'], prensa: ['Prensa', 'P', '#9aa8cc'], otro: ['Otro', '•', '#9aa8cc'],
 };
 const cerca = (id, dx, dy) => aLL([LUGAR[id].xy[0] + dx, LUGAR[id].xy[1] + dy]);
 const PUNTOS_INICIALES = [

@@ -3,7 +3,7 @@
 $('#bSOS').onclick = () => {
   const a = estado.comision ? ASIGNA[estado.comision] : null;
   const quien = estado.usuario ? estado.usuario.nombre : (estado.nombre || 'Sin nombre');
-  $('#sosDatos').innerHTML = `👤 ${esc(quien)}${estado.usuario ? ' · ' + ROLES[estado.usuario.rol][0] : ''}<br>🔷 ${estado.comision || 'Sin comisión'}<br>🏨 ${a ? SEDES[a[0]].nombre + ' · ' + a[1] : 'Sin sede'}<br>📍 ${compartiendo() ? 'Tu ubicación en vivo va con el aviso' : 'Sin ubicación (no la estás compartiendo)'}`;
+  $('#sosDatos').innerHTML = `${esc(quien)}${estado.usuario ? ' · ' + ROLES[estado.usuario.rol][0] : ''}<br>${estado.comision || 'Sin comisión'}<br>${a ? SEDES[a[0]].nombre + ' · ' + a[1] : 'Sin sede'}<br>${compartiendo() ? 'Tu ubicación en vivo va con el aviso' : 'Sin ubicación (no la estás compartiendo)'}`;
   $('#sosVelo').classList.add('on');
 };
 $('#sosCerrar').onclick = () => $('#sosVelo').classList.remove('on');
@@ -12,7 +12,7 @@ $('#sosEnviar').onclick = () => {
   const tipo = $('#sosTipo').value, a = estado.comision ? ASIGNA[estado.comision] : null;
   const para = tipo === 'Persona herida o enferma' ? ['bienestar', 'seguridad'] : ['seguridad'];
   para.forEach(p => enviarAviso(p, { tipo: 'SOS · ' + tipo, texto: tipo, comision: estado.comision || '', salon: a ? a[1] : '', sede: a ? SEDES[a[0]].nombre : '', por: estado.usuario ? estado.usuario.nombre : (estado.nombre || 'Sin nombre') }));
-  registrar('🔴 SOS', tipo, { area: para.map(p => NOMBRE_SIS[p]).join(' y '), estatus: 'escalado' });
+  registrar('SOS', tipo, { area: para.map(p => NOMBRE_SIS[p]).join(' y '), estatus: 'escalado' });
   toast(`Aviso enviado a ${para.map(p => NOMBRE_SIS[p]).join(' y ')}`);
 };
 $('#bVerSeg').onclick = () => { $('#mapa').scrollIntoView(); setTimeout(() => activarCapa('seg'), 400); };

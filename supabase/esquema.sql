@@ -1037,3 +1037,26 @@ create or replace function public.minume_chat_canales(c public.minume_codigos)
                 then array['general', case when c.sistema = 'acreditacion' then 'asistencia' else c.sistema end, 'coordinacion']
               else array['general', case when c.sistema = 'acreditacion' then 'asistencia' else c.sistema end] end
 $function$;
+
+-- =====================================================================
+-- 2026-10-26 · Administración de la plataforma (códigos AD-)
+-- Observa cada cosa: entra a Coordinación general con los mismos permisos de la Secretaría General
+-- y desde ahí abre el panel de dirección de cada subsecretaría sin otro código.
+-- Ejecutar en el SQL Editor. El código de prueba AD-0001 se anula con «Anular los códigos de prueba».
+-- =====================================================================
+alter table public.minume_codigos drop constraint if exists minume_codigos_prefijo_check;
+alter table public.minume_codigos add constraint minume_codigos_prefijo_check check (prefijo = any (array['AS', 'CO', 'AC', 'SE', 'TR', 'BI', 'EP', 'CG', 'AD']));
+
+create or replace function public.minume_tipo(p_prefijo text, out rol text, out sistema text)
+ returns record language sql immutable set search_path to 'public'
+as $function$
+  select t.rol, t.sistema from (values
+    ('AS','asistencia','asistencia'), ('CO','coordinacion','asistencia'), ('AC','acreditacion','acreditacion'), ('SE','seguridad','seguridad'),
+    ('TR','traslado','seguridad'), ('BI','bienestar','bienestar'), ('EP','eventos','eventos'), ('CG','coordinacion','coordinacion'),
+    ('AD','coordinacion','coordinacion')
+  ) t(p, rol, sistema) where t.p = p_prefijo
+$function$;
+
+insert into public.minume_codigos (ref, prefijo, hash, nombre, rol, sistema, creado_por, nivel)
+select 'demo-ad', 'AD', extensions.crypt('AD-0001', extensions.gen_salt('bf', 8)), 'Administración de la plataforma', 'coordinacion', 'coordinacion', 'Prueba', 'subdirector'
+where not exists (select 1 from public.minume_codigos where ref = 'demo-ad');

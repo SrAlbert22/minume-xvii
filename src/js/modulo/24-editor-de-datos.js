@@ -297,7 +297,7 @@ $('#edGuardar').addEventListener('click', () => {
   if (edRestaurar) { const ej = JSON.parse(JSON.stringify(EJEMPLO_DATOS[k])); guardarComp(CFG(k), ej); DATOS[k].aplicar(ej); }
   else { guardarComp(CFG(k), limpio); DATOS[k].aplicar(limpio); }
   guardarComp(CFG(k) + '.quien', { por: yoNombre(), t: ahoraMs(), ejemplo: !!edRestaurar });
-  registrar('✏️ Datos editados', `${DATOS[k].titulo}${edRestaurar ? ' · volvió a los datos de ejemplo' : ''}`);
+  registrar('Datos editados', `${DATOS[k].titulo}${edRestaurar ? ' · volvió a los datos de ejemplo' : ''}`);
   cerrarEditorDatos(); refrescarTodo(); toast(`Guardado: ${DATOS[k].titulo}. Todos lo ven al instante.`);
 });
 $('#edRestaurar').addEventListener('click', () => {

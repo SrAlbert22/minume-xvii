@@ -6,7 +6,7 @@ const AT_MOTIVOS = {
   fisico: ['Agotamiento', 'Deshidratación', 'Baja de azúcar', 'Problema con la comida', 'Calor o frío excesivo', 'Necesita reposo', 'Otro'],
   emocional: ['Ansiedad o nervios', 'Ataque de pánico', 'Crisis de llanto', 'Estrés por el debate', 'Conflicto con otra persona', 'Extraña a su familia', 'Necesita acompañamiento', 'Otro'],
 };
-const AT_SALIDA = ['Regresó a su comisión', 'Se quedó en reposo', 'Se avisó a su tutor o acudiente', 'Se fue a casa', 'Derivado al 9-1-1'];
+const AT_SALIDA = ['Regresó a su comisión', 'Se quedó en reposo', 'Se avisó a su tutor o acudiente', 'Se fue a casa', 'Derivado al 911'];
 const AT_PERSONA = ['Delegado', 'Staff', 'Mesa directiva', 'Otro'];
 // En la misma lista protegida viven los casos y las alertas médicas (tipo «alerta»): solo Bienestar y Coordinación general la leen
 const esAlerta = x => x.tipo === 'alerta';
@@ -62,7 +62,7 @@ $('#atGuardar').onclick = () => {
   const nombre = $('#atNombre').value.trim(); if (!nombre) return $('#atNombre').focus();
   const l = leerBien(), x = { id: nuevoId('at'), area: atFormArea, nombre, persona: $('#atPersona').value, com: $('#atCom').value, motivo: $('#atMotivo').value, que: $('#atQue').value.trim(), hizo: $('#atHizo').value.trim(), seguir: $('#atSeguir').checked, llega: ahoraMs(), sale: null, por: yoNombre() };
   l.push(x); guardarComp('atenciones', l); ['#atNombre', '#atQue', '#atHizo'].forEach(s => $(s).value = ''); $('#atSeguir').checked = false;
-  registrar(`💚 Atención ${AT_AREA[x.area][0].toLowerCase()}`, `${x.motivo}${x.com ? ' · ' + x.com : ''}`);
+  registrar(`Atención ${AT_AREA[x.area][0].toLowerCase()}`, `${x.motivo}${x.com ? ' · ' + x.com : ''}`);
   atVer = 'punto'; toast('Llegada registrada'); pintarAtenciones();
 };
 $('#atLista').onclick = e => {
@@ -74,8 +74,8 @@ $('#atLista').onclick = e => {
   if (a === 'seguir') x.seguir = !x.seguir;
   if (a === 'sal-ok') {
     x.sale = ahoraMs(); x.salida = $('#atSal').value; atSaliendo = null; if (typeof cerrarAvisoDeCaso === 'function') cerrarAvisoDeCaso(x);
-    if (x.salida === 'Derivado al 9-1-1') enviarAviso('seguridad', { tipo: 'Ambulancia en camino', texto: 'Bienestar derivó a una persona al 9-1-1: facilitar el acceso', comision: x.com, sede: '', donde: 'Punto de bienestar', por: yoNombre() });
-    registrar('💚 Salida de bienestar', `${x.motivo} · ${x.salida}`); toast(x.salida === 'Derivado al 9-1-1' ? 'Salida guardada y Seguridad avisada para facilitar el acceso' : 'Salida guardada');
+    if (/Derivado al 9-?1-?1/.test(x.salida || '')) enviarAviso('seguridad', { tipo: 'Ambulancia en camino', texto: 'Bienestar derivó a una persona al 911: facilitar el acceso', comision: x.com, sede: '', donde: 'Punto de bienestar', por: yoNombre() });
+    registrar('Salida de bienestar', `${x.motivo} · ${x.salida}`); toast(/Derivado al 9-?1-?1/.test(x.salida || '') ? 'Salida guardada y Seguridad avisada para facilitar el acceso' : 'Salida guardada');
   }
   guardarComp('atenciones', l); pintarAtenciones();
 };

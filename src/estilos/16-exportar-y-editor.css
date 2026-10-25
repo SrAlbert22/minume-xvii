@@ -11,7 +11,7 @@
   .editor-velo { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); background: rgba(3, 6, 18, .75); backdrop-filter: blur(4px); }
   .editor-caja { width: min(1100px, 100%); max-height: 100%; display: flex; flex-direction: column; background: #0b1534; border: 1px solid var(--borde); border-top: 4px solid var(--equipo); border-radius: 22px; box-shadow: 0 40px 120px rgba(0, 0, 0, .6); overflow: hidden; }
   .ed-cab { display: flex; gap: 12px; align-items: flex-start; padding: 18px 20px 10px; }
-  .ed-cab > div { flex: 1; min-width: 0; } .ed-cab h3 { font: 800 30px/1.05 'Barlow Condensed'; margin: 8px 0 4px; } .ed-cab p { margin: 0; color: var(--suave); font-size: 14px; }
+  .ed-cab > div { flex: 1; min-width: 0; } .ed-cab h3 { font: 800 30px/1.05 Barlow; margin: 8px 0 4px; } .ed-cab p { margin: 0; color: var(--suave); font-size: 14px; }
   .ed-x { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--borde); background: rgba(255, 255, 255, .05); color: #fff; font-size: 22px; cursor: pointer; flex: none; }
   .ed-herr { display: flex; gap: 10px; align-items: center; padding: 8px 20px 12px; flex-wrap: wrap; border-bottom: 1px solid var(--borde); }
   .ed-herr input { flex: 1 1 220px; width: auto; }
@@ -33,7 +33,7 @@
   .datos-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
   .datos-card { display: grid; gap: 10px; align-content: space-between; }
   .datos-cab { display: flex; gap: 12px; align-items: flex-start; } .datos-cab b { display: block; font-size: 16px; } .datos-cab small { color: var(--suave); font-size: 12.5px; line-height: 1.4; }
-  .datos-ic { min-width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--equipo) 20%, transparent); color: var(--equipo); font: 800 20px 'Barlow Condensed'; }
+  .datos-ic { min-width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--equipo) 20%, transparent); color: var(--equipo); font: 800 20px Barlow; }
   .datos-meta { color: var(--suave); font-size: 12px; }
   @media (max-width: 1000px) { .ed-campos { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ed-campo.ancho-3 { grid-column: span 3; } .datos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 640px) { .ed-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ed-campo.ancho-2, .ed-campo.ancho-3 { grid-column: 1 / -1; } .datos-grid { grid-template-columns: 1fr; } .ed-cab h3 { font-size: 24px; } .ed-lista, .ed-herr, .ed-pie, .ed-cab { padding-left: 14px; padding-right: 14px; } .ed-pie .boton { flex: 1; } .ed-abrir { flex: 1; justify-content: center; } .editor-caja { border-radius: 18px; } }
@@ -48,7 +48,7 @@
   .cod-form select, .cod-form input { flex: 1 1 180px; width: auto; }
   .cod-form select[hidden] { display: none; }
   .cod-nuevo { display: grid; gap: 6px; padding: 14px; border-radius: 14px; border: 1px dashed var(--verde); background: rgba(47, 211, 140, .08); margin-bottom: 12px; }
-  .cod-grande { font: 800 34px 'Barlow Condensed'; letter-spacing: 3px; color: var(--verde); }
+  .cod-grande { font: 800 34px Barlow; letter-spacing: 3px; color: var(--verde); }
   .cod-nuevo small { color: var(--suave); }
   .cod-nivel { width: auto; min-height: 34px; padding: 4px 8px; font-size: 13px; }
   .cod-acc { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
@@ -58,7 +58,7 @@
   .cod-fila { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 12px; }
   .cod-fila small { display: block; color: var(--suave); font-size: 12px; }
   .cod-fila.anulado { opacity: .5; }
-  .cod-pre { font: 800 15px 'Barlow Condensed'; padding: 4px 8px; border-radius: 8px; background: rgba(255, 210, 63, .14); color: var(--amarillo); }
+  .cod-pre { font: 800 15px Barlow; padding: 4px 8px; border-radius: 8px; background: rgba(255, 210, 63, .14); color: var(--amarillo); }
   /* Aviso de códigos de prueba activos (Códigos de acceso) */
   .cod-prueba { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 10px 0; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 210, 63, .5); background: rgba(255, 210, 63, .08); }
   .cod-prueba[hidden] { display: none; }

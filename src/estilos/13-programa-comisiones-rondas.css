@@ -1,11 +1,11 @@
   /* MINUME XVII · Albert Silvestre */
   /* Programa */
   .prog-ahora { display: grid; gap: 4px; align-content: start; }
-  .prog-ahora strong { font: 800 24px/1.1 'Barlow Condensed'; margin-top: 6px; }
+  .prog-ahora strong { font: 800 24px/1.1 Barlow; margin-top: 6px; }
   .prog-ahora small { color: var(--suave); font-size: 13px; }
   .prog-item { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--borde); }
   .prog-item:last-child { border-bottom: 0; }
-  .prog-item > b { font: 800 18px 'Barlow Condensed'; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .prog-item > b { font: 800 18px Barlow; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .prog-item strong { display: block; }
   .prog-item small { color: var(--suave); font-size: 12.5px; }
   .prog-item.ahora { background: rgba(47, 211, 140, .08); border-radius: 12px; border-bottom-color: transparent; }
@@ -13,15 +13,15 @@
   @media (max-width: 560px) { .prog-item { grid-template-columns: 1fr auto; } .prog-item > b { grid-column: 1 / -1; } }
 
   /* Comisiones en vivo */
-  .cv-est { font: 800 34px/1 'Barlow Condensed'; margin: 12px 0 4px; }
+  .cv-est { font: 800 34px/1 Barlow; margin: 12px 0 4px; }
   .cv-estados { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0 4px; }
   .cv-estados button { border: 1px solid var(--borde); border-left: 4px solid var(--c); background: rgba(255, 255, 255, .03); color: var(--texto); border-radius: 12px; padding: 12px 10px; font-weight: 700; cursor: pointer; text-align: left; font-size: 13.5px; }
   .cv-estados button.on { background: color-mix(in srgb, var(--c) 22%, transparent); border-color: var(--c); }
   .cv-contador { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 14px 0; }
-  .cv-contador > button { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--borde); background: rgba(255, 255, 255, .06); color: #fff; font: 800 34px/1 'Barlow Condensed'; cursor: pointer; }
+  .cv-contador > button { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--borde); background: rgba(255, 255, 255, .06); color: #fff; font: 800 34px/1 Barlow; cursor: pointer; }
   .cv-contador > button:active { transform: scale(.94); }
   .cv-contador div { text-align: center; }
-  .cv-contador b { display: block; font: 800 64px/1 'Barlow Condensed'; font-variant-numeric: tabular-nums; }
+  .cv-contador b { display: block; font: 800 64px/1 Barlow; font-variant-numeric: tabular-nums; }
   .cv-contador span { color: var(--suave); font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
   .cv-contador input { width: 70px; padding: 6px 8px; text-align: center; }
   .cv-barra { position: relative; height: 10px; border-radius: 99px; background: rgba(255, 255, 255, .08); overflow: visible; }
@@ -33,9 +33,9 @@
   @media (max-width: 560px) { .cv-grid { grid-template-columns: 1fr; } }
   .cv-card { border: 1px solid var(--borde); border-left: 4px solid var(--c); border-radius: 14px; padding: 12px; background: var(--panel); display: grid; gap: 4px; }
   .cv-card-cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .cv-card-cab b { font: 800 22px 'Barlow Condensed'; }
+  .cv-card-cab b { font: 800 22px Barlow; }
   .cv-card small { color: var(--suave); font-size: 12px; }
-  .cv-num { font-size: 13.5px; } .cv-num b { font: 800 22px 'Barlow Condensed'; }
+  .cv-num { font-size: 13.5px; } .cv-num b { font: 800 22px Barlow; }
   .cv-nota { margin: 2px 0; font-size: 13px; background: rgba(255, 255, 255, .04); border-radius: 8px; padding: 6px 8px; }
 
   /* Rondas */
@@ -43,7 +43,7 @@
   .rn-punto { display: flex; align-items: center; gap: 12px; padding: 10px 2px; border-bottom: 1px dashed var(--borde); flex-wrap: wrap; }
   .rn-punto > div { flex: 1; min-width: 160px; } .rn-punto small { display: block; color: var(--suave); font-size: 12.5px; }
   .rn-punto.ok small { color: var(--verde); } .rn-punto.nov small { color: var(--amarillo); }
-  .rn-num { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--borde); font: 800 15px 'Barlow Condensed'; flex: none; }
+  .rn-num { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--borde); font: 800 15px Barlow; flex: none; }
   .rn-punto.ok .rn-num { background: var(--verde); color: #04120b; border-color: var(--verde); }
   .rn-punto.nov .rn-num { background: var(--amarillo); color: #1d1600; border-color: var(--amarillo); }
   .rn-acc { display: flex; gap: 6px; }

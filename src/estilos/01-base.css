@@ -1,10 +1,10 @@
   /* MINUME XVII · estilos de los sistemas del staff · Albert Silvestre */
-  /* Línea gráfica de MINUME XVII: azules de #0a0464 a #00fdef, rosa #ffbeff y rojo #e53535; Barlow, Barlow Condensed y Libre Baskerville */
+  /* Línea gráfica de MINUME XVII: azules de #0a0464 a #00fdef, rosa #ffbeff y rojo #e53535; una sola tipografía: Barlow (títulos en 800, textos en 400 a 600) */
   :root {
     --m-noche: #0a0464; --m-marino: #002193; --m-rey: #0043c5; --m-azul: #0090fb; --m-celeste: #00b5ff; --m-turquesa: #00fdef; --m-rosa: #ffbeff; --m-rojo: #e53535;
     --fondo: #06033f; --panel: rgba(12, 22, 120, .42); --panel2: #0b1170; --borde: rgba(120, 170, 255, .2);
     --texto: #f1f4ff; --suave: #b3c0ee; --azul: #0090fb; --azul2: #0043c5; --cian: #00b5ff; --rojo: #e53535; --verde: #19d3a2; --amarillo: #ffd23f; --naranja: #ff9a3c;
-    --radio: 20px; --f-tit: 'Barlow Condensed', sans-serif; --f-txt: 'Barlow', system-ui, sans-serif; --f-ed: 'Libre Baskerville', Georgia, serif;
+    --radio: 20px; --f-tit: 'Barlow', system-ui, sans-serif; --f-txt: 'Barlow', system-ui, sans-serif; --f-ed: 'Barlow', system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 130px; }
@@ -18,8 +18,8 @@
   /* Cabecera + menú de secciones (corrige el resaltado: se calcula con la posición real del menú) */
   .cab { position: sticky; top: 0; z-index: 30; background: rgba(5, 10, 26, .82); backdrop-filter: blur(14px); border-bottom: 1px solid var(--borde); }
   .cab-fila { max-width: 1720px; margin: 0 auto; display: flex; align-items: center; gap: 12px; padding: 10px 18px; }
-  .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--azul), var(--cian)); display: grid; place-items: center; font: 800 19px 'Barlow Condensed'; color: #fff; flex: none; }
-  .cab b { font: 700 17px 'Barlow Condensed'; display: block; letter-spacing: .4px; }
+  .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--azul), var(--cian)); display: grid; place-items: center; font: 800 19px Barlow; color: #fff; flex: none; }
+  .cab b { font: 700 17px Barlow; display: block; letter-spacing: .4px; }
   .cab small { color: var(--suave); font-size: 11.5px; }
   .cab .mio { margin-left: auto; display: flex; align-items: center; gap: 8px; background: rgba(69, 200, 255, .1); border: 1px solid rgba(69, 200, 255, .35); padding: 6px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 600; }
   .cab .mio[hidden] { display: none; }
@@ -36,7 +36,7 @@
   main { max-width: 1720px; margin: 0 auto; padding: 22px 18px 80px; }
   section { margin-top: 56px; }
   .titulo-sec { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
-  .titulo-sec .n { font: 800 18px 'Barlow Condensed'; color: var(--cian); }
+  .titulo-sec .n { font: 800 18px Barlow; color: var(--cian); }
   .titulo-sec h2 { font-size: clamp(30px, 5vw, 44px); margin: 0; line-height: 1; }
   .lead { color: var(--suave); max-width: 760px; line-height: 1.6; margin: 6px 0 20px; }
   .tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, .28); }

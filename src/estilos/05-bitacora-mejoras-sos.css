@@ -16,4 +16,7 @@
   .sos-velo .tarjeta { max-width: 460px; border-color: rgba(255, 77, 94, .5); background: #1a0a16; }
   footer { color: var(--suave); font-size: 12px; text-align: center; padding: 30px 18px; border-top: 1px solid var(--borde); }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(80px); background: #0f1d44; border: 1px solid var(--borde); color: #fff; padding: 11px 16px; border-radius: 14px; font-size: 14px; z-index: 60; transition: transform .3s; }
-  .toast.on { transform: translateX(-50%) translateY(0); }
+  /* Escondido de verdad cuando no hay aviso: en el teléfono (con la barra de abajo) bajarlo 80 px lo dejaba encima de «Chat» como una bolita oscura */
+  .toast:not(.on) { opacity: 0; visibility: hidden; pointer-events: none; transition: transform .3s, opacity .2s, visibility 0s .3s; }
+  .toast:empty { display: none; }
+  .toast.on { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; transition: transform .3s, opacity .2s; }

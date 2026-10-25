@@ -38,7 +38,7 @@ function gpsRonda(listo) {
   if (!navigator.geolocation || !isSecureContext) return listo({ no: 'sin GPS' });
   navigator.geolocation.getCurrentPosition(p => medir([p.coords.latitude, p.coords.longitude], p.coords.accuracy), e => listo({ no: e && e.code === 1 ? 'sin permiso de ubicación' : 'sin señal de GPS' }), { enableHighAccuracy: true, timeout: 9000, maximumAge: 30000 });
 }
-const textoGps = g => !g ? '' : g.no ? `📍 ${g.no}` : g.ok ? `📍 comprobado · cerca de ${g.lugar} (${g.d} m)` : `📍 lejos: a ${g.d} m de ${g.lugar}`;
+const textoGps = g => !g ? '' : g.no ? `${g.no}` : g.ok ? `comprobado · cerca de ${g.lugar} (${g.d} m)` : `lejos: a ${g.d} m de ${g.lugar}`;
 function marcarConGps(idRonda, i) {
   gpsRonda(g => { const l = leerRondas(), x = l.find(y => y.id === idRonda); if (!x || !x.marcas[i]) return; x.marcas[i].gps = g; guardarComp('rondas', l); pintarRondas(); if (!g.no && !g.ok) toast(`Tu GPS te ubica a ${g.d} m de ${g.lugar}: la dirección lo verá`); });
 }
@@ -53,7 +53,7 @@ function pintarRondas() {
   if (act) {
     const r = RUTAS.find(x => x.id === act.ruta), hechos = Object.keys(act.marcas).length, faltan = r.puntos.length - hechos;
     $('#rnActiva').innerHTML = `<div class="tarjeta rn-activa"><div class="cob-cab" style="margin-bottom:6px"><span class="chip verde">Tu ronda en curso</span><b class="cond" style="font-size:26px">${r.n}</b><small class="cob-sub" style="margin:0 0 0 auto">Empezaste ${haceMin(act.ini)} · ${hechos} de ${r.puntos.length} puntos</small></div>
-      ${r.puntos.map((p, i) => { const mk = act.marcas[i]; return `<div class="rn-punto ${mk ? (mk.ok ? 'ok' : 'nov') : ''}"><span class="rn-num">${i + 1}</span><div><b>${p}</b>${mk ? `<small>${mk.ok ? 'En orden' : 'Incidencia: ' + esc(mk.nota)} · ${horaDR(mk.t)}${mk.gps ? ' · ' + textoGps(mk.gps) : ' · 📍 midiendo…'}</small>` : ''}${rnNovedad === i ? `<div class="rn-nov"><input id="rnNovTxt" placeholder="Qué encontraste"><button class="mini on" data-rn="nov-ok" data-i="${i}">Guardar</button><button class="mini" data-rn="nov-no">Cancelar</button></div>` : ''}</div>
+      ${r.puntos.map((p, i) => { const mk = act.marcas[i]; return `<div class="rn-punto ${mk ? (mk.ok ? 'ok' : 'nov') : ''}"><span class="rn-num">${i + 1}</span><div><b>${p}</b>${mk ? `<small>${mk.ok ? 'En orden' : 'Incidencia: ' + esc(mk.nota)} · ${horaDR(mk.t)}${mk.gps ? ' · ' + textoGps(mk.gps) : ' · midiendo…'}</small>` : ''}${rnNovedad === i ? `<div class="rn-nov"><input id="rnNovTxt" placeholder="Qué encontraste"><button class="mini on" data-rn="nov-ok" data-i="${i}">Guardar</button><button class="mini" data-rn="nov-no">Cancelar</button></div>` : ''}</div>
         ${mk ? `<button class="mini" data-rn="deshacer" data-i="${i}">Cambiar</button>` : `<span class="rn-acc"><button class="mini on" data-rn="ok" data-i="${i}">En orden</button><button class="mini" data-rn="nov" data-i="${i}">Incidencia</button></span>`}</div>`; }).join('')}
       ${rnConfirmar && faltan ? `<div class="cob-asignar" style="margin-top:12px"><span>Te ${faltan === 1 ? 'falta 1 punto' : `faltan ${faltan} puntos`}. Si los saltas, dirección lo verá.</span><button class="mini on" data-rn="fin-si">Terminar igual</button><button class="mini" data-rn="fin-no">Seguir la ronda</button></div>` : `<button class="boton" data-rn="fin" style="margin-top:12px">Terminar ronda</button>`}</div>`;
   } else $('#rnActiva').innerHTML = '';
@@ -78,7 +78,7 @@ $('#rondas').addEventListener('click', e => {
     const r = RUTAS.find(x => x.id === b.dataset.r), otra = l.find(x => !x.fin && x.ruta === r.id);
     if (otra) return toast(`${otra.por} ya está haciendo esta ronda`);
     l.push({ id: nuevoId('rd'), ruta: r.id, por: yoNombre(), porCod: yoCod(), ini: ahoraMs(), fin: null, marcas: {} }); guardarComp('rondas', l);
-    registrar('🛡️ Ronda', `Empezó la ronda ${r.n}`); toast('Ronda empezada: marca cada punto al pasar'); rnConfirmar = false;
+    registrar('Ronda', `Empezó la ronda ${r.n}`); toast('Ronda empezada: marca cada punto al pasar'); rnConfirmar = false;
   } else if (!act) return;
   else if (a === 'ok') { act.marcas[i] = { t: ahoraMs(), ok: true, nota: '' }; guardarComp('rondas', l); marcarConGps(act.id, i); }
   else if (a === 'nov') { rnNovedad = i; pintarRondas(); setTimeout(() => $('#rnNovTxt') && $('#rnNovTxt').focus(), 30); return; }
@@ -86,13 +86,13 @@ $('#rondas').addEventListener('click', e => {
   else if (a === 'nov-ok') {
     const t = ($('#rnNovTxt').value || '').trim(); if (!t) return $('#rnNovTxt').focus();
     const r = RUTAS.find(x => x.id === act.ruta); act.marcas[i] = { t: ahoraMs(), ok: false, nota: t }; guardarComp('rondas', l); rnNovedad = null; marcarConGps(act.id, i);
-    registrar('⚠️ Incidencia en ronda', `${r.n} · ${r.puntos[i]}: ${t}`, { estatus: 'pendiente', area: 'Seguridad' }); toast('Incidencia guardada: la dirección ya la ve');
+    registrar('Incidencia en ronda', `${r.n} · ${r.puntos[i]}: ${t}`, { estatus: 'pendiente', area: 'Seguridad' }); toast('Incidencia guardada: la dirección ya la ve');
   } else if (a === 'deshacer') { delete act.marcas[i]; guardarComp('rondas', l); }
   else if (a === 'fin' || a === 'fin-si') {
     const r = RUTAS.find(x => x.id === act.ruta), faltan = r.puntos.length - Object.keys(act.marcas).length;
     if (a === 'fin' && faltan) { rnConfirmar = true; pintarRondas(); return; }
     act.fin = ahoraMs(); guardarComp('rondas', l); rnConfirmar = false;
-    registrar('🛡️ Ronda', `Terminó la ronda ${r.n}: ${r.puntos.length - faltan} de ${r.puntos.length} puntos`); toast('Ronda terminada');
+    registrar('Ronda', `Terminó la ronda ${r.n}: ${r.puntos.length - faltan} de ${r.puntos.length} puntos`); toast('Ronda terminada');
   } else if (a === 'fin-no') rnConfirmar = false;
   pintarRondas();
 });

@@ -19,9 +19,9 @@
   .alarma::before { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 10px #fff, inset 0 0 120px 40px rgba(0, 0, 0, .45); animation: alarma-borde 1s steps(1, end) infinite; }
   .alarma[hidden] { display: none; }
   .alarma-caja { position: relative; width: 100%; max-width: 520px; background: #12030a; border: 3px solid #fff; border-radius: 26px; padding: 26px; text-align: center; box-shadow: 0 0 0 6px rgba(255, 255, 255, .25), 0 30px 80px rgba(0, 0, 0, .6); animation: alarma-caja 1s ease-in-out infinite; }
-  .alarma-caja::before { content: '🚨'; display: block; font-size: 64px; line-height: 1; margin-bottom: 6px; animation: alarma-caja 1s ease-in-out infinite; }
-  .alarma-eti { display: inline-block; font: 800 clamp(18px, 4vw, 24px) 'Barlow Condensed'; letter-spacing: .14em; color: #fff; background: #e5001e; padding: 6px 16px; border-radius: 99px; }
-  .alarma h2 { font: 800 clamp(40px, 10vw, 64px)/1 'Barlow Condensed'; margin: 14px 0 8px; color: #fff; text-transform: uppercase; }
+  .alarma-caja::before { content: ''; display: block; font-size: 64px; line-height: 1; margin-bottom: 6px; animation: alarma-caja 1s ease-in-out infinite; }
+  .alarma-eti { display: inline-block; font: 800 clamp(18px, 4vw, 24px) Barlow; letter-spacing: .14em; color: #fff; background: #e5001e; padding: 6px 16px; border-radius: 99px; }
+  .alarma h2 { font: 800 clamp(40px, 10vw, 64px)/1 Barlow; margin: 14px 0 8px; color: #fff; text-transform: uppercase; }
   .alarma p { color: #ffd6db; font-size: 16px; line-height: 1.5; margin: 0 0 18px; }
   .alarma p small { color: #e7a9b1; font-size: 13px; }
   .alarma-acc { display: grid; gap: 8px; }

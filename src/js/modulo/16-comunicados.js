@@ -52,7 +52,7 @@ function pintarComunicados() {
     if (puedeComunicar()) {
       const r = rosterCom(m.para), ya = r.filter(p => le[p.c]), faltan = r.filter(p => !le[p.c]);
       pie = `<div class="com-leido"><div class="cv-barra"><i style="width:${r.length ? ya.length / r.length * 100 : 0}%;background:var(--verde)"></i></div><b>Leído por ${ya.length} de ${r.length}</b>${faltan.length ? `<small>Falta: ${faltan.map(p => esc(p.n)).join(', ')}</small>` : '<small style="color:var(--verde)">Todos lo leyeron</small>'}</div>`;
-    } else pie = mio ? '<small class="com-meta">Lo enviaste tú</small>' : le[yo] ? `<small class="com-meta" style="color:var(--verde)">✓ Leído a las ${horaDR(le[yo].t)}</small>` : `<button class="boton" data-leido="${m.id}">Leído</button>`;
+    } else pie = mio ? '<small class="com-meta">Lo enviaste tú</small>' : le[yo] ? `<small class="com-meta" style="color:var(--verde)">✓Leído a las ${horaDR(le[yo].t)}</small>` : `<button class="boton" data-leido="${m.id}">Leído</button>`;
     return `<div class="tarjeta com-item ${cl}"><div class="com-cab"><span class="chip ${cl}">${tt}</span><span class="chip">Para: ${COM_PARA[m.para] || m.para}</span><small class="com-meta">${esc(m.de)} · ${diaDR(m.t) === hoyDR() ? horaDR(m.t) : diaDR(m.t) + ' ' + horaDR(m.t)}</small></div><p class="com-texto">${esc(m.texto)}</p>${pie}</div>`;
   }).join('') : `<div class="tarjeta"><b>No hay comunicados todavía</b><p class="cob-sub">${puedeComunicar() ? 'Escribe el primero arriba o usa una plantilla.' : 'Cuando dirección envíe algo, te aparece aquí y arriba de la pantalla.'}</p></div>`;
 }
@@ -64,7 +64,7 @@ $('#comEnviar').onclick = () => {
   if (/___/.test(t)) return toast('Completa los espacios ___ de la plantilla');
   const l = leerComs(), m = { id: nuevoId('cm'), t: ahoraMs(), deCod: yoCod(), de: yoNombre(), para: $('#comPara').value, tipo: $('#comTipo').value, texto: t, leidos: {} };
   l.push(m); guardarComp('comunicados', l.slice(-60)); comAvisados.add(m.id);
-  $('#comTexto').value = ''; registrar('📣 Comunicado', `${COM_PARA[m.para]}: ${t}`);
+  $('#comTexto').value = ''; registrar('Comunicado', `${COM_PARA[m.para]}: ${t}`);
   toast(`Comunicado enviado a ${COM_PARA[m.para]}`); pintarComunicados();
 };
 // Demo: el staff de prueba "lee" los comunicados solo, menos una persona, para que se vea quién falta

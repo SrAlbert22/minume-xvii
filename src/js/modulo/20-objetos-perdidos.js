@@ -54,8 +54,8 @@ $('#obBuscar').oninput = pintarObjetos;
 $('#obGuardar').onclick = () => {
   const que = $('#obQue').value.trim(); if (!que) return $('#obQue').focus();
   const l = leerObjetos(), base = { id: nuevoId('ob'), tipo: obModo, que, cat: $('#obCat').value, donde: $('#obDonde').value.trim() || 'Sin indicar', com: $('#obCom').value, por: yoNombre(), t: ahoraMs() };
-  if (obModo === 'encontrado') { l.push({ ...base, guarda: $('#obGuarda').value, est: 'guardado' }); registrar('🎒 Objeto encontrado', `${que} · ${base.donde} → ${$('#obGuarda').value}`); obVer = 'guardados'; }
-  else { const quien = $('#obQuien').value.trim(); if (!quien) return $('#obQuien').focus(); l.push({ ...base, quien, est: 'buscando' }); registrar('🎒 Objeto perdido', `${quien} busca: ${que}`); obVer = 'buscados'; }
+  if (obModo === 'encontrado') { l.push({ ...base, guarda: $('#obGuarda').value, est: 'guardado' }); registrar('Objeto encontrado', `${que} · ${base.donde} → ${$('#obGuarda').value}`); obVer = 'guardados'; }
+  else { const quien = $('#obQuien').value.trim(); if (!quien) return $('#obQuien').focus(); l.push({ ...base, quien, est: 'buscando' }); registrar('Objeto perdido', `${quien} busca: ${que}`); obVer = 'buscados'; }
   guardarComp('objetos', l); ['#obQue', '#obDonde', '#obQuien'].forEach(s => $(s).value = '');
   toast(obModo === 'encontrado' ? 'Objeto registrado' : 'Búsqueda registrada: te avisamos si aparece algo parecido'); pintarObjetos();
 };
@@ -64,7 +64,7 @@ $('#obLista').onclick = e => {
   const l = leerObjetos(), x = l.find(y => y.id === b.dataset.id), a = b.dataset.ob;
   if (a === 'entregar') { obEntregando = x.id; pintarObjetos(); setTimeout(() => $('#obA') && $('#obA').focus(), 30); return; }
   if (a === 'ent-no') { obEntregando = null; pintarObjetos(); return; }
-  if (a === 'ent-ok') { const quien = ($('#obA').value || '').trim(); if (!quien) return $('#obA').focus(); x.est = 'entregado'; x.entregadoA = quien; x.tEnt = ahoraMs(); obEntregando = null; registrar('🎒 Objeto entregado', `${x.que} → ${quien}`); toast('Entregado y registrado'); }
+  if (a === 'ent-ok') { const quien = ($('#obA').value || '').trim(); if (!quien) return $('#obA').focus(); x.est = 'entregado'; x.entregadoA = quien; x.tEnt = ahoraMs(); obEntregando = null; registrar('Objeto entregado', `${x.que} → ${quien}`); toast('Entregado y registrado'); }
   if (a === 'aparecio') { x.est = 'encontrado'; x.tEnt = ahoraMs(); toast('Marcado como encontrado'); }
   guardarComp('objetos', l); pintarObjetos();
 };

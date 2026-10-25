@@ -3,6 +3,7 @@
 // En lugar de una página larga, cada equipo ve su inicio con «¿Qué quieres hacer?» y abre una sección a la vez.
 // El botón «Volver» y el botón de atrás del teléfono regresan al inicio.
 const ICO = {
+  flecha: 'M5 12h14M13 6l6 6-6 6',
   casa: 'M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10', megafono: 'M3 11v2a2 2 0 0 0 2 2h2l6 4V5L7 9H5a2 2 0 0 0-2 2zM17 8a5 5 0 0 1 0 8',
   lista: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01', estrella: 'M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.8 6.7 19.4l1.2-6L3.4 9.3l6-.7z',
   persona: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0', asiento: 'M6 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6M4 11h16v4H4zM6 15v6M18 15v6',
@@ -39,6 +40,39 @@ const SECCION = {
 const PRINCIPAL = { asistencia: 'listas', acreditacion: 'delegados', seguridad: 'cobertura', traslado: 'cobertura', bienestar: 'casos', eventos: 'eventos', coordinacion: SISTEMA === 'asistencia' ? 'comisiones-vivo' : 'datos' };
 const principalDe = u => veSubdireccion() ? 'subdireccion' : PRINCIPAL[u.rol];
 let seccionActual = 'inicio';
+// Saludo del inicio después de entrar: quién eres, qué te toca y una sola acción principal. Reemplaza al título grande,
+// los contadores, la tarjeta «Hola» y la ventana de permisos (que tapaba la pantalla al entrar).
+function pintarSaludo() {
+  const u = estado.usuario; if (!u || !$('#inicio')) return;
+  let c = $('#saludo');
+  if (!c) { c = document.createElement('div'); c.id = 'saludo'; c.className = 'saludo'; $('#inicio .hero').after(c); }
+  const [eq, color] = ROLES[u.rol], { dia, min } = partesDR(ahoraEvento()), dias = ['2026-11-14', '2026-11-15', '2026-11-16'];
+  const cargo = u.admin ? 'Administración' : SISTEMA === 'coordinacion' ? 'Secretaría General' : esVol() ? 'Voluntario' : cargoDe(u) || 'Coordinación';
+  const faltan = Math.ceil((Date.parse('2026-11-14T00:00:00-04:00') - ahoraEvento()) / 864e5);
+  const cuando = dias.includes(dia) ? `Hoy · día ${dias.indexOf(dia) + 1} de 3` : dia < dias[0] ? `Faltan ${faltan} ${faltan === 1 ? 'día' : 'días'} · 14 nov` : 'El evento terminó';
+  const hola = min < 12 * 60 ? 'Buenos días' : min < 19 * 60 ? 'Buenas tardes' : 'Buenas noches';
+  const p = principalDe(u), ids = seccionesDe().map(s => s.id);
+  const verUbic = ubicacionDisponible() && !compartiendo(), verAlertas = !alertasOn();
+  let hoy = ''; try { hoy = hoyDR(); } catch {}
+  const perm = (verUbic || verAlertas) && leer('permisosDia', '') !== hoy;
+  c.style.setProperty('--c', color);
+  c.innerHTML = `<div class="saludo-top"><span class="chip">${eq} · ${cargo}</span><span class="saludo-dia">${cuando}</span></div>
+    <h2>${hola}, <span>${esc(u.nombre.split(' ')[0])}</span></h2>
+    <p>${descRol(u) || ''}</p>
+    <div class="saludo-acc">${p && ids.includes(p) ? `<button type="button" class="boton" data-ir="${p}">${SECCION[p][1]} ${ico('flecha', 18)}</button>` : ''}${ids.includes('chat') ? `<button type="button" class="boton sec" data-ir="chat">${ico(SECCION.chat[0], 18)} Chat</button>` : ''}</div>
+    ${perm ? `<div class="saludo-perm"><div><b>Prepara tu turno</b><small>Para que los SOS suenen en tu teléfono${verUbic ? ' y el equipo te encuentre' : ''}.</small></div>
+      <div class="saludo-perm-b">${verAlertas ? '<button type="button" class="mini on" data-perm="alertas">Activar alertas</button>' : ''}${verUbic ? '<button type="button" class="mini" data-perm="ubic">Compartir ubicación</button>' : ''}</div>
+      <button type="button" class="saludo-x" data-perm="cerrar" aria-label="Ahora no">×</button></div>` : ''}`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('#saludo [data-perm], #accesos .accesos-mas'); if (!b) return;
+  if (b.matches('.accesos-mas')) { const c = $('#accesos'), on = c.classList.toggle('todas'); b.setAttribute('aria-expanded', on); b.textContent = on ? 'Ver menos' : `Ver todas las secciones (${c.querySelectorAll('.acceso').length})`; return; }
+  const k = b.dataset.perm;
+  if (k === 'alertas') activarAlertas();
+  else if (k === 'ubic') empezarCompartir('cierre');
+  else if (k === 'cerrar') { try { guardar('permisosDia', hoyDR()); } catch {} }
+  setTimeout(pintarSaludo, k === 'cerrar' ? 0 : 600);
+});
 // Direcciones limpias: …/coordinacion/mapa en vez de index.html#mapa (el archivo suelto, sin servidor, sigue con #mapa)
 function baseRuta() { return (location.pathname.match(new RegExp(`^(.*/${SISTEMA}/)`)) || [])[1] || ''; }
 function urlSeccion(id) {
@@ -78,10 +112,14 @@ function modoApp() {
   SECCION.subdireccion[1] = cargoDe(u) === 'Subdirección' ? 'Mi subdirección' : 'Mi equipo';
   const ids = seccionesDe().map(s => s.id).filter(id => id !== 'inicio');
   ids.sort((a, b) => (b === principalDe(u)) - (a === principalDe(u)));   // lo principal del equipo, primero
-  // botones grandes del inicio
+  // atajos del inicio: lo principal y el chat ya están en el saludo; se ven 4 y el resto con «Ver todas»
+  pintarSaludo();
   let caja = $('#accesos');
-  if (!caja) { caja = document.createElement('div'); caja.id = 'accesos'; caja.className = 'accesos'; $('#inicio .hero').after(caja); }
-  caja.innerHTML = `<h2 class="accesos-t">¿Qué quieres hacer?</h2><div class="accesos-g">${ids.map(id => { const [i, n, d] = SECCION[id]; return `<button type="button" class="acceso${id === principalDe(u) ? ' principal' : ''}" data-ir="${id}" title="${d}"><span class="acceso-ic">${ico(i)}</span><b>${n}</b></button>`; }).join('')}</div>`;
+  if (!caja) { caja = document.createElement('div'); caja.id = 'accesos'; caja.className = 'accesos'; $('#saludo').after(caja); }
+  const atajos = ids.filter(id => id !== principalDe(u) && id !== 'chat'), extra = atajos.length - 4;
+  caja.classList.remove('todas');
+  caja.innerHTML = `<h2 class="accesos-t">Atajos</h2><div class="accesos-g">${atajos.map((id, k) => { const [i, n, d] = SECCION[id]; return `<button type="button" class="acceso${k >= 4 ? ' extra' : ''}" data-ir="${id}" title="${d}"><span class="acceso-ic">${ico(i)}</span><b>${n}</b></button>`; }).join('')}</div>
+    ${extra > 0 ? `<button type="button" class="accesos-mas" aria-expanded="false">Ver todas las secciones (${atajos.length})</button>` : ''}`;
   // barra de abajo: Inicio · lo principal del equipo · Chat · Mapa · Comunicados
   const abajo = ['inicio', principalDe(u), 'chat', 'mapa', 'comunicados'].filter((id, k, l) => id && l.indexOf(id) === k && (id === 'inicio' || ids.includes(id)));
   const corto = { chat: 'Chat', inicio: 'Inicio', mapa: 'Mapa', comunicados: 'Avisos', 'comisiones-vivo': 'Comisiones', datos: 'Datos', eventos: 'Eventos', listas: 'Mis listas', casos: 'Casos', cobertura: 'Cobertura', subdireccion: 'Mi equipo', delegados: 'Delegados', invitados: 'Invitados' };

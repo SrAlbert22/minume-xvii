@@ -7,14 +7,20 @@
 (() => {
   const C = window.MINUME_SUPABASE; if (!C || !C.url || !C.key) return;
   const LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
-  const PRE = 'minume.compartido.', COLA = 'minume.sync.cola', TOKEN = 'minume.sesion.token';
+  // Una sesión por sistema: entrar o salir de un sistema no toca la sesión de los otros en el mismo teléfono.
+  // El Inicio no tiene código propio: lee con la sesión de cualquier sistema abierto.
+  const SIS = window.MINUME_SISTEMA || '', BASE_TOKEN = 'minume.sesion.token';
+  const PRE = 'minume.compartido.', COLA = 'minume.sync.cola', TOKEN = SIS ? `${BASE_TOKEN}.${SIS}` : null;
+  window.MINUME_TOKEN_CLAVE = TOKEN;
+  // La llave de antes (una sola para todos los sistemas) podía ser de otro código: no se usa y se borra
+  try { ls.removeItem(BASE_TOKEN); } catch {}
   const ls = window.localStorage, setOrig = Storage.prototype.setItem;
   let cliente = null, listo = false, sinRed = false, aplicando = false, canal = null;
   const pendientes = new Map(), enviando = new Set(), antes = new Set();
   let cola; try { cola = new Set(JSON.parse(ls.getItem(COLA) || '[]')); } catch { cola = new Set(); }
   const guardarCola = () => { try { setOrig.call(ls, COLA, JSON.stringify([...cola])); } catch {} };
   const avisar = clave => { try { window.dispatchEvent(new StorageEvent('storage', { key: clave })); } catch {} };
-  const token = () => { try { return ls.getItem(TOKEN); } catch { return null; } };
+  const token = () => { try { if (TOKEN) return ls.getItem(TOKEN); const k = Object.keys(ls).find(x => x.startsWith(BASE_TOKEN + '.')); return k ? ls.getItem(k) : null; } catch { return null; } };
   const estado = e => { window.MINUME_SYNC = e; try { window.dispatchEvent(new CustomEvent('minume-sync', { detail: e })); } catch {} };
   const rpc = async (fn, args) => {
     const r = await fetch(`${C.url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { apikey: C.key, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
@@ -23,6 +29,7 @@
     return d;
   };
   function sesionVencida() {
+    if (!TOKEN) { listo = false; estado('sin-sesion'); return; }   // en el Inicio no se borra la sesión de ningún sistema
     try { ls.removeItem(TOKEN); } catch {}
     listo = false; estado('sin-sesion');
     try { window.dispatchEvent(new Event('minume-sesion-vencida')); } catch {}
@@ -32,12 +39,13 @@
     try {
       const d = await rpc('minume_entrar', { p_codigo: codigo });
       if (!d || d.error) return { error: (d && d.error) || 'No se pudo verificar el código.' };
-      setOrig.call(ls, TOKEN, d.token); iniciar(); return d;
+      if (TOKEN) setOrig.call(ls, TOKEN, d.token); iniciar(); return d;
     } catch (e) { return navigator.onLine === false || e instanceof TypeError ? { sinRed: true } : { error: 'No se pudo verificar el código. Intenta otra vez.' }; }
   };
   // Funciones del servidor que piden la sesión (por ejemplo, los códigos de acceso de coordinación)
   window.MINUME_RPC = (fn, args) => token() ? rpc(fn, { p_token: token(), ...args }).catch(e => { if (e.code === '28000') sesionVencida(); throw e; }) : Promise.reject(new Error('Vuelve a entrar con tu código'));
-  window.MINUME_SALIR = () => { try { ls.removeItem(TOKEN); } catch {} if (canal && cliente) cliente.removeChannel(canal); canal = null; listo = false; };
+  window.MINUME_TIENE_SESION = () => !!token();
+  window.MINUME_SALIR = () => { try { if (TOKEN) ls.removeItem(TOKEN); } catch {} if (canal && cliente) cliente.removeChannel(canal); canal = null; listo = false; };
   function ponerLocal(clave, valor) { const t = JSON.stringify(valor); if (ls.getItem(clave) === t) return false; aplicando = true; try { setOrig.call(ls, clave, t); } finally { aplicando = false; } return true; }
   Storage.prototype.setItem = function (k, v) {
     setOrig.call(this, k, v);

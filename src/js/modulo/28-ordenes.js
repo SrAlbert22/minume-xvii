@@ -1,7 +1,7 @@
 // MINUME XVII · Mandar a la gente: órdenes de la subdirección · Albert Silvestre
 // ---------- Mandar a la gente: órdenes de la subdirección ----------
 // La subdirección (o la coordinación) de un equipo manda a una persona de su staff a un punto o a una tarea.
-// A esa persona le aparece arriba «📣 Te mandan…» con «Voy en camino», «Ya llegué» o «No puedo», y le suena en el
+// A esa persona le aparece arriba «Te mandan…» con «Voy en camino», «Ya llegué» o «No puedo», y le suena en el
 // teléfono aunque esté bloqueado (la base avisa por Web Push, ver supabase/esquema.sql). Quien la mandó ve la respuesta.
 // Clave compartida «ordenes»: [{ id, para (ref del código), paraN, de, deRef, sis, que, t, estado, tE }]
 const CLAVE_ORD = 'ordenes';
@@ -15,7 +15,7 @@ let ordVistas = new Set(leerOrdenes().map(o => o.id));
 function cambiarOrden(id, est) {
   const l = leerOrdenes(), o = l.find(x => x.id === id); if (!o) return;
   o.estado = est; o.tE = ahoraMs(); guardarComp(CLAVE_ORD, l.slice(-300)); borrarNotificaciones(['ord-' + id]);
-  registrar('📣 Orden', `${o.que} · ${EST_ORD[est][0]}`);
+  registrar('Orden', `${o.que} · ${EST_ORD[est][0]}`);
   pintarOrdenes();
 }
 
@@ -26,7 +26,7 @@ function pintarOrdenes() {
   const l = ordenesDeHoy().filter(o => o.para === ref && (o.estado === 'nueva' || o.estado === 'voy')).sort((a, c) => c.t - a.t);
   for (const o of l) if (!ordVistas.has(o.id)) {
     ordVistas.add(o.id);
-    if (o.estado === 'nueva') { tono(988, .2, .3); setTimeout(() => tono(1318, .2, .3), 230); setTimeout(() => tono(988, .3, .3), 460); vibrar([400, 150, 400, 150, 700]); toast(`📣 ${o.de.split(' ')[0]} te manda: ${o.que}`); }
+    if (o.estado === 'nueva') { tono(988, .2, .3); setTimeout(() => tono(1318, .2, .3), 230); setTimeout(() => tono(988, .3, .3), 460); vibrar([400, 150, 400, 150, 700]); toast(`${o.de.split(' ')[0]} te manda: ${o.que}`); }
   }
   if (!l.length) { b.hidden = true; return; }
   const o = l[0];
@@ -57,7 +57,7 @@ function ventanaMandar(p) {
     const que = $('#ordQue').value.trim(); if (!que) return $('#ordQue').focus();
     const l = leerOrdenes(), o = { id: nuevoId('o'), para: p.ref, paraN: p.nombre, de: yoNombre(), deRef: miRef(), sis: SISTEMA, que, t: ahoraMs(), estado: 'nueva' };
     l.push(o); ordVistas.add(o.id); guardarComp(CLAVE_ORD, l.slice(-300));
-    registrar('📣 Orden', `${p.nombre}: ${que}`);
+    registrar('Orden', `${p.nombre}: ${que}`);
     toast(`Le mandaste a ${p.nombre.split(' ')[0]}: ${que}`); v.remove();
     if (window.SUBDIR_LISTO) pintarSubdireccion();
   });

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 @@css estilos/01-base.css
 @@css estilos/02-portada.css
@@ -39,6 +39,7 @@
 @@css estilos/25-triaje.css
 @@css estilos/22-telefono-fluido.css
 @@css estilos/27-mi-momento.css
+@@css estilos/28-saludo.css
 @@css estilos/26-comodidad.css
 </style>
 </head>
@@ -46,7 +47,7 @@
 <div class="deco" aria-hidden="true"><img class="d1" src="marca/anillo-pixel.svg" alt=""></div>
 <div class="aviso-demo solo-demo">DEMO · Propuesta de Albert Silvestre para la página de Asistencia de MINUME XVII · No es la página oficial · Sedes, salones y horarios de ejemplo</div>
 
-<div class="entrada" id="entrada"><div class="ent-caja">
+<div class="entrada entrando" id="entrada"><div class="ent-caja">
   <aside class="ent-marca">
     <div class="ent-top"><div><img class="ent-logo" src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones"><small id="entSis">Sistema del staff</small></div></div>
     <h2 class="ent-titulo" id="entTitulo">Bienvenido al staff</h2>
@@ -89,7 +90,7 @@
     <button class="alertas-btn" id="bAlertas" type="button"></button>
     <button class="alertas-btn" id="bPush" type="button" hidden></button>
     <span class="rol-chip" id="rolChip"></span>
-    <button class="sos" id="bSOS" title="Emergencia">🚨 SOS</button>
+    <button class="sos" id="bSOS" title="Emergencia">SOS</button>
     <button class="salir" id="bSalir" title="Salir">Salir</button>
   </div>
   <nav class="rail" id="rail">
@@ -125,7 +126,7 @@
     <a href="#casos"><span>01</span>Casos</a>
     <a href="#protocolos"><span>02</span>Protocolos</a>
     <a href="#punto"><span>03</span>Punto de bienestar</a>
-    <a href="#mejoras"><span>✨</span>Qué mejora</a>
+    <a href="#mejoras"><span></span>Qué mejora</a>
   </nav>
   <div class="banner-com" id="bannerCom" hidden></div>
   <div class="banner-orden" id="bannerOrden" hidden></div>
@@ -177,7 +178,7 @@
   <div id="sosDatos" style="background:rgba(255,255,255,.05);border-radius:12px;padding:10px 12px;font-size:14px"></div>
   <label for="sosTipo">¿Qué pasa?</label>
   <select id="sosTipo"><option>Persona herida o enferma</option><option>Persona extraviada</option><option>Situación de riesgo</option><option>Evacuación</option><option>Otra</option></select>
-  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="boton rojo" id="sosEnviar">Enviar aviso</button><button class="boton sec" id="sosCerrar">Cancelar</button><a class="boton sec" href="tel:911">📞 9-1-1</a></div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="boton rojo" id="sosEnviar">Enviar aviso</button><button class="boton sec" id="sosCerrar">Cancelar</button><a class="boton sec" href="tel:911">911</a></div>
 </div></div>
 <div class="qr-grande" id="qrGrande"><div><div id="qrG"></div><b id="qrGNombre">—</b><small>Toca para cerrar · el QR se renueva solo</small></div></div>
 <div class="editor-velo" id="editor" hidden role="dialog" aria-modal="true" aria-labelledby="edTitulo"><div class="editor-caja">
