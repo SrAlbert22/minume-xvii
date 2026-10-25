@@ -219,6 +219,69 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 @media (max-width:760px){.barra{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(var(--fondo) 80%,transparent)}input,select{font-size:16px}.deco .d2,.deco .d3{display:none}}
 @media (hover:none){.atajo:active,.boton:active,.abierta:active{transform:scale(.97)}}
+/* Rediseño del Inicio (25 oct): menos cajas, más jerarquía. Título grande sin marco, cifras en una franja,
+   los tres días como línea de tiempo, la entrada con código como tarjeta principal y equipos más limpios. */
+.arriba{gap:clamp(16px,3vw,40px);align-items:stretch;margin-top:18px}
+.caja.estado{background:none;border:0;padding:8px 0 0}
+.estado .eti{color:var(--asis)}
+.estado h1{font-size:clamp(40px,6.2vw,84px);line-height:.92;letter-spacing:-.01em;margin:14px 0 4px;text-transform:uppercase}
+.estado h1 em{font-style:normal;background:linear-gradient(90deg,var(--asis),var(--bien));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cuentas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:22px;border-block:1px solid var(--borde);padding:14px 0}
+.cuenta{background:none;border:0;border-left:1px solid var(--borde);border-radius:0;padding:2px 16px}
+.cuenta:first-child{border-left:0;padding-left:0}
+.cuenta b{font-size:clamp(28px,2.6vw,40px)}
+.dias{gap:0;margin-top:22px}
+.dia{border:0;border-top:3px solid rgba(255,255,255,.12);border-radius:0;padding:12px 10px 0 0;overflow:visible}
+.dia::before{content:'';position:absolute;top:-8px;left:0;width:13px;height:13px;border-radius:50%;background:#1a2a8a;border:2px solid rgba(255,255,255,.25)}
+.dia.hoy{background:none;border-top-color:rgba(255,210,63,.35)}
+.dia.hoy::before{background:var(--oro);border-color:var(--oro);box-shadow:0 0 0 5px rgba(255,210,63,.18)}
+.dia.paso::before{background:var(--suave);border-color:var(--suave)}
+.dia .barrita{top:-3px;bottom:auto}
+.dia b{font-size:20px;margin-top:4px}
+.momento{background:none;border:0;border-left:3px solid var(--oro);border-radius:0;padding:4px 0 4px 14px;margin-top:22px}
+.caja.entrar{position:relative;overflow:hidden;border-radius:26px;padding:clamp(22px,2.4vw,34px);
+  background:linear-gradient(155deg,rgba(0,67,197,.55),rgba(10,4,100,.82) 60%);border:1px solid rgba(0,181,255,.45);
+  box-shadow:0 30px 70px rgba(0,0,30,.45),inset 0 1px 0 rgba(255,255,255,.1)}
+.caja.entrar::before{content:'';position:absolute;width:260px;height:260px;right:-90px;top:-100px;background:url('marca/anillo-turquesa.svg') center/contain no-repeat;opacity:.22;pointer-events:none}
+.caja.entrar > *{position:relative}
+.caja.entrar .eti{color:var(--bien)}
+.campo input{background:rgba(3,6,40,.75);border-color:rgba(0,181,255,.4);text-align:left}
+.campo input:focus{border-color:var(--asis);outline:none;box-shadow:0 0 0 4px rgba(0,181,255,.18)}
+.campo .boton{background:linear-gradient(90deg,var(--azul),var(--asis))}
+.titulo{margin:44px 0 16px;border-bottom:1px solid var(--borde);padding-bottom:12px}
+.titulo h2{display:flex;align-items:center;gap:12px;text-transform:uppercase}
+.titulo h2::before{content:'';width:26px;height:5px;border-radius:4px;background:linear-gradient(90deg,var(--asis),var(--bien));flex:none}
+.equipo{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 9%,rgba(12,22,120,.55)),rgba(8,12,84,.55) 55%);border-top:3px solid var(--c);border-radius:20px}
+.equipo::before{opacity:.6}
+.eq-letra{border-radius:13px;background:linear-gradient(140deg,var(--c),color-mix(in srgb,var(--c) 55%,#000))}
+.eq-cab .entrar-eq{background:color-mix(in srgb,var(--c) 14%,transparent)}
+.kpis{gap:0;border-block:1px solid var(--borde);padding:10px 0}
+.kpi{background:none;border:0;border-left:1px solid var(--borde);border-radius:0;padding:2px 12px}
+.kpi:first-child{border-left:0;padding-left:0}
+.eq-ahora{background:none;border:0;border-left:3px solid var(--c);border-radius:0;padding:2px 0 2px 12px}
+.atajo{background:rgba(255,255,255,.035);border-color:rgba(120,170,255,.16)}
+.atajo:hover{background:color-mix(in srgb,var(--c) 12%,transparent)}
+.abajo .caja,.tres .caja,#instalar{background:rgba(10,16,96,.45)}
+@media (max-width:900px){.caja.estado{padding-top:4px}}
+@media (max-width:640px){
+  .estado h1{font-size:clamp(34px,10.5vw,48px)}
+  .cuentas{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:14px}
+  .cuenta:nth-child(3){border-left:0;padding-left:0}
+  .dia b{font-size:16px}
+  .titulo{margin-top:34px}
+  /* barra de arriba en una sola línea */
+  .barra{gap:8px}.barra .der{flex-wrap:nowrap;gap:6px}
+  .logo-marca{height:auto;width:min(172px,44vw)}
+  .reloj{font-size:15px;white-space:nowrap}#redTxt{display:none}.marca{display:none}.pastilla{padding:8px}
+  .sim{padding:6px 10px}
+  /* en el teléfono lo primero es entrar: la tarjeta del código va justo después del título */
+  .arriba{display:flex;flex-direction:column;gap:0}
+  .caja.estado{display:contents}
+  .estado .eti{order:0}.estado h1{order:1}.caja.entrar{order:2;margin:18px 0 4px}
+  .cuentas{order:3}.dias{order:4}.momento{order:5}
+  .caja.entrar::before{display:none}
+}
+.cuenta span,.dia small{display:block;line-height:1.3;margin-top:3px}
 </style>
 </head>
 <body>
@@ -260,7 +323,7 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
   <div class="titulo"><h2>Los equipos</h2><p>Datos en vivo de la base compartida · toca un atajo para ir directo</p></div>
   <section class="equipos" id="equipos"></section>
 
-  <div class="titulo"><h2>Lo que todos consultan</h2><p>Avisos entre equipos, movilizaciones, salones y a quién acudir</p></div>
+  <div class="titulo"><h2>Lo que todos consultan</h2><p>Avisos entre equipos, regionales, salones y a quién acudir</p></div>
   <section class="abajo">
     <div class="caja">
       <div class="cab-caja">
@@ -281,8 +344,6 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
         <h3>Regionales</h3>
       </div>
       <div id="buses"></div>
-      <h4 class="sub-viajes">A pie entre las sedes</h4>
-      <div id="viajes"></div>
     </div>
   </section>
 
@@ -398,8 +459,8 @@ const ATAJOS = {
   ],
   bienestar: [
     ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
-    ['casos', 'corazon', 'Casos en vivo', 'Atender y derivar'],
-    ['atenciones', 'tablilla', 'Registro de atenciones', 'Físico y emocional'],
+    ['casos', 'corazon', 'Casos y triaje', 'Lo más grave, primero'],
+    ['atenciones', 'tablilla', 'Expedientes', 'Historial y PDF de cada caso'],
     ['protocolos', 'lista', 'Protocolos', 'Qué hacer en cada caso'],
     ['punto', 'cruz', 'Punto de bienestar', 'Dónde está y qué tiene'],
     ['mapa', 'mapa', 'Mapa 3D', 'Llegar al salón'],
@@ -468,7 +529,7 @@ const FOCO = {
   seguridad: { pre: 'Revisa tu puesto y tus turnos en Cobertura de áreas.', montaje: 'Puntos de seguridad y accesos listos en el mapa.', sesiones: 'Atiende avisos y SOS; vigila accesos.', transiciones: 'Pasillos y el camino Jaragua – Sheraton.', cierre: 'Salida ordenada y último grupo.', fin: 'Cierra la bitácora del equipo.' },
   eventos: { pre: 'Revisa los eventos y la lista de invitados.', montaje: 'Monta cada evento y marca su lista.', sesiones: 'Avanza cada evento con su botón y recibe a los invitados.', transiciones: 'Prepara el siguiente evento.', cierre: 'Marca los eventos terminados.', fin: 'Revisa que todo quedó cerrado.' },
   coordinacion: { pre: 'Prepara los comunicados y revisa que cada equipo tenga sus datos.', montaje: 'Confirma que cada sede y cada punto esté listo.', sesiones: 'Mira comisiones, cobertura y avisos en vivo.', transiciones: 'Vigila traslados y comisiones que no han vuelto.', cierre: 'Revisa que todo quede cerrado y descarga los reportes.', fin: 'Descarga los reportes del evento.' },
-  bienestar: { pre: 'Repasa los protocolos y el punto de bienestar.', montaje: 'Punto de bienestar abierto y equipado.', sesiones: 'Casos en vivo: atender, derivar y cerrar.', transiciones: 'Atento a desmayos y calor en los traslados.', cierre: 'Cierra los casos abiertos del día.', fin: 'Reporte de casos del evento.' }
+  bienestar: { pre: 'Repasa los protocolos y el punto de bienestar.', montaje: 'Punto de bienestar abierto y equipado.', sesiones: 'Cola de triaje: lo más grave primero, atender y cerrar.', transiciones: 'Atento a desmayos y calor en los traslados.', cierre: 'Cierra los casos abiertos del día.', fin: 'Reporte de casos del evento.' }
 };
 
 /* Lo que coordinación edita en «Datos del evento» (salones, movilizaciones y responsables) */
@@ -531,14 +592,14 @@ function pintarEstado() {
   const saludo = hm < 12 ? 'Buenos días' : hm < 19 ? 'Buenas tardes' : 'Buenas noches';
   if (mo === 'pre') {
     const ms = hasta('2026-11-14T19:00:00-04:00'), [a, ua] = fmt(ms);
-    $('#eTit').textContent = ms ? `Faltan ${a} ${ua} para el montaje` : 'Hoy empieza el montaje';
+    $('#eTit').innerHTML = ms ? `Faltan <em>${a} ${ua}</em> para el montaje` : 'Hoy empieza <em>el montaje</em>';
     $('#eLead').textContent = `${saludo}. Cada equipo entra a su propio sistema y todos comparten los avisos: un caso que Asistencia escala le llega al instante a Seguridad o a Bienestar.`;
   } else if (mo === 'fin') {
     $('#eTit').textContent = 'MINUME XVII terminó';
     $('#eLead').textContent = 'Cierra tu bitácora y entrega tus reportes. Gracias por tu trabajo.';
   } else {
     const dia = DIAS.findIndex(x => x.f === fechaLocal(d)) + 1;
-    $('#eTit').textContent = `${saludo} · Día ${dia} de 3`;
+    $('#eTit').innerHTML = `${saludo} · <em>Día ${dia}</em> de 3`;
     $('#eLead').textContent = `Ahora: ${MOMENTOS[mo][0]}. Entra a tu sistema para ver tu checklist y lo que te toca.`;
   }
   const s = hasta('2026-11-15T08:00:00-04:00'), [s1, su1, s2, su2] = fmt(s);
@@ -682,6 +743,7 @@ function pintarBuses() {
 }
 function pintarViajes() {
   pintarBuses();
+  if (!$('#viajes')) return;
   const d = ahora(), ev = enEvento(d), m = minutos(d), prox = proximoViaje(d);
   $('#viajes').innerHTML = (ev ? '' : `<p style="margin:0 0 8px;color:var(--suave);font-size:13px">Horario de cada día de sesiones (15 y 16 de noviembre).</p>`) + VIAJES.map(v => {
     const ya = ev && aMin(v.h) < m - 5, es = prox === v, falta = es ? aMin(v.h) - m : 0;
