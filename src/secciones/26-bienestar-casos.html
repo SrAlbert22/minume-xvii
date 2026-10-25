@@ -1,18 +1,26 @@
-  <!-- Bienestar: casos (solo el sistema de Bienestar) -->
+  <!-- Bienestar: casos y cola de triaje (solo el sistema de Bienestar) -->
   <section id="casos" data-roles="bienestar">
-    <div class="titulo-sec"><span class="n">01</span><h2>Casos de bienestar</h2></div>
-    <p class="lead">Los avisos que escalan Asistencia o Seguridad, los SOS por una persona enferma y los casos que abre el equipo en piso. Cada caso dice dónde está la persona, quién la reporta y cuántos minutos lleva esperando.</p>
-    <div class="filtros" id="casoFiltro"><button data-f="abiertos" class="on">Abiertos</button><button data-f="resueltos">Cerrados</button><button data-f="todos">Todos</button></div>
-    <div id="casosLista" class="rejilla r2"></div>
-    <div class="tarjeta" style="margin-top:14px">
-      <b class="cond" style="font-size:24px">Abrir un caso en piso</b>
-      <div class="rejilla r3">
-        <div><label for="cTipo">Tipo</label><select id="cTipo"><option>Malestar físico</option><option>Crisis emocional o ansiedad</option><option>Lesión leve</option><option>Hidratación o calor</option><option>Otro</option></select></div>
-        <div><label for="cCom">Comisión</label><select id="cCom"></select></div>
-        <div><label for="cDonde">Dónde está</label><input id="cDonde" placeholder="Salón o zona"></div>
-        <div class="ancho"><label for="cTexto">Qué pasa (sin diagnóstico ni datos médicos)</label><input id="cTexto" placeholder="Ej.: delegada mareada en el pasillo del foyer"></div>
-      </div>
-      <button class="boton" id="cAbrir" style="margin-top:12px">Abrir caso</button>
-      <div class="respaldo"><span>Anota solo lo necesario para ubicar y atender a la persona. La página no guarda datos de salud.</span></div>
+    <div class="titulo-sec"><span class="n">01</span><h2>Casos y triaje</h2></div>
+    <p class="lead">Quién necesita ayuda, qué tan grave es y quién lo atiende. Lo más grave sale primero.</p>
+    <div class="tiles" id="trTiles"></div>
+    <div class="tr-acciones">
+      <button class="boton tr-nuevo" id="trNuevo" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nuevo caso</button>
+      <button class="boton sec" id="trEscanear" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2"/></svg>Escanear gafete</button>
+    </div>
+    <div class="pestanas" id="trVer"><button data-v="activos" class="on">Activos</button><button data-v="cerrados">Cerrados hoy</button></div>
+    <div id="trCola" class="tr-cola"></div>
+    <div class="tarjeta tr-alergias" id="trAlergiasCaja">
+      <div class="cob-cab"><b class="cond" style="font-size:24px">Alergias y alertas médicas</b><span class="chip rojo" id="trAlCuenta">0</span></div>
+      <p class="cob-sub">Revísalas siempre antes de dar algo de comer, una bebida o primeros auxilios. Al abrir un caso de una persona de esta lista, la alerta sale sola.</p>
+      <div id="trAlLista"></div>
+      <details class="tr-al-nueva"><summary>Agregar una alerta</summary>
+        <div class="rejilla r2" style="gap:10px;margin-top:8px">
+          <div><label for="trAlNombre">Persona</label><input id="trAlNombre" list="trPersonas" placeholder="Nombre o ID del gafete" autocomplete="off"></div>
+          <div><label for="trAlQue">Alergia o condición</label><input id="trAlQue" placeholder="Ej.: penicilina, maní, asma" maxlength="120"></div>
+        </div>
+        <button class="boton" id="trAlGuardar" type="button" style="margin-top:10px">Guardar alerta</button>
+      </details>
+      <datalist id="trPersonas"></datalist>
+      <p class="cob-sub" style="font-size:12.5px">Son datos de salud: solo los ven Bienestar y la Coordinación general.</p>
     </div>
   </section>

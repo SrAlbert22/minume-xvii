@@ -85,7 +85,7 @@ const HERO = {
   traslado: ['Seguridad y Traslado', 'SUBDIRECCIÓN DE SEGURIDAD Y TRASLADO', 'Todo el evento en vivo: el staff en el mapa, los puntos y sus turnos, las rondas, las 18 regionales y las alertas.'],
   coordinacion: ['Coordinación', 'DIRECCIÓN · COORDINACIÓN GENERAL', 'Lo ves todo: cada equipo, cada sede, las movilizaciones, las alertas y lo que piden los salones.'],
   eventos: ['Eventos y Protocolo', 'EVENTOS Y PROTOCOLO', 'Cada ceremonia y actividad del día, paso a paso, los invitados especiales y el plano de asientos de cada evento.'],
-  bienestar: ['Bienestar', 'EQUIPO DE BIENESTAR', 'Los casos de bienestar en vivo: quién necesita ayuda, dónde está y quién lo atiende. Con protocolos rápidos y el punto de bienestar en el mapa.'],
+  bienestar: ['Bienestar', 'EQUIPO DE BIENESTAR', 'Los casos en vivo con su triaje: quién necesita ayuda, qué tan grave es, dónde está y quién lo atiende. Con alergias, expedientes y protocolos.'],
 };
 const HERO_SIS = { coordinacion: { coordinacion: ['Coordinación general', 'DIRECCIÓN · COORDINACIÓN GENERAL', 'Todo el evento en un solo lugar: comunicados, comisiones, cobertura de seguridad, rondas, bienestar, objetos perdidos y avisos.'] }, asistencia: { coordinacion: ['Coordinación', 'COORDINACIÓN DE ASISTENCIA A COMISIONES', 'Las incidencias que reportan los asistentes, los pedidos de los salones y el avance de cada comisión.'] } };
 // Cada equipo ve sus secciones en su propio orden; las demás no existen para él

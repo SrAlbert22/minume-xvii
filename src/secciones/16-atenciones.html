@@ -1,10 +1,11 @@
   <!-- Registro de atenciones de Bienestar -->
   <section id="atenciones" data-roles="bienestar coordinacion">
-    <div class="titulo-sec"><span class="n">00</span><h2>Registro de atenciones</h2><span class="chip amarillo">NUEVO</span></div>
+    <div class="titulo-sec"><span class="n">00</span><h2>Expedientes</h2></div>
     <p class="lead" id="atLead">Cada persona que llega al punto de bienestar: por qué vino, qué se hizo y cómo salió. Bienestar físico y bienestar emocional llevan su propio registro.</p>
     <div class="tiles" id="atTiles"></div>
-    <div class="rejilla r2" style="margin-top:14px" id="atCuerpo">
-      <div class="tarjeta" id="atFormCaja">
+    <button class="boton" id="atNuevo" type="button" style="margin-top:12px">Nuevo caso</button>
+    <div class="rejilla" style="margin-top:14px" id="atCuerpo">
+      <div class="tarjeta" id="atFormCaja" hidden>
         <b class="cond" style="font-size:24px">Registrar una llegada</b>
         <div class="pestanas" id="atFormArea" style="margin-top:10px"><button data-a="fisico">Bienestar físico</button><button data-a="emocional">Bienestar emocional</button></div>
         <div class="rejilla r2" style="gap:10px">

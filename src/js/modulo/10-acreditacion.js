@@ -112,6 +112,7 @@ function crearEscaner(vid, msg, boton, alLeer) {
     setTimeout(leer, 180);
   }
   boton.onclick = () => flujo ? cerrar() : abrir();
+  return { abrir, cerrar };
 }
 crearEscaner($('#video'), $('#visorMsg'), $('#bCamara'), procesarQR);
 

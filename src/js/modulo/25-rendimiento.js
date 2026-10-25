@@ -37,7 +37,7 @@ function accionesDelDia(dia) {
   Object.entries(leerComp('comisiones', {})).forEach(([c, x]) => add(x.por, `Reportó el estado de ${c}`, x.t));
   leerComp('rondas', []).forEach(x => { if (x.fin) add(x.por, `Completó la ronda ${x.ruta}`, x.fin); });
   leerComp('objetos', []).forEach(x => add(x.por, x.tipo === 'buscado' ? 'Registró un objeto buscado' : 'Registró un objeto encontrado', x.t));
-  leerComp('atenciones', []).forEach(x => add(x.por, 'Registró una atención de bienestar', x.llega));
+  leerComp('atenciones', []).filter(x => x.tipo !== 'alerta').forEach(x => add(x.por, 'Registró una atención de bienestar', x.llega));
   const evs = Object.fromEntries(EV_LISTA.map(e => [e.id, e.n]));
   Object.entries(leerComp('eventos', {})).forEach(([id, x]) => add(x.por, `Avanzó el evento ${evs[id] || ''}`.trim(), x.t));
   const invs = Object.fromEntries(INV_LISTA.map(g => [g.id, g.n]));

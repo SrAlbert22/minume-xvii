@@ -178,6 +178,139 @@
     bajar(doc.output('blob'), c.archivo + '.pdf');
   }
 
+  // Expediente de una persona atendida por Bienestar: una hoja vertical tipo ficha clínica, con su foto,
+  // una banda de identificación como la pulsera de un hospital (con QR del caso), la gravedad y lo que se hizo.
+  async function expediente(e) {
+    await cargarTodo(LIBS.pdf);
+    const [ttf, logo, inst, adorno] = await Promise.all([cargarLetras(), aPng('blanco', 760), aPng('institucional', 320), aPng('adorno', 240)]);
+    const { jsPDF } = window.jspdf, doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    if (ttf) for (const [n, [fam, est]] of Object.entries(LETRAS)) { doc.addFileToVFS(n + '.ttf', ttf[n]); doc.addFont(n + '.ttf', fam, est); }
+    const TIT = ttf ? 'Barlow Condensed' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
+    const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 14, navy = rgb(NAVY), suave = rgb(SUAVE), tinta = rgb(TINTA), linea = rgb(LINEA);
+    const pc = rgb(e.prioColor || MARCA.medio);
+    // cabecera de la marca
+    const pasos = 60;
+    for (let i = 0; i < pasos; i++) { const t = i / (pasos - 1); doc.setFillColor(...(t < .6 ? mezcla(MARCA.noche, MARCA.rey, t / .6) : mezcla(MARCA.rey, MARCA.azul, (t - .6) / .4))); doc.rect(W * i / pasos, 0, W / pasos + .3, 24, 'F'); }
+    if (adorno) { doc.saveGraphicsState(); doc.setGState(new doc.GState({ opacity: .35 })); doc.addImage(adorno.data, 'PNG', W - 24, -14, 36, 36 / adorno.prop, 'adorno', 'FAST'); doc.restoreGraphicsState(); }
+    if (logo) doc.addImage(logo.data, 'PNG', M, 6.5, 56, 56 / logo.prop, 'logo', 'FAST');
+    else { doc.setFont(TIT, 'bold'); doc.setFontSize(16); doc.setTextColor(255, 255, 255); doc.text('MINUME XVII', M, 13); }
+    doc.setFont(TIT, 'normal'); doc.setFontSize(10); doc.setTextColor(...rgb(MARCA.celeste)); doc.text('SUBSECRETARÍA DE BIENESTAR', M, 19.5, { charSpace: .3 });
+    doc.setFont(TXT, 'normal'); doc.setFontSize(8.2); doc.setTextColor(214, 224, 255);
+    doc.text('Documento confidencial', W - 28, 11, { align: 'right' }); doc.text(paraPdf(fechaTxt()), W - 28, 16, { align: 'right' });
+    FRANJA.forEach((col, i) => { doc.setFillColor(...rgb(col)); doc.rect(W * i / FRANJA.length, 24, W / FRANJA.length + .2, 1.4, 'F'); });
+
+    // título y número de caso
+    let y = 38;
+    doc.setFont(TIT, 'bold'); doc.setFontSize(24); doc.setTextColor(...navy); doc.text('EXPEDIENTE DE ATENCIÓN', M, y);
+    doc.setFontSize(22); doc.setTextColor(...navy); doc.text(paraPdf(e.codigo), W - M, y, { align: 'right' });
+    doc.setFillColor(...rgb(MARCA.medio)); doc.rect(M, y + 3, 22, 1.2, 'F');
+    y += 10;
+
+    // foto, como en una ficha clínica
+    const fw = 40, fh = 48;
+    doc.setDrawColor(...navy); doc.setLineWidth(.6); doc.setFillColor(...rgb(CLARO)); doc.rect(M, y, fw, fh, 'FD');
+    if (e.foto) { try { doc.addImage(e.foto, 'JPEG', M + 1.2, y + 1.2, fw - 2.4, fw - 2.4, 'foto', 'FAST'); } catch {} }
+    else { doc.setFont(TIT, 'bold'); doc.setFontSize(30); doc.setTextColor(170, 180, 215); doc.text(paraPdf(e.nombre.split(/\s+/).slice(0, 2).map(s => s[0] || '').join('').toUpperCase()), M + fw / 2, y + fw / 2 + 4, { align: 'center' }); }
+    doc.setFillColor(...navy); doc.rect(M, y + fw, fw, fh - fw, 'F');
+    doc.setFont(TIT, 'bold'); doc.setFontSize(8.5); doc.setTextColor(255, 255, 255); doc.text(e.foto ? 'FOTO DE IDENTIFICACIÓN' : 'SIN FOTO', M + fw / 2, y + fw + 5.4, { align: 'center', charSpace: .2 });
+
+    // banda de identificación (como la pulsera del hospital)
+    const bx = M + fw + 6, bw = W - M - bx;
+    doc.setFillColor(...navy); doc.roundedRect(bx, y, bw, 20, 2.5, 2.5, 'F');
+    doc.setFillColor(...pc); doc.rect(bx, y, 3, 20, 'F');
+    doc.setFont(TIT, 'bold'); doc.setFontSize(19); doc.setTextColor(255, 255, 255);
+    doc.text(doc.splitTextToSize(paraPdf(e.nombre).toUpperCase(), bw - 30)[0], bx + 7, y + 9);
+    doc.setFont(TXT, 'normal'); doc.setFontSize(8.6); doc.setTextColor(200, 214, 255);
+    doc.text(paraPdf([e.persona, e.id ? 'ID ' + e.id : '', e.com].filter(Boolean).join('  ·  ')), bx + 7, y + 15.5);
+    if (window.qrcode) {
+      const q = window.qrcode(0, 'M'); q.addData(`M17-EXP.${e.codigo}.${e.id || 'sin-id'}`); q.make();
+      const n = q.getModuleCount(), s = 15 / n, qx = bx + bw - 18, qy = y + 2.5;
+      doc.setFillColor(255, 255, 255); doc.rect(qx - 1, qy - 1, 17, 17, 'F'); doc.setFillColor(...navy);
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) doc.rect(qx + c * s, qy + r * s, s + .02, s + .02, 'F');
+    }
+    // datos de la persona
+    // la comisión va a lo ancho porque su nombre completo es largo
+    const datos = [['Comisión', e.comNombre ? `${e.com} · ${e.comNombre}` : e.com, 1], ['Delegación o equipo', e.del], ['Colegio', e.col], ['Llegada', `${e.fecha} · ${e.llega}`], ['Lugar', e.donde]];
+    const dy = y + 25, cw = bw / 2;
+    datos.forEach(([k, v, ancho], i) => {
+      const j = i + 1, x = ancho ? bx : bx + (j % 2) * cw, yy = dy + (ancho ? 0 : Math.floor(j / 2) * 8.6), cw2 = ancho ? bw : cw;
+      doc.setFont(TXT, 'bold'); doc.setFontSize(6.8); doc.setTextColor(...suave); doc.text(paraPdf(k).toUpperCase(), x, yy, { charSpace: .15 });
+      doc.setFont(TXT, 'normal'); doc.setFontSize(9.6); doc.setTextColor(...tinta); doc.text(doc.splitTextToSize(paraPdf(v || '—'), cw2 - 3)[0], x, yy + 4.2);
+    });
+    y += fh + 7;
+
+    // alergias
+    const hayAl = e.alergias && e.alergias.length;
+    doc.setFillColor(...(hayAl ? [253, 232, 234] : [229, 246, 237])); doc.setDrawColor(...rgb(hayAl ? TONOS.rojo : TONOS.verde)); doc.setLineWidth(.4);
+    doc.roundedRect(M, y, W - 2 * M, 12, 2, 2, 'FD');
+    doc.setFont(TIT, 'bold'); doc.setFontSize(11); doc.setTextColor(...rgb(hayAl ? TONOS.rojo : TONOS.verde));
+    doc.text(hayAl ? 'ALERGIAS Y ALERTAS MÉDICAS' : 'SIN ALERGIAS REGISTRADAS', M + 4, y + 5.2, { charSpace: .2 });
+    doc.setFont(TXT, 'normal'); doc.setFontSize(9); doc.setTextColor(...tinta);
+    doc.text(doc.splitTextToSize(paraPdf(hayAl ? e.alergias.join(' · ') : 'Verifica siempre con la persona antes de dar alimentos o primeros auxilios.'), W - 2 * M - 8)[0], M + 4, y + 9.6);
+    y += 17;
+
+    // triaje: gravedad, categoría, motivo y estado
+    const cols = [['Gravedad', e.prio, e.prioDesc], ['Categoría', e.area, ''], ['Motivo', e.motivo, ''], ['Estado', e.estado, e.salida]];
+    const gw = (W - 2 * M - 9) / 4;
+    cols.forEach(([k, v, s], i) => {
+      const x = M + i * (gw + 3), sobre = i === 0 ? (esClaro(e.prioColor) ? navy : [255, 255, 255]) : null;
+      if (i === 0) { doc.setFillColor(...pc); doc.roundedRect(x, y, gw, 19, 2, 2, 'F'); } else { doc.setFillColor(...rgb(CLARO)); doc.setDrawColor(...linea); doc.roundedRect(x, y, gw, 19, 2, 2, 'FD'); }
+      doc.setFont(TXT, 'bold'); doc.setFontSize(6.8); doc.setTextColor(...(sobre || suave)); doc.text(paraPdf(k).toUpperCase(), x + 3.5, y + 5, { charSpace: .15 });
+      const lv = doc.setFont(TIT, 'bold').setFontSize(13.5).splitTextToSize(paraPdf(v || '—'), gw - 6), dos = lv.length > 1 && !s;
+      if (dos) doc.setFontSize(10.5); doc.setTextColor(...(sobre || navy)); doc.text(dos ? doc.splitTextToSize(paraPdf(v), gw - 6).slice(0, 2) : lv[0], x + 3.5, dos ? y + 10.5 : y + 11.5);
+      if (s) { doc.setFont(TXT, 'normal'); doc.setFontSize(7.6); doc.setTextColor(...(sobre || suave)); doc.text(doc.splitTextToSize(paraPdf(s), gw - 6)[0], x + 3.5, y + 16); }
+    });
+    y += 26;
+
+    // secciones de texto
+    const seccion = (titulo, texto, alto = 0) => {
+      doc.setFont(TIT, 'bold'); doc.setFontSize(11.5); doc.setTextColor(...navy); doc.text(paraPdf(titulo).toUpperCase(), M, y, { charSpace: .25 });
+      doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.line(M, y + 1.8, W - M, y + 1.8); y += 6.5;
+      doc.setFont(TXT, 'normal'); doc.setFontSize(9.6); doc.setTextColor(...tinta);
+      const l = doc.splitTextToSize(paraPdf(texto || 'Sin anotaciones.'), W - 2 * M); doc.text(l, M, y); y += Math.max(alto, l.length * 4.4) + 5;
+    };
+    seccion('Motivo de consulta y observaciones', e.que, 8);
+    seccion('Atención brindada', e.hizo, 8);
+    seccion('Egreso', e.sale ? `${e.salida || 'Cerrado'} · salió a las ${e.sale} · estuvo ${e.duracion}` : 'El caso sigue abierto.');
+
+    // historial
+    doc.setFont(TIT, 'bold'); doc.setFontSize(11.5); doc.setTextColor(...navy); doc.text('HISTORIAL DEL CASO', M, y, { charSpace: .25 }); y += 2.5;
+    doc.autoTable({
+      startY: y, head: [['HORA', 'QUÉ PASÓ', 'QUIÉN']], body: (e.hist || []).map(f => f.map(v => paraPdf(v))),
+      margin: { left: M, right: M, bottom: 40 }, theme: 'grid',
+      styles: { font: TXT, fontSize: 8.6, cellPadding: 2.2, textColor: tinta, lineColor: linea, lineWidth: .2 },
+      headStyles: { font: TIT, fillColor: navy, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 9 },
+      alternateRowStyles: { fillColor: [246, 248, 255] }, columnStyles: { 0: { cellWidth: 26 }, 2: { cellWidth: 52 } },
+    });
+    y = doc.lastAutoTable.finalY + 14;
+    if (y > H - 42) { doc.addPage(); y = 30; }
+    // firmas
+    const fwid = (W - 2 * M - 12) / 2;
+    [['Atendió', e.encargado], ['Firma y sello de Bienestar', '']].forEach(([k, v], i) => {
+      const x = M + i * (fwid + 12);
+      doc.setDrawColor(...navy); doc.setLineWidth(.35); doc.line(x, y + 8, x + fwid, y + 8);
+      doc.setFont(TXT, 'normal'); doc.setFontSize(9.4); doc.setTextColor(...tinta); if (v) doc.text(paraPdf(v), x, y + 6);
+      doc.setFont(TXT, 'bold'); doc.setFontSize(7); doc.setTextColor(...suave); doc.text(paraPdf(k).toUpperCase(), x, y + 12, { charSpace: .15 });
+    });
+    // pie
+    const tot = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= tot; p++) {
+      doc.setPage(p);
+      FRANJA.forEach((col, i) => { doc.setFillColor(...rgb(col)); doc.rect(M + (W - 2 * M) * i / FRANJA.length, H - 13, (W - 2 * M) / FRANJA.length + .1, .7, 'F'); });
+      doc.setFont(TXT, 'normal'); doc.setFontSize(7.4); doc.setTextColor(110, 118, 160);
+      doc.text(paraPdf(`MINUME XVII · Expediente ${e.codigo} · Contiene datos de salud: solo para Bienestar y la Coordinación general`), M, H - 7.5);
+      if (inst) doc.addImage(inst.data, 'PNG', W - 54, H - 11.4, 7 * inst.prop, 7, 'inst', 'FAST');
+      doc.setFont(TIT, 'bold'); doc.setFontSize(8.5); doc.setTextColor(...navy); doc.text(`${p}/${tot}`, W - M, H - 7.5, { align: 'right' });
+    }
+    const archivo = sinEmoji(e.nombre).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    bajar(doc.output('blob'), `expediente-${e.codigo.toLowerCase()}-${archivo}.pdf`);
+  }
+  window.exportarExpediente = async e => {
+    aviso('Preparando el expediente…');
+    try { await expediente(e); aviso('Expediente descargado'); }
+    catch (er) { console.warn(er); aviso('No se pudo crear el expediente. La primera vez necesita internet para preparar las plantillas.'); }
+  };
+
   window.exportarReporte = async (fmt, c) => {
     if (!c) return;
     if (!c.filas || !c.filas.length) return aviso('Todavía no hay datos para descargar');

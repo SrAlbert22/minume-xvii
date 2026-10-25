@@ -966,3 +966,48 @@ end $$;
 
 revoke all on function public.minume_foto_guardar(text, text, text), public.minume_foto_borrar(text, text), public.minume_foto_leer(text, text[]) from public;
 grant execute on function public.minume_foto_guardar(text, text, text), public.minume_foto_borrar(text, text), public.minume_foto_leer(text, text[]) to anon, authenticated;
+
+-- =====================================================================
+-- Fotos de Bienestar para el expediente (clave bie.<id del caso>)
+-- Las suben Bienestar y Coordinación general; solo ellos las pueden ver. Las de invitados (inv.*) siguen igual.
+-- =====================================================================
+create or replace function public.minume_foto_permiso(c public.minume_codigos, p_clave text) returns boolean
+language sql stable set search_path = public as $$
+  select case
+    when p_clave ~ '^inv\.[a-z0-9_-]{1,60}$' then c.sistema in ('eventos', 'coordinacion')
+    when p_clave ~ '^bie\.[a-z0-9_-]{1,60}$' then c.rol = 'bienestar' or c.sistema = 'coordinacion'
+    else false end
+$$;
+
+create or replace function public.minume_foto_guardar(p_token text, p_clave text, p_data text)
+returns jsonb language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token); v timestamptz;
+begin
+  if not public.minume_foto_permiso(c, p_clave) then raise exception 'No puedes subir esta foto' using errcode = '42501'; end if;
+  if p_data is null or p_data not like 'data:image/jpeg;base64,%' or char_length(p_data) > 200000 then raise exception 'La foto no es válida o es muy grande'; end if;
+  insert into public.minume_fotos (clave, data, por, actualizado) values (p_clave, p_data, left(c.nombre, 80), now())
+  on conflict (clave) do update set data = excluded.data, por = excluded.por, actualizado = now() returning actualizado into v;
+  perform realtime.send(jsonb_build_object('clave', p_clave), 'foto', 'minume-compartido', false);
+  return jsonb_build_object('clave', p_clave, 'actualizado', v);
+end $$;
+
+create or replace function public.minume_foto_borrar(p_token text, p_clave text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  if not public.minume_foto_permiso(c, p_clave) then raise exception 'No puedes quitar esta foto' using errcode = '42501'; end if;
+  delete from public.minume_fotos where clave = p_clave;
+  perform realtime.send(jsonb_build_object('clave', p_clave), 'foto', 'minume-compartido', false);
+end $$;
+
+-- Las de invitados las ve todo el staff; las de Bienestar, solo Bienestar y Coordinación general
+create or replace function public.minume_foto_leer(p_token text, p_claves text[])
+returns jsonb language plpgsql stable security definer set search_path = public, extensions as $$
+declare c public.minume_codigos := public.minume_sesion(p_token);
+begin
+  return coalesce((select jsonb_object_agg(f.clave, f.data) from public.minume_fotos f
+                   where f.clave = any(p_claves[1:40])
+                     and (f.clave like 'inv.%' or (f.clave like 'bie.%' and (c.rol = 'bienestar' or c.sistema = 'coordinacion')))), '{}'::jsonb);
+end $$;
+
+revoke all on function public.minume_foto_permiso(public.minume_codigos, text) from public, anon, authenticated;

@@ -47,8 +47,8 @@ const REPORTES = {
     return baseReporte('Registro de atenciones de Bienestar', 'atenciones-bienestar', {
       subtitulo: 'Documento confidencial: contiene datos de salud. Compártelo solo con el equipo de Bienestar y la coordinación general.',
       resumen: [[l.filter(x => !x.sale).length, 'en el punto ahora'], [hoy.length, 'atendidos hoy'], [hoy.filter(x => x.area === 'fisico').length, 'bienestar físico'], [hoy.filter(x => x.area === 'emocional').length, 'bienestar emocional'], [l.filter(x => x.seguir).length, 'requieren seguimiento']],
-      columnas: [{ t: 'Llegó', w: 10, pdf: 15 }, { t: 'Área', w: 11, pdf: 18 }, { t: 'Nombre', w: 20 }, { t: 'Es', w: 11, pdf: 18 }, { t: 'Comisión', w: 10, pdf: 17 }, { t: 'Motivo', w: 20 }, { t: 'Qué le pasa', w: 28 }, { t: 'Qué se hizo', w: 28 }, { t: 'Salió', w: 10, pdf: 15 }, { t: 'Cómo salió', w: 20 }, { t: 'Seguimiento', w: 11, pdf: 17 }],
-      filas: l.map(x => [horaDR(x.llega), AT_AREA[x.area][0], x.nombre, x.persona, x.com, x.motivo, x.que, x.hizo, x.sale ? horaDR(x.sale) : '', x.salida || 'En el punto', x.seguir ? 'Sí' : 'No']), estadoCol: 9, estado: tonoEstado,
+      columnas: [{ t: 'Llegó', w: 10, pdf: 15 }, { t: 'Área', w: 11, pdf: 18 }, { t: 'Nombre', w: 20 }, { t: 'Es', w: 11, pdf: 18 }, { t: 'Comisión', w: 10, pdf: 17 }, { t: 'Gravedad', w: 12, pdf: 18 }, { t: 'Motivo', w: 20 }, { t: 'Qué le pasa', w: 28 }, { t: 'Qué se hizo', w: 28 }, { t: 'Salió', w: 10, pdf: 15 }, { t: 'Cómo salió', w: 20 }, { t: 'Seguimiento', w: 11, pdf: 17 }],
+      filas: l.map(x => [horaDR(x.llega), AT_AREA[x.area][0], x.nombre, x.persona, x.com, x.prio && PRIO[x.prio] ? PRIO[x.prio].n : '', x.motivo, x.que, x.hizo, x.sale ? horaDR(x.sale) : '', x.salida || 'En el punto', x.seguir ? 'Sí' : 'No']), estadoCol: 10, estado: tonoEstado,
     });
   },
   comunicados() {

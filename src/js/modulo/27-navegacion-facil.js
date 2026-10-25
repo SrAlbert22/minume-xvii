@@ -23,7 +23,7 @@ const SECCION = {
   comunicados: ['megafono', 'Comunicados', 'Avisos para todo el staff'], chat: ['chat', 'Chat', 'Mensajes con tu equipo y el staff'], rendimiento: ['grafico', 'Rendimiento', 'Quién trabaja y cómo va cada persona'], 'comisiones-vivo': ['lista', 'Comisiones', 'Cómo va cada comisión'],
   eventos: ['estrella', 'Eventos de hoy', 'Avanza cada evento con un botón'], invitados: ['persona', 'Invitados', 'Quién llegó y dónde se sienta'],
   asientos: ['asiento', 'Asientos', 'Plano de asientos de cada evento'], cobertura: ['escudo', 'Cobertura', 'Quién cubre cada punto y cuándo'],
-  rondas: ['ruta', 'Rondas', 'Recorridos de seguridad'], atenciones: ['corazon', 'Atenciones', 'Registro de atenciones'],
+  rondas: ['ruta', 'Rondas', 'Recorridos de seguridad'], atenciones: ['reporte', 'Expedientes', 'Todas las atenciones y sus expedientes'],
   objetos: ['bolso', 'Objetos perdidos', 'Lo encontrado y lo que se busca'], programa: ['calendario', 'Programa', 'Qué pasa hoy y a qué hora'],
   delegados: ['qr', 'Delegados', 'Acreditación de delegados'], mapa: ['mapa', 'Mapa y rutas', 'Cómo llegar a cada salón'],
   ubicacion: ['pin', 'Equipo en vivo', 'Dónde está el equipo'], seguridad: ['alerta', 'Seguridad', 'Código del evento y protocolo'],
@@ -31,7 +31,7 @@ const SECCION = {
   bitacora: ['libro', 'Bitácora', 'Lo importante del día'], reportes: ['reporte', 'Reportes', 'Todo lo que pasó, día por día'], listas: ['check', 'Mis listas', 'Lo que te toca ahora'],
   sesion: ['reloj', 'Durante la sesión', 'Sesión y transiciones'], 'mi-comision': ['grupo', 'Mi comisión', 'La ficha de tu comisión'],
   empieza: ['persona', 'Mi rol', 'Qué hace un asistente'], bolsillo: ['tarjeta', 'Guía de bolsillo', 'Contactos y respuestas rápidas'],
-  cumplimiento: ['grafico', 'Cumplimiento', 'Avance de las comisiones'], casos: ['corazon', 'Casos', 'Casos de bienestar en vivo'],
+  cumplimiento: ['grafico', 'Cumplimiento', 'Avance de las comisiones'], casos: ['corazon', 'Casos y triaje', 'Quién necesita ayuda y qué tan grave es'],
   protocolos: ['libro', 'Protocolos', 'Qué hacer en cada caso'], punto: ['cruz', 'Punto de bienestar', 'Dónde está y qué tiene'],
 };
 // lo que va en la barra de abajo (además de Inicio, Mapa y Comunicados)
