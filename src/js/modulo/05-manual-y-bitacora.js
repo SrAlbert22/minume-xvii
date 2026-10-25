@@ -50,6 +50,7 @@ const vistaReporte = () => { $('#iVista').textContent = textoReporte(); };
 $('#iNivel').onchange = () => { $('#iArea').value = AREA_NIVEL[$('#iNivel').value]; vistaReporte(); };
 ['#iTexto', '#iHice', '#iNecesito', '#iDonde', '#iImpacto', '#iArea'].forEach(id => $(id).addEventListener('input', vistaReporte));
 $('#iArea').value = 'coordinacion'; vistaReporte();
+$('#bWhats').onclick = () => { open('https://wa.me/?text=' + encodeURIComponent(textoReporte()), '_blank', 'noopener'); };
 $('#bCopiar').onclick = async () => { try { await navigator.clipboard.writeText(textoReporte()); toast('Mensaje copiado: pégalo en el canal'); } catch { toast('No se pudo copiar el mensaje'); } };
 
 // Bitácora con el formato del manual: Hora · Situación · Acción · Área contactada · Estatus

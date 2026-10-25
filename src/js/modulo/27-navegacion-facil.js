@@ -62,7 +62,7 @@ function abrirSeccion(id, { historia = true, arriba = true } = {}) {
   const url = urlSeccion(id), ahora = location.pathname + location.search + location.hash;
   if (url !== ahora && !location.hash.startsWith('#entrar=')) history[historia ? 'pushState' : 'replaceState']({ seccion: id }, '', url);
   if (arriba) scrollTo({ top: 0, behavior: 'instant' });
-  if (id === 'inicio') pintarTablero();
+  if (id === 'inicio') { pintarTablero(); if (window.MOMENTO_LISTO) { ubicarMomento(); pintarMomento(); } }
   if (id === 'traslado' && window.REGIONALES_LISTO) pintarRegionales();
   if (id === 'rendimiento' && window.RENDIMIENTO_LISTO) cargarRendimiento();
   if (id === 'reportes' && window.REPORTES_DIA_LISTO) pintarReportes();
