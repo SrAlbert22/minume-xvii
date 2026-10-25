@@ -1,3 +1,4 @@
+// MINUME XVII · Tablero de cada equipo (su propio inicio) · Albert Silvestre
 // ---------- Tablero de cada equipo (su propio inicio) ----------
 // Turnos de cada asistente (por su nombre); se editan en «Datos del evento → Turnos de asistentes»
 const TURNOS_ASIS = { 'María Pérez': [{ de: '7:30', a: '13:00', salon: 'Anacaona 2', tarea: 'Montaje, agua y conteo de delegados' }, { de: '14:00', a: '18:30', salon: 'Anacaona 2', tarea: 'Sesión de la tarde y cierre del salón' }] };

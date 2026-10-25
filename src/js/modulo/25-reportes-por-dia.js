@@ -1,3 +1,4 @@
+// MINUME XVII · Reportes por día: todo lo que pasó, guardado día por día · Albert Silvestre
 // ---------- Reportes por día: todo lo que pasó, guardado día por día ----------
 // Pedido en la reunión del 21 de octubre: la bitácora no se reinicia, se archiva; un botón por cada día del evento
 // y, al abrirlo, el reporte completo (cobertura, puntos, rondas, incidencias, regionales, objetos…) en PDF y Excel.

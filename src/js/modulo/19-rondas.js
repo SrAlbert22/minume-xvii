@@ -1,3 +1,4 @@
+// MINUME XVII · Rondas · Albert Silvestre
 // ---------- Rondas ----------
 const RUTAS = [
   { id: 'R1', n: 'Jaragua · salones y lobby', cada: 60, puntos: ['Lobby y acreditación', 'Pasillo de salones', 'Anacaona', 'Salones pequeños (Marién a Las Olas)', 'Salida de emergencia', 'Puerta este'] },

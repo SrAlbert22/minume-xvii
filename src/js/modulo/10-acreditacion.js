@@ -1,3 +1,4 @@
+// MINUME XVII · Acreditación con QR · Albert Silvestre
 // ---------- Acreditación con QR ----------
 // Gafetes de ejemplo. En la versión real salen de la base de datos y la firma la pone el servidor con una llave que nadie ve.
 const GAFETES = {

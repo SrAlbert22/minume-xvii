@@ -1,3 +1,4 @@
+// MINUME XVII · Reportes en PDF y Excel (plantilla de MINUME XVII) · Albert Silvestre
 // ---------- Reportes en PDF y Excel (plantilla de MINUME XVII) ----------
 window.toastMinume = toast;
 const colorEquipo = () => SIS.color || (getComputedStyle(document.documentElement).getPropertyValue('--equipo') || '').trim() || '#0090fb';

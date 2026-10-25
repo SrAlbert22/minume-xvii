@@ -1,3 +1,4 @@
+// MINUME XVII · Objetos perdidos · Albert Silvestre
 // ---------- Objetos perdidos ----------
 const OB_CAT = ['Documento o identificación', 'Celular o electrónico', 'Ropa o accesorio', 'Mochila o bolso', 'Llaves', 'Material de comisión', 'Otro'];
 const OB_GUARDA = ['Mesa de Seguridad · Lobby del Jaragua', 'Lobby del Sheraton', 'Malecón Terrace', 'Lo tengo yo'];

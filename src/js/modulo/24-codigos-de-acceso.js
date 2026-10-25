@@ -1,3 +1,4 @@
+// MINUME XVII · Códigos de acceso del staff (solo Coordinación general) · Albert Silvestre
 // ---------- Códigos de acceso del staff (solo Coordinación general) ----------
 // Los crea el servidor: el código completo se muestra una sola vez y en la base solo queda cifrado.
 const TIPOS_CODIGO = [['AS', 'Asistente de comisión'], ['CO', 'Coordinación de Asistencia'], ['AC', 'Acreditación'], ['SE', 'Seguridad y Traslado (SE)'], ['TR', 'Seguridad y Traslado (TR)'], ['BI', 'Bienestar'], ['EP', 'Eventos y Protocolo'], ['CG', 'Dirección (Coordinación general)']];

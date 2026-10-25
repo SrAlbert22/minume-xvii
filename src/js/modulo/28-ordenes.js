@@ -1,3 +1,4 @@
+// MINUME XVII · Mandar a la gente: órdenes de la subdirección · Albert Silvestre
 // ---------- Mandar a la gente: órdenes de la subdirección ----------
 // La subdirección (o la coordinación) de un equipo manda a una persona de su staff a un punto o a una tarea.
 // A esa persona le aparece arriba «📣 Te mandan…» con «Voy en camino», «Ya llegué» o «No puedo», y le suena en el

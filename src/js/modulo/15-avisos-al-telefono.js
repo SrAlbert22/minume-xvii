@@ -1,3 +1,4 @@
+// MINUME XVII · Avisos al teléfono (Web Push) · Albert Silvestre
 // ---------- Avisos al teléfono (Web Push) ----------
 // Con esto los SOS, el nivel 3, los comunicados urgentes y los mensajes urgentes del chat llegan aunque
 // la página esté cerrada o el teléfono bloqueado. La base decide a quién le llega cada aviso (supabase/esquema.sql)

@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* ---------- Línea gráfica de MINUME XVII ---------- */
   .logo-marca { height: 30px; width: auto; display: block; flex: none; }
   .cab-fila .logo-marca + div small { display: block; color: var(--suave); font-size: 12px; font-weight: 600; letter-spacing: .02em; }

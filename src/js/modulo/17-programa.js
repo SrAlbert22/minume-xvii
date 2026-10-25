@@ -1,3 +1,4 @@
+// MINUME XVII · Programa del evento (de ejemplo) · Albert Silvestre
 // ---------- Programa del evento (de ejemplo) ----------
 const PROGRAMA = {
   '2026-11-14': [['15:00', '19:00', 'Montaje de salones', 'Jaragua y Sheraton', 'Staff'], ['17:00', '21:00', 'Acreditación de delegados', 'Lobby · Renaissance Jaragua', 'Delegados'], ['19:00', '20:00', 'Reunión general del staff', 'Anacaona · Jaragua', 'Staff'], ['20:00', '21:00', 'Recorrido de seguridad por la ruta Jaragua – Sheraton', 'Las dos sedes', 'Seguridad']],

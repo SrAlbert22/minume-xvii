@@ -61,7 +61,7 @@
 
   async function excel(c) {
     await cargarTodo(LIBS.xlsx);
-    const wb = new ExcelJS.Workbook(); wb.creator = 'MINUME XVII'; wb.created = new Date();
+    const wb = new ExcelJS.Workbook(); wb.creator = 'Albert Silvestre'; wb.lastModifiedBy = 'Albert Silvestre'; wb.company = 'MINUME XVII'; wb.created = new Date();
     const n = c.columnas.length, ac = c.color || MARCA.medio, sobreAc = esClaro(ac) ? NAVY : '#FFFFFF', numAc = esClaro(ac) ? NAVY : ac;
     const TIT = { name: 'Barlow Condensed', family: 2 }, TXT = { name: 'Barlow', family: 2 };
     const ws = wb.addWorksheet(sinEmoji(c.titulo).replace(/[\\/?*[\]:]/g, '').slice(0, 31) || 'Reporte', {
@@ -120,6 +120,7 @@
     await cargarTodo(LIBS.pdf);
     const [ttf, logo, inst, adorno] = await Promise.all([cargarLetras(), aPng('blanco', 760), aPng('institucional', 320), aPng('adorno', 240)]);
     const { jsPDF } = window.jspdf, doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
+    doc.setProperties({ title: paraPdf(c.titulo), subject: 'MINUME XVII', author: 'Albert Silvestre', creator: 'MINUME XVII · Albert Silvestre' });
     if (ttf) for (const [n, [fam, est]] of Object.entries(LETRAS)) { doc.addFileToVFS(n + '.ttf', ttf[n]); doc.addFont(n + '.ttf', fam, est); }
     const TIT = ttf ? 'Barlow Condensed' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
     const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), ac = rgb(c.color || MARCA.medio), navy = rgb(NAVY), suave = rgb(SUAVE);
@@ -184,6 +185,7 @@
     await cargarTodo(LIBS.pdf);
     const [ttf, logo, inst, adorno] = await Promise.all([cargarLetras(), aPng('blanco', 760), aPng('institucional', 320), aPng('adorno', 240)]);
     const { jsPDF } = window.jspdf, doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    doc.setProperties({ title: 'Expediente ' + paraPdf(e.codigo), subject: 'MINUME XVII · Bienestar', author: 'Albert Silvestre', creator: 'MINUME XVII · Albert Silvestre' });
     if (ttf) for (const [n, [fam, est]] of Object.entries(LETRAS)) { doc.addFileToVFS(n + '.ttf', ttf[n]); doc.addFont(n + '.ttf', fam, est); }
     const TIT = ttf ? 'Barlow Condensed' : 'helvetica', TXT = ttf ? 'Barlow' : 'helvetica';
     const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 14, navy = rgb(NAVY), suave = rgb(SUAVE), tinta = rgb(TINTA), linea = rgb(LINEA);

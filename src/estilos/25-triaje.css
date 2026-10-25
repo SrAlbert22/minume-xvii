@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Bienestar: casos y cola de triaje. Cada caso lleva a la izquierda el color de su gravedad. */
   #trTiles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .tr-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 6px; }

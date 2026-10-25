@@ -3,6 +3,7 @@
 <html lang="es-DO">
 <head>
 <meta charset="utf-8">
+<meta name="author" content="Albert Silvestre">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inicio · MINUME XVII</title>
 <script>/* instalada como app, la ventana ya dice «MINUME XVII · Staff»: el título no lo repite */ if (matchMedia('(display-mode: standalone)').matches) document.title = 'Inicio';</script>
@@ -41,6 +42,7 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 @media (max-width:640px){.logo-marca{height:26px}}
 .deco{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}.deco img{position:absolute}
 .deco .d1{width:520px;right:-170px;top:-120px;opacity:.2}.deco .d2{width:110px;left:2%;top:46%;opacity:.15}.deco .d3{width:280px;left:-90px;bottom:-70px;opacity:.1}
+.autor{text-align:center;margin:6px 0 0;color:var(--tenue);font-size:12px;letter-spacing:.03em}
 .pie-marca{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;margin:28px 0 6px;opacity:.85}.pie-marca img{height:34px;width:auto}
 /* Barra */
 .barra{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 0;padding-top:max(12px,env(safe-area-inset-top,0px));
@@ -377,6 +379,7 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
   </section>
 
   <div class="pie-marca"><img src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas" style="height:22px"><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD"></div>
+  <p class="autor">Diseño y desarrollo: Albert Silvestre</p>
   <footer class="pie solo-demo">
     <span>DEMO · datos de ejemplo. Códigos de prueba:</span>
     <div class="cods" id="cods"></div>
@@ -423,6 +426,7 @@ const IC = {
   flecha: 'M5 12h14M13 6l6 6-6 6',
   puerta: 'M14 4h5v16h-5M4 20h10V4H4zM10 12h.01'
 };
+try { console.info('%cMINUME XVII%c · Inicio del staff · diseño y desarrollo: Albert Silvestre', 'font-weight:800;color:#00b5ff', 'color:inherit'); } catch {}
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"/></svg>`;
 const toast = t => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2600); };
 const leerLS = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };

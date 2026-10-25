@@ -1,3 +1,4 @@
+// MINUME XVII · Regionales: pase de lista de los delegados, mañana y noche · Albert Silvestre
 // ---------- Regionales: pase de lista de los delegados, mañana y noche ----------
 // No hay autobuses (reunión del 21 de octubre): el staff llega el 14, las regionales el 15 con su encargado y todo es a pie.
 // Cada regional tiene un encargado fijo del staff. Cada mañana y cada noche el encargado marca a cada delegado cuando

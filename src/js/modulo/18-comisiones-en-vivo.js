@@ -1,3 +1,4 @@
+// MINUME XVII · Comisiones en vivo (Asistencia reporta, coordinación ve todas) · Albert Silvestre
 // ---------- Comisiones en vivo (Asistencia reporta, coordinación ve todas) ----------
 const EST_COM = { 'por-empezar': ['Por empezar', '#45c8ff'], faltan: ['Faltan delegados', '#ffd23f'], sesion: ['En sesión', '#2fd38c'], receso: ['En receso', '#a974ff'], detenida: ['Detenida por un problema', '#ff4d5e'], terminada: ['Terminó', '#8a96b8'] };
 const totalDel = c => DELEGADOS.filter(d => d.com === c).length || 20;

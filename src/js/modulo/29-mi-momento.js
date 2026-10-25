@@ -1,3 +1,4 @@
+// MINUME XVII · Asistente: «Tu momento ahora» · Albert Silvestre
 // ---------- Asistente: «Tu momento ahora» ----------
 // El manual divide el trabajo en 5 momentos (Antes, Abre, Sesión, Mueve, Cierra). Esta tarjeta, arriba del inicio,
 // adivina en cuál estás por la fecha, la hora y tus turnos, y te pone a la mano su checklist y lo que toca hacer.

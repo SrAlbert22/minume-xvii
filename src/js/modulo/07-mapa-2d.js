@@ -1,3 +1,4 @@
+// MINUME XVII · Mapa 2D de Seguridad y Traslado (estilo del mapa del V CND) · Albert Silvestre
 // ---------- Mapa 2D de Seguridad y Traslado (estilo del mapa del V CND) ----------
 // Pedido de la dirección: «lo mismo pero en 2D», una vista desde arriba para ver dónde queda cada cosa y asignar
 // los puntos y los pasillos. Bloques de color con su nombre sobre un fondo verde claro y cada punto como un círculo

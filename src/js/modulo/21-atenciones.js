@@ -1,3 +1,4 @@
+// MINUME XVII · Registro de atenciones de Bienestar (físico y emocional) · Albert Silvestre
 // ---------- Registro de atenciones de Bienestar (físico y emocional) ----------
 const AT_AREA = { medico: ['Médica', '#ff6b7a'], fisico: ['Física', '#45c8ff'], emocional: ['Emocional', '#c58bff'] };
 const AT_MOTIVOS = {

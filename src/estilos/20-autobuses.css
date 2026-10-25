@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* ---------- Autobuses de participantes y llegada a los hoteles ---------- */
   .chip.azul { color: var(--m-celeste); border-color: rgba(0, 181, 255, .45); background: rgba(0, 181, 255, .1); }
   .bus-cifras { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }

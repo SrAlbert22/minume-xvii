@@ -1,3 +1,4 @@
+// MINUME XVII · Albert Silvestre
 // =================== Eventos y Protocolo ===================
 // Pensado para usarse rápido: cada evento tiene UN botón con el siguiente paso, y cada invitado UN botón para marcar que llegó.
 // Eventos, horarios e invitados son de EJEMPLO; en la versión real salen de la agenda oficial y se guardan en Supabase.

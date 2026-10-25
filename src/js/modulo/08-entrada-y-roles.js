@@ -1,3 +1,4 @@
+// MINUME XVII · Entrada con código y roles · Albert Silvestre
 // ---------- Entrada con código y roles ----------
 const CODIGOS = {
   'AS-4821': { nombre: 'María Pérez', rol: 'asistencia', comision: 'AMS', acr: 'ACR-7F3K2' },

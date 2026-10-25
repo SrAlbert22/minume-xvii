@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Hero */
   .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 26px; align-items: start; margin-top: 6px; }
   @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }

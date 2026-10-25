@@ -1,3 +1,4 @@
+// MINUME XVII · Chat del staff: canal General y uno por equipo · Albert Silvestre
 // ---------- Chat del staff: canal General y uno por equipo ----------
 // Los mensajes se guardan en Supabase (minume_chat) y solo se leen con la sesión del código.
 // El servidor avisa en tiempo real «hay mensaje nuevo en tal canal» y cada teléfono lo pide; si no hay tiempo real, revisa cada 20 s.

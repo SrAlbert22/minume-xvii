@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Asistente: «Tu momento ahora», los 5 momentos del manual con su checklist a la mano */
   .mi-momento[hidden] { display: none; }
   .mi-momento { margin: 18px 0 6px; padding: 16px; border-top: 3px solid var(--equipo, #45c8ff); }

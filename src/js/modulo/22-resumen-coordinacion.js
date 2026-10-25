@@ -1,3 +1,4 @@
+// MINUME XVII · Resumen de coordinación general · Albert Silvestre
 // ---------- Resumen de coordinación general ----------
 function resumenGeneral() {
   const o = leerComis(), enSes = COMISIONES.filter(([c]) => o[c] && o[c].est === 'sesion').length, prob = COMISIONES.filter(([c]) => o[c] && (o[c].est === 'detenida' || o[c].est === 'faltan')).length;

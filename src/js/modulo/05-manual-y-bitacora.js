@@ -1,3 +1,4 @@
+// MINUME XVII · Manual: contactos, ficha, reporte en 20 segundos y bitácora · Albert Silvestre
 // ---------- Manual: contactos, ficha, reporte en 20 segundos y bitácora ----------
 // Contactos operativos del manual (sin teléfonos: en la página real cada uno abre su canal oficial)
 const AREAS = [

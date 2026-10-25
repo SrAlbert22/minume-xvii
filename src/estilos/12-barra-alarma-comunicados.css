@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Sin internet, alertas y comunicados en la barra */
   .red-pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 210, 63, .5); color: var(--amarillo); background: rgba(255, 210, 63, .08); border-radius: 99px; padding: 5px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; flex: none; }
   .alertas-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--borde); color: var(--suave); border-radius: 99px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: 700; flex: none; }

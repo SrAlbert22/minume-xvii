@@ -1,3 +1,4 @@
+// MINUME XVII · Pintar todo lo nuevo y mantenerlo al día · Albert Silvestre
 // ---------- Pintar todo lo nuevo y mantenerlo al día ----------
 function pintarNuevas() { pintarRed(); pintarBotonAlertas(); pintarBanner(); pintarComunicados(); pintarPrograma(); pintarComisVivo(); pintarRondas(); pintarObjetos(); pintarAtenciones(); pintarEventos(); pintarInvitados(); pintarAsientos(); pintarDatos(); }
 addEventListener('storage', e => { if (e.key && e.key.startsWith('minume.compartido.') && e.key !== CLAVE_AVISOS) { pintarNuevas(); pintarCobertura(); if (estado.usuario) pintarTablero(); } });

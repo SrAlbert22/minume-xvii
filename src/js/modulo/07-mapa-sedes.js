@@ -1,3 +1,4 @@
+// MINUME XVII · Mapa 3D de las sedes: Renaissance Jaragua, Sheraton y Malecón Terrace · Albert Silvestre
 // ---------- Mapa 3D de las sedes: Renaissance Jaragua, Sheraton y Malecón Terrace ----------
 // La maqueta (plantel.glb) sale de blender/plantel/construir_plantel.py. Todo se mide en metros
 // sobre el mismo plano que la maqueta (x al este, y al norte); el GPS se convierte a ese plano.

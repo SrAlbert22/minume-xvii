@@ -1,3 +1,4 @@
+// MINUME XVII · Bienestar: kit y punto · Albert Silvestre
 // ---------- Bienestar: kit y punto ----------
 const KIT = ['Botiquín completo: gasas, curitas, guantes y antiséptico', 'Agua y vasos', 'Suero oral', 'Compresas frías o bolsas de hielo', 'Silla o camilla para reposo', 'Espacio privado para una crisis emocional'];
 // Los casos y la cola de triaje están en 23-bienestar-triaje.js

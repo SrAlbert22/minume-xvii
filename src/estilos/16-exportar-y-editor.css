@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Botones de PDF y Excel */
   .exp-btns { display: inline-flex; gap: 8px; flex-wrap: wrap; }
   .exp-btns .exp { padding: 9px 14px; font-size: 13.5px; gap: 7px; }

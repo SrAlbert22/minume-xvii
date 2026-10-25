@@ -1,3 +1,4 @@
+// MINUME XVII · Compartir mi ubicación · Albert Silvestre
 // ---------- Compartir mi ubicación ----------
 estado.compartir = leer('compartir', null);
 let reloj_gps = null, miPos = null, avisoGps = false;

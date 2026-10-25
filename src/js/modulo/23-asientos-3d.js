@@ -1,3 +1,4 @@
+// MINUME XVII · Plano de asientos en 3D · Albert Silvestre
 // ---------- Plano de asientos en 3D ----------
 // El mismo plano, pero como el salón por dentro: cada asiento con su color y se toca igual que en el plano.
 const ESC_AS = 0.62;                       // metros por unidad del plano

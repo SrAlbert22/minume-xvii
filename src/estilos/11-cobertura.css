@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Cobertura de áreas */
   .cob-radio { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
   .cob-radio .mini.on { border-color: var(--verde); color: var(--verde); }

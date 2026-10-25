@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Ubicación en vivo */
   .vivo-pill { display: none; align-items: center; gap: 6px; background: rgba(47, 211, 140, .15); border: 1px solid rgba(47, 211, 140, .5); color: var(--verde); font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 99px; flex: none; cursor: pointer; }
   .vivo-pill.on { display: inline-flex; }

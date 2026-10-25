@@ -1,3 +1,4 @@
+// MINUME XVII · SOS · Albert Silvestre
 // ---------- SOS ----------
 $('#bSOS').onclick = () => {
   const a = estado.comision ? ASIGNA[estado.comision] : null;

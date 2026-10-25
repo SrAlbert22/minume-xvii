@@ -1,3 +1,4 @@
+// MINUME XVII · Avisos entre sistemas · Albert Silvestre
 // ---------- Avisos entre sistemas ----------
 // Lo único que comparten los tres sistemas. En la versión real es una tabla "avisos" en la misma base de Supabase,
 // con tiempo real; en esta demo viaja por el navegador (abre los sistemas en el mismo navegador para verlo).

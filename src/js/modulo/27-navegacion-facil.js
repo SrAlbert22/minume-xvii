@@ -1,3 +1,4 @@
+// MINUME XVII · Navegación fácil: botones grandes y una sola pantalla a la vez · Albert Silvestre
 // ---------- Navegación fácil: botones grandes y una sola pantalla a la vez ----------
 // En lugar de una página larga, cada equipo ve su inicio con «¿Qué quieres hacer?» y abre una sección a la vez.
 // El botón «Volver» y el botón de atrás del teléfono regresan al inicio.

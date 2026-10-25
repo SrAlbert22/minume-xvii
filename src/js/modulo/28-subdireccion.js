@@ -1,3 +1,4 @@
+// MINUME XVII · Mi subdirección: el panel de quien dirige cada equipo · Albert Silvestre
 // ---------- Mi subdirección: el panel de quien dirige cada equipo ----------
 // La subdirección (y la coordinación de cada equipo) entra directo a su gente: el staff de su equipo separado por rol
 // (Seguridad y Traslado es un solo equipo), quién está activo, quién no ha entrado,

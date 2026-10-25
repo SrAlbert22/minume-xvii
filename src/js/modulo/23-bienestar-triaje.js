@@ -1,3 +1,4 @@
+// MINUME XVII · Bienestar: casos y cola de triaje · Albert Silvestre
 // ---------- Bienestar: casos y cola de triaje ----------
 // Cada caso es una atención en la lista protegida (solo Bienestar y Coordinación general la leen) con prioridad,
 // categoría y estado. Los avisos que escalan otros equipos esperan arriba hasta que alguien les hace el triaje;

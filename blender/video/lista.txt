@@ -1,3 +1,4 @@
+# MINUME XVII · recorrido en video · Albert Silvestre
 file 'partes/0.mp4'
 file 'partes/1.mp4'
 file 'partes/2.mp4'

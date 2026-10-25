@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Acreditación con QR */
   .gafete { border-radius: 26px; padding: 18px; background: linear-gradient(160deg, #13265e, #0b1638 60%, #0a1230); border: 2px solid rgba(69, 200, 255, .35); box-shadow: 0 20px 50px rgba(0, 0, 0, .35); max-width: 420px; width: 100%; justify-self: center; transition: border-color .3s, box-shadow .3s; }
   .gafete.ok { border-color: var(--verde); box-shadow: 0 0 0 4px rgba(47, 211, 140, .15), 0 20px 50px rgba(0, 0, 0, .35); }

@@ -1,3 +1,4 @@
+// MINUME XVII · Cuenta regresiva · Albert Silvestre
 // ---------- Cuenta regresiva ----------
 function dias(fecha) { return Math.max(0, Math.ceil((new Date(fecha) - new Date()) / 86400000)); }
 $('#dMontaje').textContent = dias('2026-11-14T19:00:00-04:00') + ' días';

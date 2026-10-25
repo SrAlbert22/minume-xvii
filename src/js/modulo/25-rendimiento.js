@@ -1,3 +1,4 @@
+// MINUME XVII · Rendimiento del staff · Albert Silvestre
 // ---------- Rendimiento del staff ----------
 // Cada página manda un «latido» por minuto mientras está abierta y a la vista (minume_latido): así Coordinación
 // sabe quién está conectado y cuánto tiempo activo lleva. Lo que cada persona hace sale de lo que ya marca en el sistema.

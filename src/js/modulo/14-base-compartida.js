@@ -1,3 +1,4 @@
+// MINUME XVII · Albert Silvestre
 // =================== Comunicados, alarma de SOS, programa, comisiones en vivo, rondas, objetos perdidos y atenciones ===================
 // Todo lo que deben ver otros equipos o coordinación va en claves "compartidas". En la versión real son tablas de Supabase en tiempo real.
 const CLAVE_COMP = k => 'minume.compartido.' + k;

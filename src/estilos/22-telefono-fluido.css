@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* ---------- Teléfono: más fluido y más cómodo para el dedo ---------- */
   html { -webkit-text-size-adjust: 100%; }
   button, a, label, summary, [role="button"], input[type="checkbox"] { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }

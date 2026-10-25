@@ -1,3 +1,4 @@
+// MINUME XVII · Plano de asientos (Eventos y Protocolo) · Albert Silvestre
 // ---------- Plano de asientos (Eventos y Protocolo) ----------
 // Cada lugar con su capacidad real (cuadro de capacidades de cada hotel). Se toca un asiento para
 // asignarle una persona, marcarlo libre, reservado o no disponible. Cada evento tiene su propio plano.

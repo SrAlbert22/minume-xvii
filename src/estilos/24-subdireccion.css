@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Mi subdirección: el staff del equipo y lo que puede editar */
   .sd-cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0 18px; }
   .sd-cab { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 18px 0 10px; }

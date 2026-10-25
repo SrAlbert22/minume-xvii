@@ -1,3 +1,4 @@
+// MINUME XVII · Fotos de los invitados especiales · Albert Silvestre
 // ---------- Fotos de los invitados especiales ----------
 // Eventos y Protocolo (y Coordinación general) adjuntan la foto de cada invitado para reconocerlo en la puerta.
 // La foto se achica aquí mismo (JPEG de ~30 KB) y va a su propia tabla (minume_fotos). Solo se descargan las de los

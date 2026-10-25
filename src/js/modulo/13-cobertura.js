@@ -1,3 +1,4 @@
+// MINUME XVII · Cobertura de áreas (Seguridad y Traslado) · Albert Silvestre
 // ---------- Cobertura de áreas (Seguridad y Traslado) ----------
 // Cada punto del evento tiene sus turnos del día: a qué hora, quién debe estar y qué hace. El staff confirma que llegó
 // a su puesto; dirección ve qué punto se quedó solo y manda un refuerzo de los que están libres.

@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Avisos entre sistemas y Bienestar */
   .punto-aviso { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--amarillo); box-shadow: 0 0 0 4px rgba(255, 210, 63, .15); }
   .punto-aviso.nuevo { background: var(--rojo); box-shadow: 0 0 0 4px rgba(255, 77, 94, .2); animation: latido 1.2s infinite; }

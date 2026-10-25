@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* Entrada con código */
   .entrada { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 18px; overflow: auto; background: radial-gradient(900px 600px at 20% 0%, #15306e 0%, transparent 60%), #040817; }
   .entrada.oculta { display: none; }
@@ -11,6 +12,7 @@
   .ent-puntos { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 12px; position: relative; z-index: 1; }
   .ent-puntos li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #e3e9ff; line-height: 1.45; }
   .ent-puntos svg { color: var(--equipo); flex: none; margin-top: 1px; }
+  .ent-autor { display: block; margin-top: 4px; color: #7f8fc8; font-size: 11.5px; letter-spacing: .02em; }
   .ent-pie { margin-top: auto; padding-top: 18px; color: #9aa8cc; font-size: 12.5px; position: relative; z-index: 1; }
   .ent-form { padding: 36px; display: flex; flex-direction: column; background: #0a1431; }
   .ent-form h3 { font: 800 34px/1 'Barlow Condensed'; margin: 12px 0 4px; }

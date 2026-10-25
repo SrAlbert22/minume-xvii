@@ -1,3 +1,4 @@
+// MINUME XVII · Alarma de SOS · Albert Silvestre
 // ---------- Alarma de SOS ----------
 let alAudio = null, alSirena = null, alVib = null, alActual = null;
 const esUrgente = a => /^SOS/i.test(a.tipo || '') || /^Nivel 3/.test(a.tipo || '');

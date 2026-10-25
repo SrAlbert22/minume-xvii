@@ -1,3 +1,4 @@
+  /* MINUME XVII · Albert Silvestre */
   /* ================= Ajustes para teléfono y tableta ================= */
   /* Nada se sale de su columna: las tarjetas pueden encogerse y las palabras largas se parten */
   .rejilla > *, .ev-lista-eventos > *, .inv-lista > *, .cob-lista > *, .com-lista > *, .tiles > *, .cv-grid > * { min-width: 0; }

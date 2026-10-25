@@ -1,3 +1,4 @@
+// MINUME XVII · Albert Silvestre
 // =================== Datos editables: cronogramas, asignaciones y listas del evento ===================
 // Los datos de ejemplo se pueden cambiar desde la página. Lo editado se guarda en claves compartidas
 // ("config.*"); en la versión real son tablas de Supabase y todos lo ven al instante.

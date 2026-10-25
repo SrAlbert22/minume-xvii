@@ -1,3 +1,4 @@
+// MINUME XVII · Comunicados de dirección · Albert Silvestre
 // ---------- Comunicados de dirección ----------
 const COM_TIPO = { info: ['Información', ''], importante: ['Importante', 'amarillo'], urgente: ['Urgente', 'rojo'] };
 const COM_PARA = { todos: 'Todo el staff', asistencia: 'Asistencia', acreditacion: 'Acreditación', seguridad: 'Seguridad y Traslado', bienestar: 'Bienestar', eventos: 'Eventos y Protocolo' };
