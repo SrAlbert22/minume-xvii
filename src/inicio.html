@@ -197,6 +197,13 @@ svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-wid
 @keyframes entra{from{transform:translateY(10px);opacity:.0}to{transform:none;opacity:1}}
 .aviso.nuevo{animation:entra .4s ease-out}
 @media (max-width:640px){.pest,.cod,.sim{min-height:38px;padding-left:12px;padding-right:12px}.buscar input,.campo input,#vCodigo{font-size:16px}.caja{padding:16px;border-radius:18px}.atajo{min-height:52px}.entrar-eq{min-height:36px}.abierta{min-height:52px}.instalar{gap:10px}}
+/* Con el zoom del navegador reducido (o en monitores muy anchos) la página se agranda para llenar la pantalla en vez de quedarse en el centro */
+@media (min-width:1950px){.envoltura{zoom:1.12}}
+@media (min-width:2150px){.envoltura{zoom:1.24}}
+@media (min-width:2400px){.envoltura{zoom:1.38}}
+@media (min-width:2700px){.envoltura{zoom:1.55}}
+@media (min-width:3100px){.envoltura{zoom:1.78}}
+@media (min-width:3600px){.envoltura{zoom:2.05}}
 /* Ajuste del Inicio (25 oct): menos texto, tarjeta del código centrada y todo más grande en pantallas anchas */
 .estado .lead{display:none}
 .entrar{display:flex;flex-direction:column;justify-content:center}
