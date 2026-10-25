@@ -9,8 +9,9 @@ const CANALES_CHAT = {
 const chat = { canal: null, msgs: {}, resumen: {}, cargando: false, cola: leer('chat.cola', []) };
 function misCanalesChat() {
   const u = estado.usuario; if (!u) return [];
-  const sis = SIS_DE_CODIGO(u.codigo) || SISTEMA;
+  let sis = SIS_DE_CODIGO(u.codigo) || SISTEMA;
   if (sis === 'coordinacion') return Object.keys(CANALES_CHAT);
+  if (sis === 'acreditacion') sis = 'asistencia';   // misma subsecretaría: mismo canal
   return ['general', sis, ...(esDir() ? ['coordinacion'] : [])].filter((k, i, l) => CANALES_CHAT[k] && l.indexOf(k) === i);
 }
 // Cada persona tiene su color (siempre el mismo) y su círculo con iniciales, para saber de un vistazo quién escribió

@@ -21,7 +21,7 @@ const aMinutos = h => { const [a, b] = h.split(':').map(Number); return a * 60 +
 const yoCod = () => estado.usuario ? (estado.usuario.ref ? 'r:' + estado.usuario.ref : estado.usuario.codigo) : null;
 const yoNombre = () => estado.usuario ? estado.usuario.nombre : (estado.nombre || 'Sin nombre');
 const esCoord = () => !!estado.usuario && estado.usuario.rol === 'coordinacion';
-const SIS_DE_CODIGO = c => ({ AS: 'asistencia', CO: 'asistencia', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', EP: 'eventos', CG: 'coordinacion' })[String(c).slice(0, 2)];
+const SIS_DE_CODIGO = c => ({ AS: 'asistencia', CO: 'asistencia', AC: 'acreditacion', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', EP: 'eventos', CG: 'coordinacion' })[String(c).slice(0, 2)];
 const escribiendo = sec => { const a = document.activeElement; return !!a && sec.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName); };
 function bajarCsv(nombre, filas) {
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;

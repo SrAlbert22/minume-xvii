@@ -27,6 +27,7 @@ VERCEL = {'projectId': 'prj_dPyGbtm0VXXcpsgpDQXKcljhDQCd', 'orgId': 'team_8yZKZP
 #            carpeta        archivo para enviar        nombre                    corto           color      letra
 SISTEMAS = {
     'asistencia':   ('Asistencia',            'Asistencia, Bienvenida y Acreditación', 'Asistencia',   '#00b5ff', 'A'),
+    'acreditacion': ('Acreditacion',          'Acreditación',                'Acreditación', '#a974ff', 'A'),
     'seguridad':    ('Seguridad-y-Traslado',  'Seguridad y Traslado',        'Seguridad',    '#e53535', 'S'),
     'bienestar':    ('Bienestar',             'Bienestar',                   'Bienestar',    '#00fdef', 'B'),
     'eventos':      ('Eventos-y-Protocolo',   'Eventos y Protocolo',         'Eventos',      '#ffbeff', 'E'),

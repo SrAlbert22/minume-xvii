@@ -1,6 +1,6 @@
 // ---------- Comunicados de dirección ----------
 const COM_TIPO = { info: ['Información', ''], importante: ['Importante', 'amarillo'], urgente: ['Urgente', 'rojo'] };
-const COM_PARA = { todos: 'Todo el staff', asistencia: 'Asistencia', seguridad: 'Seguridad y Traslado', bienestar: 'Bienestar', eventos: 'Eventos y Protocolo' };
+const COM_PARA = { todos: 'Todo el staff', asistencia: 'Asistencia', acreditacion: 'Acreditación', seguridad: 'Seguridad y Traslado', bienestar: 'Bienestar', eventos: 'Eventos y Protocolo' };
 const COM_PLANTILLAS = [
   ['Cambio de salón', 'importante', 'La comisión ___ cambia al salón ___ a partir de las ___.'],
   ['Cambio de horario', 'importante', 'La sesión de la tarde empieza a las ___ en vez de las ___.'],

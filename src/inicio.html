@@ -404,6 +404,7 @@ button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const IC = {
+  qr: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2',
   lista: 'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',
   alerta: 'M12 3l9 16H3zM12 10v4M12 17v.5',
   libro: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11',
@@ -430,15 +431,16 @@ const guardarLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); 
 const ENLACES = window.MINUME_ENLACES;
 const EQUIPOS = {
   asistencia: { nombre: 'Asistencia, Bienvenida y Acreditación', corto: 'Asistencia', letra: 'A', color: '#00b5ff', quienes: 'Asistentes de comisión y su coordinación' },
+  acreditacion: { nombre: 'Acreditación', corto: 'Acreditación', letra: 'A', color: '#a974ff', quienes: 'Mesas de acreditación de delegados' },
   seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y regionales' },
   bienestar: { nombre: 'Bienestar', corto: 'Bienestar', letra: 'B', color: '#00fdef', quienes: 'Bienestar físico y emocional' },
   eventos: { nombre: 'Eventos y Protocolo', corto: 'Eventos', letra: 'E', color: '#ffbeff', quienes: 'Ceremonias, montajes e invitados' },
   coordinacion: { nombre: 'Coordinación general', corto: 'Coordinación', letra: 'C', color: '#0090fb', quienes: 'Ve todo el evento en un solo lugar' }
 };
 // Prefijo del código → sistema. El sistema valida el código completo al entrar.
-const PREFIJOS = { AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
-const PRUEBA = ['AS-4821', 'CO-0001', 'SE-1093', 'TR-5570', 'BI-2207', 'BI-3318', 'EP-2603', 'CG-0001'];
-const PRUEBA_SUB = [['SE-4400', 'Seguridad y Traslado'], ['BI-4400', 'Bienestar'], ['EP-4400', 'Eventos y Protocolo']];   // subdirección de prueba de cada equipo
+const PREFIJOS = { AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], AC: ['acreditacion', 'Acreditación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
+const PRUEBA = ['AS-4821', 'CO-0001', 'AC-3307', 'SE-1093', 'TR-5570', 'BI-2207', 'BI-3318', 'EP-2603', 'CG-0001'];
+const PRUEBA_SUB = [['SE-4400', 'Seguridad y Traslado'], ['BI-4400', 'Bienestar'], ['EP-4400', 'Eventos y Protocolo'], ['AC-4400', 'Acreditación']];   // subdirección de prueba de cada equipo
 const ATAJOS = {
   asistencia: [
     ['listas', 'lista', 'Checklist del momento', 'Lo que toca ahora'],
@@ -456,6 +458,13 @@ const ATAJOS = {
     ['traslado', 'gente', 'Regionales', 'Pase de lista de cada regional'],
     ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
     ['mapa', 'mapa', 'Mapa 3D', 'Salones y puntos']
+  ],
+  acreditacion: [
+    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y la lista oficial'],
+    ['delegados', 'qr', 'Acreditar delegados', 'Escanear el QR o buscar por nombre'],
+    ['programa', 'reloj', 'Programa', 'Horarios de acreditación'],
+    ['mapa', 'mapa', 'Mapa 3D', 'Mesas y lobby'],
+    ['bitacora', 'libro', 'Bitácora', 'Novedades de la mesa']
   ],
   bienestar: [
     ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
@@ -525,6 +534,7 @@ const MOMENTOS = {
 };
 // Lo que cada equipo hace en cada momento del día
 const FOCO = {
+  acreditacion: { pre: 'Revisa que la lista oficial de delegados esté cargada.', montaje: 'Mesas listas en el lobby: acreditación de 5:00 a 9:00 p. m.', sesiones: 'Acredita a los que lleguen tarde y avisa de los que faltan.', transiciones: 'Atento a delegados sin gafete.', cierre: 'Revisa quién falta por acreditar.', fin: 'Lista final de acreditados.' },
   asistencia: { pre: 'Llena tu ficha rápida y el checklist de Pre-MINUME.', montaje: 'Checklist de montaje: salón, placards y audiovisuales.', sesiones: 'Checklist de sesión y bitácora al día.', transiciones: 'Mueve a tu comisión con la secuencia acordada.', cierre: 'Cierre en 5 minutos y bitácora cerrada.', fin: 'Entrega tu reporte final.' },
   seguridad: { pre: 'Revisa tu puesto y tus turnos en Cobertura de áreas.', montaje: 'Puntos de seguridad y accesos listos en el mapa.', sesiones: 'Atiende avisos y SOS; vigila accesos.', transiciones: 'Pasillos y el camino Jaragua – Sheraton.', cierre: 'Salida ordenada y último grupo.', fin: 'Cierra la bitácora del equipo.' },
   eventos: { pre: 'Revisa los eventos y la lista de invitados.', montaje: 'Monta cada evento y marca su lista.', sesiones: 'Avanza cada evento con su botón y recibe a los invitados.', transiciones: 'Prepara el siguiente evento.', cierre: 'Marca los eventos terminados.', fin: 'Revisa que todo quedó cerrado.' },
@@ -626,7 +636,6 @@ function pintarEstado() {
 const sesion = s => leerLS(`minume.${s}.usuario`, null);
 function detectar(cod) {
   const c = (cod || '').trim().toUpperCase(), p = PREFIJOS[c.slice(0, 2)];
-  if (c.startsWith('AC')) return { error: 'Acreditación todavía no tiene sistema propio. Pídele tu acceso a coordinación.' };
   if (!c) return null;
   if (!p) return c.length >= 2 ? { error: 'Ese código no corresponde a ningún equipo. Revisa las dos primeras letras.' } : null;
   return { sis: p[0], rol: p[1], completo: /^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(c), codigo: c };
@@ -791,6 +800,11 @@ function pintarEquipos(mo) {
       [evProblema(), 'eventos con problema', 'alerta'],
       [invLlegaron(), 'invitados llegaron', '']
     ],
+    acreditacion: (() => { const a = leerLS('minume.compartido.acreditados', {}), tot = (leerLS('minume.compartido.config.delegados', null) || []).length, n = Object.keys(a).length; return [
+      [tot ? `${n}/${tot}` : String(n), 'delegados acreditados', 'ok'],
+      [tot ? String(Math.max(0, tot - n)) : '—', 'faltan por llegar', ''],
+      [Object.values(a).filter(x => x && x.t && hoy(x)).length, 'acreditados hoy', 'ok']
+    ]; })(),
     coordinacion: [
       [enSesion(), 'comisiones en sesión', 'ok'],
       [conProblema(), 'comisiones con problema', 'alerta'],

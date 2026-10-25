@@ -1011,3 +1011,29 @@ begin
 end $$;
 
 revoke all on function public.minume_foto_permiso(public.minume_codigos, text) from public, anon, authenticated;
+
+-- =====================================================================
+-- Acreditación con sistema propio (códigos AC-, página /acreditacion)
+-- Es parte de «Asistencia, Bienvenida y Acreditación»: comparte el canal de chat de Asistencia.
+-- Las acreditaciones de todas las mesas van en la clave compartida minume.compartido.acreditados
+-- y la lista oficial de delegados en minume.compartido.config.delegados (la sube la subdirección).
+-- =====================================================================
+alter table public.minume_codigos drop constraint if exists minume_codigos_prefijo_check;
+alter table public.minume_codigos add constraint minume_codigos_prefijo_check check (prefijo = any (array['AS', 'CO', 'AC', 'SE', 'TR', 'BI', 'EP', 'CG']));
+
+create or replace function public.minume_tipo(p_prefijo text, out rol text, out sistema text)
+ returns record language sql immutable set search_path to 'public'
+as $function$
+  select t.rol, t.sistema from (values
+    ('AS','asistencia','asistencia'), ('CO','coordinacion','asistencia'), ('AC','acreditacion','acreditacion'), ('SE','seguridad','seguridad'),
+    ('TR','traslado','seguridad'), ('BI','bienestar','bienestar'), ('EP','eventos','eventos'), ('CG','coordinacion','coordinacion')
+  ) t(p, rol, sistema) where t.p = p_prefijo
+$function$;
+
+create or replace function public.minume_chat_canales(c public.minume_codigos)
+ returns text[] language sql immutable set search_path to 'public' as $function$
+  select case when c.sistema = 'coordinacion' then array['general','asistencia','seguridad','bienestar','eventos','coordinacion']
+              when c.rol = 'coordinacion' or c.nivel in ('coordinacion', 'subdirector')
+                then array['general', case when c.sistema = 'acreditacion' then 'asistencia' else c.sistema end, 'coordinacion']
+              else array['general', case when c.sistema = 'acreditacion' then 'asistencia' else c.sistema end] end
+$function$;

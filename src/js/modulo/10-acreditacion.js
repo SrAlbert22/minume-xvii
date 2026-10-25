@@ -123,8 +123,12 @@ const APELLIDOS = ['Rodríguez', 'Martínez', 'García', 'Pérez', 'Reyes', 'Jim
 const PAISES = ['Francia', 'Japón', 'Brasil', 'Canadá', 'Kenia', 'India', 'México', 'Alemania', 'Noruega', 'Egipto', 'Chile', 'Corea del Sur', 'Australia', 'Sudáfrica', 'Italia', 'Argentina', 'Indonesia', 'Marruecos'];
 const COLEGIOS = ['Colegio Horizonte', 'Liceo Los Pinos', 'Instituto Nuevo Amanecer', 'Colegio Arcoíris', 'Liceo Brisas del Mar', 'Colegio Monte Verde', 'Instituto Puerta del Sol', 'Colegio Las Palmas'];
 function delegadosEjemplo() { let r = 7; const az = n => (r = r * 16807 % 2147483647) % n, l = []; COMISIONES.forEach(([c]) => { for (let i = 0; i < 8; i++) l.push({ id: 'D-' + String(l.length + 1).padStart(3, '0'), n: `${NOMBRES[az(NOMBRES.length)]} ${APELLIDOS[az(APELLIDOS.length)]} ${APELLIDOS[az(APELLIDOS.length)]}`, com: c, del: PAISES[az(PAISES.length)], col: COLEGIOS[az(COLEGIOS.length)] }); }); return l; }
-let DELEGADOS = leer('delegados', null) || delegadosEjemplo();
-estado.delAcr = leer('delAcr', null) || Object.fromEntries(DELEGADOS.filter((d, i) => i % 3 === 0).map((d, i) => [d.id, { t: hoyA(7, 5 + i % 50), por: 'Mesa 1', sync: true }]));
+// La lista de delegados y quién ya se acreditó son compartidas: todas las mesas ven lo mismo al instante y nadie se acredita dos veces.
+// (Se leen directo del navegador porque este módulo carga antes que la base compartida.)
+const compAcr = k => { try { return JSON.parse(localStorage.getItem('minume.compartido.' + k) || 'null'); } catch { return null; } };
+const guardarAcr = () => { try { localStorage.setItem('minume.compartido.acreditados', JSON.stringify(estado.delAcr)); } catch {} };
+let DELEGADOS = compAcr('config.delegados') || leer('delegados', null) || delegadosEjemplo();
+estado.delAcr = compAcr('acreditados') || {};
 let colaDel = leer('colaDel', []), simOffline = false, fichaDel = null;
 const qrDel = d => `M17D.${d.id}.${firma('D.' + d.id)}`; // en la versión real: firma con llave privada, se comprueba sin internet con la llave pública
 const enLinea = () => navigator.onLine && !simOffline;
@@ -137,7 +141,7 @@ function pintarSync() {
 function sincronizar() {
   pintarSync(); if (!enLinea() || !colaDel.length) return;
   const n = colaDel.length;
-  setTimeout(() => { colaDel.forEach(id => { if (estado.delAcr[id]) estado.delAcr[id].sync = true; }); colaDel = []; guardar('colaDel', colaDel); guardar('delAcr', estado.delAcr); pintarDelegados(); pintarTablero(); toast(`☁️ Volvió el internet: se subieron ${n} acreditación${n === 1 ? '' : 'es'}`); }, 1300);
+  setTimeout(() => { colaDel.forEach(id => { if (estado.delAcr[id]) estado.delAcr[id].sync = true; }); colaDel = []; guardar('colaDel', colaDel); guardarAcr(); pintarDelegados(); pintarTablero(); toast(`☁️ Volvió el internet: se subieron ${n} acreditación${n === 1 ? '' : 'es'}`); }, 1300);
 }
 addEventListener('online', sincronizar); addEventListener('offline', pintarSync);
 $('#dOffline').onclick = () => { simOffline = !simOffline; if (simOffline) { pintarSync(); toast('📴 Sin internet: puedes seguir acreditando'); } else sincronizar(); };
@@ -160,7 +164,7 @@ function confirmarDel(d, como) {
   const on = enLinea();
   estado.delAcr[d.id] = { t: Date.now(), por: estado.usuario ? estado.usuario.nombre : 'Mesa', sync: on, manual: como === 'manual', gafete: $('#eGafete').checked, kit: $('#eKit').checked, material: $('#eMat').checked };
   if (!on) colaDel.push(d.id);
-  guardar('delAcr', estado.delAcr); guardar('colaDel', colaDel);
+  guardarAcr(); guardar('colaDel', colaDel);
   registrar('🪪 Delegado', `${d.n} (${d.com}) acreditado${como === 'manual' ? ' a mano' : ''}`);
   const box = $('#dFicha'); box.className = 'resultado verde';
   box.innerHTML = `<b class="grande">${esc(d.n.split(' ')[0])} acreditado${on ? '' : ' (sin internet)'}</b>${esc(d.com)} · ${esc(d.del || '')} · ${hora()}<br>${on ? 'Guardado en la nube.' : 'Guardado en este teléfono: se sube solo cuando vuelva el internet.'}`;
@@ -199,10 +203,18 @@ $('#dArchivo').onchange = async e => {
     const col = (fila, ...claves) => { const k = Object.keys(fila).find(k => claves.some(c => norm(k).includes(c))); return k ? String(fila[k]).trim() : ''; };
     const l = filas.map((r, i) => ({ id: 'D-' + String(i + 1).padStart(3, '0'), n: col(r, 'nombre'), com: col(r, 'comis').toUpperCase(), del: col(r, 'deleg', 'pais'), col: col(r, 'colegio', 'centro', 'escuela', 'institu') })).filter(d => d.n);
     if (!l.length) { toast('No encontré la columna "nombre" en el archivo'); return; }
-    DELEGADOS = l; estado.delAcr = {}; colaDel = []; guardar('delegados', l); guardar('delAcr', {}); guardar('colaDel', []);
-    $('#dFuente').textContent = `Usando tu lista "${f.name}": ${l.length} delegados.`; pintarDelegados(); pintarTablero(); toast(`📋 Se cargaron ${l.length} delegados`);
+    const ya = Object.keys(estado.delAcr).length;
+    if (ya && !confirm(`Ya hay ${ya} delegados acreditados. Si cambias la lista, sus marcas pueden quedar en otra persona. ¿Seguir?`)) { e.target.value = ''; return; }
+    DELEGADOS = l; guardar('delegados', l);
+    if (esDir()) try { localStorage.setItem('minume.compartido.config.delegados', JSON.stringify(l)); } catch {}   // la lista nueva llega a todas las mesas
+    $('#dFuente').textContent = `Usando tu lista "${f.name}": ${l.length} delegados.`; pintarDelegados(); pintarTablero(); toast(esDir() ? `Se cargaron ${l.length} delegados para todas las mesas` : `Se cargaron ${l.length} delegados en este teléfono. Para todas las mesas, súbela con el código de la subdirección.`);
   } catch { toast('No se pudo leer el archivo. Prueba con la plantilla.'); }
   e.target.value = '';
 };
 $('#dPlantilla').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeffnombre,comision,delegacion,colegio\nValeria Rodríguez Peña,CSNU,Francia,Colegio Horizonte\n'], { type: 'text/csv' })); a.download = 'plantilla-delegados.csv'; a.click(); };
-if (leer('delegados', null)) $('#dFuente').textContent = `Usando la lista que subiste: ${DELEGADOS.length} delegados.`;
+if (compAcr('config.delegados') || leer('delegados', null)) $('#dFuente').textContent = `Usando la lista oficial: ${DELEGADOS.length} delegados.`;
+// Otra mesa acreditó a alguien o la subdirección subió la lista: se ve aquí al instante
+addEventListener('storage', e => {
+  if (e.key === 'minume.compartido.acreditados') { estado.delAcr = compAcr('acreditados') || {}; pintarDelegados(); if (fichaDel && estado.delAcr[fichaDel.id] && $('#dConfirmar')) abrirFicha(fichaDel, 'manual'); }
+  if (e.key === 'minume.compartido.config.delegados') { const l = compAcr('config.delegados'); if (l && l.length) { DELEGADOS = l; $('#dFuente').textContent = `Usando la lista oficial: ${l.length} delegados.`; pintarDelegados(); } }
+});

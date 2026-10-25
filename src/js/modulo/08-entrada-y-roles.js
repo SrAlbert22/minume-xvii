@@ -13,6 +13,7 @@ const CODIGOS = {
   'SE-4400': { nombre: 'Subdirección de Seguridad y Traslado', rol: 'seguridad', nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'BI-4400': { nombre: 'Subdirección de Bienestar', rol: 'bienestar', area: 'fisico', nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'EP-4400': { nombre: 'Subdirección de Eventos y Protocolo', rol: 'eventos', nivel: 'subdirector', acr: 'ACR-1C0RD' },
+  'AC-4400': { nombre: 'Subdirección de Acreditación', rol: 'acreditacion', nivel: 'subdirector', acr: 'ACR-1C0RD' },
 };
 const ROLES = { asistencia: ['Asistencia', '#45c8ff'], acreditacion: ['Acreditación', '#a974ff'], seguridad: ['Seguridad y Traslado', '#ff4d5e'], traslado: ['Seguridad y Traslado', '#ff4d5e'], coordinacion: ['Coordinación', '#ffd23f'], bienestar: ['Bienestar', '#2fd38c'], eventos: ['Eventos y Protocolo', '#f472b6'] };
 // Niveles (como en la organización): Secretaría General (Coordinación general) → Subdirección (subsecretarios) → Coordinación → voluntarios.
@@ -121,7 +122,7 @@ $('#bEntrar').onclick = () => entrar($('#codigo').value);
 $('#codigo').addEventListener('keydown', e => { if (e.key === 'Enter' && !$('#bEntrar').disabled) entrar($('#codigo').value); });
 // Entrada: escribe el guion solo, reconoce el equipo por las dos letras y avisa si el código es de otro sistema
 const EQUIPO_PREF = { AS: 'Asistente de comisión', CO: 'Coordinación de Asistencia', SE: 'Seguridad y Traslado', TR: 'Seguridad y Traslado', BI: 'Bienestar', EP: 'Eventos y Protocolo', CG: 'Coordinación general', AC: 'Acreditación' };
-const SIS_PREF = { AS: 'asistencia', CO: 'asistencia', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', CG: 'coordinacion', AC: 'todo' };
+const SIS_PREF = { AS: 'asistencia', CO: 'asistencia', AC: 'acreditacion', SE: 'seguridad', TR: 'seguridad', BI: 'bienestar', EP: 'eventos', CG: 'coordinacion' };
 const INICIO_MINUME = window.MINUME_INICIO || '';
 if (INICIO_MINUME) { $('#entVolver').href = INICIO_MINUME; $('#entVolver').hidden = false; }
 function revisarCodigo() {

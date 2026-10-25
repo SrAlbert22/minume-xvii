@@ -103,3 +103,11 @@ Todo lo que hace falta está en este repositorio, menos los secretos, que están
 Los nombres del staff, la asignación de comisiones a salones, los turnos, las regionales con sus delegados y los horarios son de ejemplo. **Todo lo que es dato se cambia desde «Datos del evento»** (25 listas: programa, sedes, eventos, invitados, capacidad de los salones, montaje, comisiones, turnos, checklists, material, staff, puntos, rondas, regionales y encargados, delegados por regional, listas de Bienestar y de objetos, plantillas de comunicados, mensajes rápidos del chat y responsables). Cada equipo edita lo suyo y Coordinación general, todo. Lo editado se guarda en `minume_compartido` con claves `minume.compartido.config.*`. La lista real del staff se puede pegar en Staff → «Pegar una lista de personas».
 
 Mapa: maqueta 3D propia hecha en Blender · calles y contornos © colaboradores de OpenStreetMap (ODbL).
+
+## Acreditación (sistema propio)
+
+- Página: `/acreditacion`, códigos que empiezan con `AC-` (los crea Coordinación general en «Códigos de acceso»).
+- Es parte de «Asistencia, Bienvenida y Acreditación»: usa el canal de chat de Asistencia.
+- Las acreditaciones de todas las mesas van en `minume.compartido.acreditados` (una entrada por delegado): si dos mesas escanean a la vez, la base junta las dos y nadie se acredita dos veces.
+- La lista oficial de delegados (Excel o CSV con columnas nombre, comision, delegacion, colegio) la sube la subdirección de Acreditación o Coordinación general y llega a todas las mesas (`minume.compartido.config.delegados`). Súbela antes de imprimir los gafetes: los QR usan el número de fila (D-001, D-002…).
+- Cambios en la base: sección «Acreditación con sistema propio» de `supabase/esquema.sql`.
