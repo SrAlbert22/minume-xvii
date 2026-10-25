@@ -11,6 +11,7 @@ const CODIGOS = {
   'BI-3318': { nombre: 'Marcos Peña', rol: 'bienestar', area: 'emocional', acr: 'ACR-8B1EN' },
   // Subdirección de prueba de cada equipo: entran directo a «Mi subdirección»
   'SE-4400': { nombre: 'Subdirección de Seguridad y Traslado', rol: 'seguridad', nivel: 'subdirector', acr: 'ACR-1C0RD' },
+  'TR-4400': { nombre: 'Subdirección de Traslado', rol: 'traslado', nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'BI-4400': { nombre: 'Subdirección de Bienestar', rol: 'bienestar', area: 'fisico', nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'EP-4400': { nombre: 'Subdirección de Eventos y Protocolo', rol: 'eventos', nivel: 'subdirector', acr: 'ACR-1C0RD' },
   'AC-4400': { nombre: 'Subdirección de Acreditación', rol: 'acreditacion', nivel: 'subdirector', acr: 'ACR-1C0RD' },
