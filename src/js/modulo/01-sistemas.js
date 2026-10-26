@@ -15,7 +15,7 @@ const SISTEMAS = {
   coordinacion: { nombre: 'Coordinación general', roles: ['coordinacion'], letra: 'C', color: '#0090fb', prefijos: ['CG'] },
 };
 const SIS = SISTEMAS[SISTEMA] || SISTEMAS.todo;
-try { console.info('%cMINUME XVII%c · ' + SIS.nombre + ' · diseño y desarrollo: Albert Silvestre', 'font-weight:800;color:#00b5ff', 'color:inherit'); } catch {}
+try { console.info('%cMINUME XVII%c · ' + SIS.nombre + ' · desarrollo: Albert Silvestre · diseño: Cristian Vargas', 'font-weight:800;color:#00b5ff', 'color:inherit'); } catch {}
 const PREF = SISTEMA === 'todo' ? 'minumeDemo.' : `minume.${SISTEMA}.`; // cada sistema guarda su sesión aparte
 // ¿Se está viendo este pedazo? (pestaña al frente y su sección abierta). Los relojes de cada segundo lo revisan antes de trabajar.
 const seVe = el => !document.hidden && !!el && el.offsetParent !== null;

@@ -90,7 +90,7 @@ def incrustar(html):
 
 def manifest(nombre, corto, icono_base, inicio):
     return json.dumps({
-        'name': nombre, 'short_name': corto, 'description': f'{nombre} · diseño y desarrollo: Albert Silvestre', 'start_url': inicio, 'scope': './', 'display': 'standalone',
+        'name': nombre, 'short_name': corto, 'description': f'{nombre} · desarrollo: Albert Silvestre · diseño: Cristian Vargas', 'start_url': inicio, 'scope': './', 'display': 'standalone',
         'background_color': '#050a1a', 'theme_color': '#050a1a', 'lang': 'es-DO',
         'icons': [{'src': f'{icono_base}-192.png', 'sizes': '192x192', 'type': 'image/png'},
                   {'src': f'{icono_base}-512.png', 'sizes': '512x512', 'type': 'image/png'},
