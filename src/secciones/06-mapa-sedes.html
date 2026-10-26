@@ -2,7 +2,11 @@
   <!-- 02 · Mapa de las sedes -->
   <section id="mapa">
     <div class="titulo-sec"><span class="n">02</span><h2>Mapa de las sedes</h2></div>
-    <p class="lead">Maqueta 3D del Renaissance Jaragua, el Sheraton y el Malecón Terrace. Gira con el dedo, acerca y aleja. Con «Ver en 2D» se ve desde arriba, con los salones y pasillos por dentro. Elige a dónde vas y la ruta morada te lleva caminando, paso a paso.</p>
+    <p class="lead">Busca un salón, una comisión o un lugar y la ruta morada te lleva caminando. Gira con el dedo; con «Ver en 2D» ves los salones por dentro.</p>
+    <div class="mapa-buscar" id="mapaBuscar">
+      <label class="mb-campo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"/></svg><input id="mbTexto" type="search" placeholder="Busca un salón, una comisión o un lugar: CSNU, Anacaona, baños…" autocomplete="off" aria-label="Buscar en el mapa" aria-controls="mbRes"></label>
+      <div class="mb-res" id="mbRes" role="listbox" hidden></div>
+    </div>
     <div class="sedes" id="sedes"></div>
     <div class="mapa-sedes-rejilla">
       <div class="lienzo-caja" id="caja">
@@ -16,6 +20,12 @@
           <button id="cSeg" class="seg on">Seguridad</button>
           <button id="cVivo" class="vivo" data-roles="seguridad traslado coordinacion">Equipo en vivo</button>
           <button id="cAdmin" class="admin" hidden>Editar mapa</button>
+        </div>
+        <div class="mapa-nav" id="mapaNav">
+          <button type="button" data-nav="mas" title="Acercar (+)" aria-label="Acercar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button type="button" data-nav="menos" title="Alejar (−)" aria-label="Alejar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+          <button type="button" data-nav="centro" title="Volver a la vista de la sede (0)" aria-label="Centrar el mapa"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></button>
+          <button type="button" data-nav="completo" title="Pantalla completa (F)" aria-label="Pantalla completa"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         </div>
         <div class="ficha" id="ficha"><b>¿A dónde vas?</b>Toca un lugar de la maqueta o elige desde dónde y hasta dónde.</div>
         <div class="modal" id="modal"><div class="tarjeta" style="width:min(420px,calc(100% - 24px));background:#0c1736;max-height:calc(100% - 24px);overflow:auto">

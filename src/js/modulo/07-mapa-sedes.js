@@ -269,6 +269,11 @@ function crearVisor(caja, { capaHTML }) {
     const p = c.clone().add(new THREE.Vector3(Math.sin(rumbo) * r, d * alto, Math.cos(rumbo) * r));
     v.vuelo = { t0: performance.now(), dur, p0: camara.position.clone(), p1: p, c0: control.target.clone(), c1: c }; pedir();
   };
+  v.zoom = f => {
+    const off = camara.position.clone().sub(control.target).multiplyScalar(f), L = off.length();
+    if (L < control.minDistance) off.setLength(control.minDistance); else if (L > control.maxDistance) off.setLength(control.maxDistance);
+    v.vuelo = { t0: performance.now(), dur: 320, p0: camara.position.clone(), p1: control.target.clone().add(off), c0: control.target.clone(), c1: control.target.clone() }; pedir();
+  };
   v.ruta = puntos => {
     ruta.clear();
     if (!puntos) return pedir();
@@ -360,7 +365,10 @@ function pintarLugares() {
 function fichaLugar(l, coms = []) {
   $('#ficha').innerHTML = `<b>${esc(l.n)}</b>${SEDES[l.sede] ? SEDES[l.sede].nombre : ''}${coms.length ? ' · ' + coms.join(', ') : ''}<br><button class="mini" data-ir="${l.id}">Cómo llegar aquí</button>`;
 }
-$('#ficha').onclick = e => { const b = e.target.closest('[data-ir]'); if (b) { $('#rDestino').value = b.dataset.ir; irA(); } };
+$('#ficha').onclick = e => {
+  if (e.target.closest('[data-pasos]')) { if (typeof salirPantallaCompleta === 'function') salirPantallaCompleta(); $('#rCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  const b = e.target.closest('[data-ir]'); if (b) { $('#rDestino').value = b.dataset.ir; irA(); }
+};
 
 // ---------- Cómo llegar ----------
 const opcionLugar = l => `<option value="${l.id}">${esc(l.n)}</option>`;
@@ -386,6 +394,7 @@ function pintarRutaTexto(r, nota = '') {
   $('#rResumen').innerHTML = `<b>${r.metros} m</b><span>${r.minutos} min a pie</span><span class="r-dest">${esc(r.destino.n)}</span>`;
   $('#rPasos').innerHTML = r.pasos.map((p, i) => `<li class="${i === r.pasos.length - 1 ? 'fin' : ''}">${esc(p)}</li>`).join('');
   $('#rNota').innerHTML = nota;
+  $('#ficha').innerHTML = `<b>${esc(r.destino.n)}</b>${r.metros} m · ${r.minutos} min a pie<br><button class="mini" type="button" data-pasos>Ver los pasos</button>`;
 }
 function irA(origen) {
   const o = origen || $('#rOrigen').value, d = $('#rDestino').value;
@@ -394,6 +403,7 @@ function irA(origen) {
   const r = calcularRuta(o, d); if (!r) return toast('No encontré un camino entre esos dos lugares');
   pintarRutaTexto(r); dibujarRuta(r);
   iniciarMapa().then(() => dibujarRuta(r)).catch(() => {});
+  if (matchMedia('(max-width: 900px)').matches && !$('#caja').classList.contains('completo')) $('#caja').scrollIntoView({ behavior: 'smooth', block: 'start' });   // en el teléfono el mapa queda arriba de los pasos
 }
 $('#rIr').onclick = () => irA();
 $('#rCambiar').onclick = () => { const o = $('#rOrigen').value; if (o === 'gps') return; [$('#rOrigen').value, $('#rDestino').value] = [$('#rDestino').value, o]; irA(); };
