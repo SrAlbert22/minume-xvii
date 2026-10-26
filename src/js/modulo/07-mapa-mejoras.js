@@ -67,6 +67,7 @@ function pantallaCompleta() {
 }
 function navMapa(a) {
   if (a === 'completo') return pantallaCompleta();
+  if (esquemaOn) { if (a === 'mas') zoomEsquema(0.7); else if (a === 'menos') zoomEsquema(1.45); else if (a === 'centro') centrarEsquema(); return; }
   if (!mapa || !mapa.listo) return;
   if (a === 'mas') mapa.zoom(0.7);
   else if (a === 'menos') mapa.zoom(1.45);

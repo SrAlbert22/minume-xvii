@@ -85,7 +85,8 @@ function svgEsquema(sede) {
     return `<g class="esq-punto${sel ? ' sel' : ''}" data-cobpt="${esc(p.id)}" role="button" tabindex="0" aria-label="Punto ${esc(p.id)}: ${esc(p.n)}"><circle cx="${x}" cy="${y}" r="${r + (sel ? 1.5 : 0)}" fill="${COLOR_PUNTO[p.tipo] || '#16357a'}" stroke="#fff" stroke-width="1.8"/><text x="${x}" y="${(y + 1.9).toFixed(1)}" font-size="${p.id.length > 4 ? 4.6 : 5.4}" font-weight="800" fill="#fff" text-anchor="middle" font-family="Manrope, Barlow, Arial">${esc(p.id)}</text></g>`; }).join('');
   const norte = `<g transform="translate(${W - 13},14)"><circle r="8" fill="#fff" opacity=".9"/><path d="M0 -5.5 L3.6 3.5 L0 1.3 L-3.6 3.5 Z" fill="#e85d2a"/></g>`;
   const escala = `<g transform="translate(9,${H - 10})"><rect x="-3" y="-8" width="40" height="11" rx="3" fill="#fff" opacity=".85"/><line x1="0" y1="0" x2="34" y2="0" stroke="#33415c" stroke-width="1.6"/><text x="17" y="-2.6" font-size="4.6" text-anchor="middle" fill="#33415c" font-family="Manrope, Barlow, Arial">${Math.round(34)} m</text></g>`;
-  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa 2D de las sedes" class="${capas.admin ? 'editando' : ''}">${s}${norte}${escala}</svg>`;
+  const v = vistaEsquema();
+  return `<svg viewBox="${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa 2D de las sedes" class="${capas.admin ? 'editando' : ''}">${s}${norte}${escala}</svg>`;
 }
 function pintarEsquema() {
   if (!window.ESQUEMA_LISTO) return;
@@ -103,7 +104,68 @@ function fichaPuntoCob(id) {
   const gente = f ? [...f.gente.map(g => `${esc(cobNombre(g.cod))}${g.conf != null && !g.fuera ? ' ✓' : ''}`), ...f.refs.map(r => `${esc(cobNombre(r.cod))} (refuerzo)`)] : [];
   $('#ficha').innerHTML = `<b>${esc(p.id)} · ${esc(p.n)}</b>${esc(SEDES[p.sede] ? SEDES[p.sede].nombre : '')} · ${esc(p.tipo || '')}<br>${f && f.t ? `Ahora: ${esc(f.t[2])} · ${gente.length ? gente.join(', ') : 'nadie asignado'}` : 'Sin turno en este momento'}<br><button class="mini" type="button" data-ver-cob="1">Ver en Cobertura</button>`;
 }
+// ---- Moverse en el plano: arrastrar, rueda o pellizco para acercar, doble toque para acercar ----
+let esqVista = null, esqMovio = false;
+const esqBase = s => { const [x0, y0, x1, y1] = ESQ_CAJA[s] || ESQ_CAJA.todas; return { w: x1 - x0, h: y1 - y0 }; };
+function vistaEsquema() {
+  const s = estado.sede || 'todas', b = esqBase(s);
+  if (!esqVista || esqVista.sede !== s) esqVista = { sede: s, x: 0, y: 0, w: b.w, h: b.h };
+  return esqVista;
+}
+function aplicarVistaEsquema() {
+  const v = vistaEsquema(), b = esqBase(v.sede);
+  // que no se pierda: siempre queda a la vista al menos un pedazo del plano
+  v.x = Math.min(Math.max(v.x, -v.w * 0.6), b.w - v.w * 0.4); v.y = Math.min(Math.max(v.y, -v.h * 0.6), b.h - v.h * 0.4);
+  const svg = $('#mapa2d svg'); if (svg) svg.setAttribute('viewBox', `${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}`);
+}
+// acerca (f < 1) o aleja (f > 1) con centro en un punto de la pantalla (o en el centro del plano)
+function zoomEsquema(f, cx, cy) {
+  const svg = $('#mapa2d svg'); if (!svg) return;
+  const v = vistaEsquema(), b = esqBase(v.sede), r = svg.getBoundingClientRect();
+  const pt = svg.createSVGPoint(); pt.x = cx != null ? cx : r.left + r.width / 2; pt.y = cy != null ? cy : r.top + r.height / 2;
+  const q = pt.matrixTransform(svg.getScreenCTM().inverse());
+  const w = Math.min(Math.max(v.w * f, b.w / 10), b.w * 1.3), k = w / v.w;
+  v.x = q.x - (q.x - v.x) * k; v.y = q.y - (q.y - v.y) * k; v.w = w; v.h *= k;
+  aplicarVistaEsquema();
+}
+function centrarEsquema() { esqVista = null; aplicarVistaEsquema(); }
+(() => {
+  const caja = $('#mapa2d'), dedos = new Map();
+  let ini = null;
+  const escala = () => { const svg = $('#mapa2d svg'); return svg ? svg.getScreenCTM().a : 1; };
+  caja.addEventListener('pointerdown', e => {
+    if (!e.target.closest('svg')) return;
+    dedos.set(e.pointerId, [e.clientX, e.clientY]);
+    const v = vistaEsquema();
+    ini = { x: e.clientX, y: e.clientY, vx: v.x, vy: v.y, s: escala(), dist: null };
+    if (dedos.size === 2) { const [a, b] = [...dedos.values()]; ini.dist = Math.hypot(a[0] - b[0], a[1] - b[1]); ini.w = v.w; }
+    esqMovio = false;
+  });
+  addEventListener('pointermove', e => {   // en la ventana: el arrastre sigue aunque el dedo salga del plano
+    if (!ini || !dedos.has(e.pointerId)) return;
+    dedos.set(e.pointerId, [e.clientX, e.clientY]);
+    const v = vistaEsquema();
+    if (dedos.size === 2 && ini.dist) {
+      const [a, b] = [...dedos.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      zoomEsquema((ini.w * ini.dist / d) / v.w, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); esqMovio = true; return;
+    }
+    const dx = e.clientX - ini.x, dy = e.clientY - ini.y;
+    if (!esqMovio && Math.hypot(dx, dy) < 6) return;
+    esqMovio = true; caja.classList.add('arrastrando');
+    v.x = ini.vx - dx / ini.s; v.y = ini.vy - dy / ini.s; aplicarVistaEsquema();
+  });
+  const soltar = e => {
+    if (!dedos.has(e.pointerId)) return;
+    dedos.delete(e.pointerId); caja.classList.remove('arrastrando');
+    if (dedos.size === 1) { const [p] = [...dedos.values()], v = vistaEsquema(); ini = { x: p[0], y: p[1], vx: v.x, vy: v.y, s: escala(), dist: null }; }
+    else if (!dedos.size) ini = null;
+  };
+  addEventListener('pointerup', soltar); addEventListener('pointercancel', soltar);
+  caja.addEventListener('wheel', e => { if (!e.target.closest('svg')) return; e.preventDefault(); zoomEsquema(e.deltaY > 0 ? 1.18 : 1 / 1.18, e.clientX, e.clientY); }, { passive: false });
+  caja.addEventListener('dblclick', e => { if (e.target.closest('svg') && !e.target.closest('[data-cobpt],[data-pin]')) zoomEsquema(0.55, e.clientX, e.clientY); });
+})();
 $('#mapa2d').addEventListener('click', e => {
+  if (esqMovio) { esqMovio = false; return; }   // fue un arrastre, no un toque
   const c = e.target.closest('[data-cobpt]'), pin = e.target.closest('[data-pin]');
   if (c) { esquemaSel = 'c:' + c.dataset.cobpt; fichaPuntoCob(c.dataset.cobpt); pintarEsquema(); return; }
   if (pin) { esquemaSel = 'p:' + pin.dataset.pin; tocarPunto(pin.dataset.pin); pintarEsquema(); return; }
