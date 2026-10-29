@@ -1,1246 +1,176 @@
 <!doctype html>
-<!-- MINUME XVII · Inicio del staff · Albert Silvestre -->
+<!-- MINUME XVII · Entrada del staff -->
 <html lang="es-DO">
 <head>
 <meta charset="utf-8">
 <meta name="author" content="Albert Silvestre (desarrollo), Cristian Vargas (diseño)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inicio · MINUME XVII</title>
-<script>/* instalada como app, la ventana ya dice «MINUME XVII · Staff»: el título no lo repite */ if (matchMedia('(display-mode: standalone)').matches) document.title = 'Inicio';</script>
 <!--__APP__-->
 <!--__REPORTES__-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script>window.MINUME_ENLACES = /*__ENLACES__*/ { asistencia: 'asistencia/index.html', seguridad: 'seguridad/index.html', bienestar: 'bienestar/index.html' };</script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>window.MINUME_ENLACES = /*__ENLACES__*/ { asistencia: 'asistencia/index.html', acreditacion: 'acreditacion/index.html', seguridad: 'seguridad/index.html', bienestar: 'bienestar/index.html', eventos: 'eventos/index.html', coordinacion: 'coordinacion/index.html' };</script>
 <style>
-/* Centro de operaciones: arriba el estado del evento y la entrada; en el centro una columna por equipo con sus datos en vivo y sus atajos; abajo lo que todos consultan (avisos, traslados, comisiones, escalamiento y contactos). */
-:root{
-  --fondo:#06033f; --panel:rgba(12,22,120,.5); --panel2:rgba(11,17,112,.7);
-  --borde:rgba(120,170,255,.2); --borde2:rgba(120,170,255,.34);
-  --texto:#f1f4ff; --suave:#b3c0ee; --tenue:#7f8fc8;
-  --asis:#00b5ff; --segu:#e53535; --bien:#00fdef; --oro:#ffd23f; --amar:#ffb547; --rosa:#ffbeff; --azul:#0090fb;
-  --f-tit:Barlow,'Segoe UI',system-ui,sans-serif;
-  --f-txt:Barlow,'Segoe UI',system-ui,sans-serif; --f-ed:Barlow,'Segoe UI',system-ui,sans-serif;
-  color-scheme:dark;
-}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html.modo-evento .solo-demo{display:none!important}
-html{background:var(--fondo)}
-body{margin:0;min-height:100%;color:var(--texto);font:15px/1.5 var(--f-txt);
-  background:radial-gradient(1100px 620px at 10% -12%,#0043c5,transparent 58%),radial-gradient(900px 600px at 105% -5%,#002193,transparent 55%),linear-gradient(180deg,#0a0464,var(--fondo) 60%);background-attachment:fixed;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-button,input{font:inherit;color:inherit}
-button{cursor:pointer}
-:focus-visible{outline:3px solid var(--asis);outline-offset:2px}
-.envoltura{max-width:1720px;margin:0 auto;padding-block:0 40px}
-@media (min-width:1100px){body{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
-svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-/* Línea gráfica */
-.logo-marca{height:34px;width:auto;display:block;flex:none}
-@media (max-width:640px){.logo-marca{height:26px}}
-.deco{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}.deco img{position:absolute}
-.deco .d1{width:520px;right:-170px;top:-120px;opacity:.2}.deco .d2{width:110px;left:2%;top:46%;opacity:.15}.deco .d3{width:280px;left:-90px;bottom:-70px;opacity:.1}
-.autor{text-align:center;margin:6px 0 0;color:var(--tenue);font-size:12px;letter-spacing:.03em}
-.pie-marca{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;margin:28px 0 6px;opacity:.85}.pie-marca img{height:34px;width:auto}
-.pie-marca img,.bv-pie img{max-width:100%;object-fit:contain}
-/* Barra */
-.barra{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 0;padding-top:max(12px,env(safe-area-inset-top,0px));
-  background:linear-gradient(var(--fondo) 65%,transparent);backdrop-filter:blur(6px)}
-.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:800 22px var(--f-tit);color:#04121d;
-  background:conic-gradient(from 210deg,var(--asis),var(--bien),var(--oro),var(--segu),var(--asis))}
-.marca b{display:block;font:800 20px/1 var(--f-tit);letter-spacing:.02em}
-.marca small{color:var(--suave);font-size:12px}
-.barra .der{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.pastilla{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--borde2);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:#c3d0ff;background:rgba(10,18,44,.6);white-space:nowrap}
-.pastilla .pt{width:8px;height:8px;border-radius:50%;background:var(--bien);box-shadow:0 0 0 0 rgba(47,211,140,.6);animation:latido 2s infinite}
-.pastilla.off .pt{background:var(--amar);animation:none}
-.reloj{font:700 18px var(--f-tit);letter-spacing:.03em;font-variant-numeric:tabular-nums}
-.sim{border:1px dashed var(--borde2);background:none;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--suave)}
-.sim[aria-pressed="true"]{border-style:solid;border-color:var(--oro);color:var(--oro)}
-@media (max-width:640px){.marca small,.sim .largo{display:none}}
-
-/* Fila superior */
-.arriba{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;margin-top:6px}
-@media (max-width:900px){.arriba{grid-template-columns:1fr}}
-.caja{background:var(--panel);border:1px solid var(--borde);border-radius:22px;padding:20px;min-width:0}
-.eti{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
-.estado h1{font:800 clamp(34px,5.6vw,58px)/.95 var(--f-tit);margin:8px 0 6px;text-wrap:balance}
-.estado .lead{color:var(--suave);margin:0;max-width:60ch}
-.cuentas{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-.cuenta{flex:1 1 130px;background:var(--panel2);border:1px solid var(--borde);border-radius:16px;padding:12px 14px}
-.cuenta b{display:block;font:800 30px/1 var(--f-tit);font-variant-numeric:tabular-nums}
-.cuenta span{font-size:12px;color:var(--suave)}
-.dias{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
-.dia{position:relative;border:1px solid var(--borde);border-radius:14px;padding:10px 12px;overflow:hidden}
-.dia b{display:block;font:700 17px/1.1 var(--f-tit)}
-.dia small{color:var(--suave);font-size:12px}
-.dia .barrita{position:absolute;left:0;bottom:0;height:3px;background:var(--oro);width:0;transition:width .6s}
-.dia.hoy{border-color:var(--oro);background:rgba(255,210,63,.07)}
-.dia.paso{opacity:.55}
-.momento{display:flex;gap:12px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.28)}
-.momento .ic{color:var(--oro);margin-top:2px}
-.momento b{font:700 18px/1.1 var(--f-tit);display:block;color:var(--oro)}
-.momento p{margin:2px 0 0;color:#d7ddf5;font-size:14px}
-
-.entrar h2{font:800 30px/1 var(--f-tit);margin:6px 0 4px}
-.entrar p{color:var(--suave);margin:0 0 14px;font-size:14px}
-.campo{display:flex;gap:8px}
-.campo input{flex:1;min-width:0;background:rgba(5,10,26,.7);border:1px solid var(--borde2);border-radius:14px;padding:13px 14px;font:700 22px var(--f-tit);letter-spacing:.12em;text-transform:uppercase}
-.boton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 18px;font-weight:700;background:var(--asis);color:#04121d;text-decoration:none;white-space:nowrap}
-.boton.sec{background:var(--panel2);color:var(--texto);border:1px solid var(--borde2)}
-.boton:disabled{opacity:.45;cursor:default}
-.detecta{min-height:24px;margin-top:10px;font-size:13px;font-weight:600;color:var(--suave);display:flex;align-items:center;gap:8px}
-.detecta .bola{width:10px;height:10px;border-radius:50%}
-.error{color:#ff8a95}
-.abiertas{display:grid;gap:8px;margin-top:14px}
-.abierta{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--borde);border-left:4px solid var(--c);border-radius:14px;padding:10px 12px}
-.abierta b{display:block;font-size:14px}
-.abierta small{color:var(--suave);font-size:12px}
-.abierta .ic{margin-left:auto;color:var(--c)}
-
-/* Equipos */
-.titulo{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:30px 0 12px;flex-wrap:wrap}
-.titulo h2{font:800 clamp(26px,3.6vw,34px)/1 var(--f-tit);margin:0}
-.titulo p{margin:0;color:var(--suave);font-size:13px}
-.equipos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-@media (max-width:820px){.equipos{grid-template-columns:1fr}}
-.instalar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
-@media (max-width:700px){.instalar{grid-template-columns:1fr}}
-.paso-i{background:rgba(5,10,26,.45);border:1px solid var(--borde);border-radius:16px;padding:14px}
-.paso-i b{font:800 20px var(--f-tit);display:block;margin-bottom:6px}
-.paso-i ol{margin:0;padding-left:20px;color:#d7ddf5;font-size:14px;line-height:1.6}
-.equipo{position:relative;background:var(--panel);border:1px solid var(--borde);border-radius:22px;padding:18px;overflow:hidden;min-width:0;display:flex;flex-direction:column;gap:14px}
-.equipo::before{content:"";position:absolute;inset:0 0 auto;height:120px;background:radial-gradient(260px 120px at 20% 0%,color-mix(in srgb,var(--c) 28%,transparent),transparent 70%);pointer-events:none}
-.eq-cab{position:relative;display:flex;align-items:center;gap:12px}
-.eq-letra{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--c);color:#04121d;font:800 24px var(--f-tit);flex:none}
-.eq-cab b{display:block;font:800 25px/1 var(--f-tit)}
-.eq-cab small{color:var(--suave);font-size:12px}
-.eq-cab .entrar-eq{margin-left:auto;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:none;color:var(--c);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
-.kpis{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.kpi{background:rgba(5,10,26,.5);border:1px solid var(--borde);border-radius:14px;padding:10px}
-.kpi b{display:block;font:800 26px/1 var(--f-tit);font-variant-numeric:tabular-nums}
-.kpi span{display:block;font-size:11px;color:var(--suave);line-height:1.25;margin-top:3px}
-.kpi.alerta b{color:var(--segu)}
-.kpi.ok b{color:var(--bien)}
-.eq-ahora{position:relative;font-size:13px;color:#d7ddf5;background:rgba(5,10,26,.35);border-radius:12px;padding:10px 12px;border:1px solid var(--borde)}
-.eq-ahora b{color:var(--c)}
-.atajos{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.atajo{display:flex;align-items:center;gap:10px;text-align:left;background:var(--panel2);border:1px solid var(--borde);border-radius:14px;padding:11px 12px;font-weight:600;font-size:13.5px;line-height:1.2;transition:border-color .2s,transform .15s}
-.atajo .ic{color:var(--c)}
-.atajo:last-child:nth-child(odd){grid-column:1/-1}
-.atajo:hover{border-color:color-mix(in srgb,var(--c) 60%,transparent);transform:translateY(-2px)}
-.atajo small{display:block;color:var(--suave);font-weight:500;font-size:11.5px;margin-top:2px}
-
-/* Abajo */
-.abajo{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
-@media (max-width:900px){.abajo{grid-template-columns:1fr}}
-.cab-caja{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.cab-caja h3{font:800 24px/1 var(--f-tit);margin:0}
-.cab-caja .der{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-.pest{border:1px solid var(--borde);background:none;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--suave)}
-.pest.on{background:var(--panel2);color:var(--texto);border-color:var(--borde2)}
-.chip{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:700;background:rgba(120,160,255,.12);color:#c3d0ff;white-space:nowrap}
-.chip.rojo{background:rgba(255,77,94,.16);color:#ff8a95}
-.chip.verde{background:rgba(47,211,140,.14);color:#6ee8b2}
-.chip.amar{background:rgba(255,181,71,.15);color:#ffc978}
-.resumen{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.lista{display:grid;gap:8px}
-.aviso{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:rgba(5,10,26,.45);border:1px solid var(--borde);border-radius:14px;padding:10px 12px}
-.aviso .pt{width:10px;height:10px;border-radius:50%}
-.aviso b{display:block;font-size:14px;overflow-wrap:anywhere}
-.aviso small{display:block;color:var(--suave);font-size:12px;overflow-wrap:anywhere}
-.aviso.sos{border-color:rgba(255,77,94,.5);background:rgba(255,77,94,.08)}
-.vacio{border:1px dashed var(--borde2);border-radius:14px;padding:18px;color:var(--suave);font-size:14px;text-align:center}
-.viaje{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--borde)}
-.viaje:last-child{border-bottom:0}
-.sub-viajes{margin:14px 0 2px;font:800 15px var(--f-tit);text-transform:uppercase;letter-spacing:.04em;color:var(--suave)}
-.viaje .h{font:800 22px/1 var(--f-tit);font-variant-numeric:tabular-nums}
-.viaje b{display:block;font-size:13.5px}
-.viaje small{color:var(--suave);font-size:12px}
-.viaje.ya{opacity:.4}
-.viaje.prox{background:linear-gradient(90deg,rgba(255,77,94,.12),transparent);border-radius:10px;padding-inline:8px;margin-inline:-8px}
-.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
-@media (max-width:980px){.tres{grid-template-columns:1fr}}
-.buscar{display:flex;align-items:center;gap:8px;background:rgba(5,10,26,.7);border:1px solid var(--borde2);border-radius:14px;padding:0 12px}
-.buscar input{flex:1;min-width:0;background:none;border:0;padding:11px 0;outline:none}
-.res-com{display:grid;gap:6px;margin-top:10px;max-height:300px;overflow-y:auto}
-.com{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(5,10,26,.4)}
-.com b{font:800 17px var(--f-tit)}
-.com span{font-size:13px;line-height:1.3}
-.com small{display:block;color:var(--suave);font-size:12px}
-.nivel{border-left:4px solid var(--c);padding:8px 0 8px 12px;margin-bottom:10px}
-.nivel b{display:block;font:700 18px/1.1 var(--f-tit);color:var(--c)}
-.nivel p{margin:3px 0 0;font-size:13px;color:#d7ddf5}
-.contacto{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--borde);font-size:13.5px}
-.contacto:last-child{border-bottom:0}
-.contacto span{color:var(--suave)}
-.contacto b{text-align:right}
-
-.pie{margin-top:28px;border-top:1px solid var(--borde);padding-top:16px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--suave);font-size:13px}
-.pie .der{margin-left:auto}
-.cods{display:flex;gap:6px;flex-wrap:wrap}
-.cod.sub{border-color:rgba(255,210,63,.55);color:#ffd23f}
-.cod{border:1px solid var(--borde);background:none;border-radius:99px;padding:4px 10px;font:700 12px var(--f-txt);color:#c3d0ff;letter-spacing:.04em}
-
-/* Ventana para entrar desde un atajo */
-.velo{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(3,6,18,.72);backdrop-filter:blur(4px);padding:16px}
-.ventana{width:100%;max-width:420px;background:#0d1838;border:1px solid var(--borde2);border-top:4px solid var(--c,var(--asis));border-radius:22px;padding:22px;animation:sube .3s ease-out}
-.ventana h3{font:800 28px/1 var(--f-tit);margin:6px 0 6px}
-.ventana p{margin:0 0 14px;color:var(--suave);font-size:14px}
-.ventana .acciones{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
-.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:40;background:#14214d;border:1px solid var(--borde2);border-radius:14px;padding:10px 16px;font-weight:600;transition:.3s;pointer-events:none;max-width:calc(100% - 32px)}
-.toast.on{transform:translate(-50%,0);opacity:1}
-.subir{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));z-index:20;width:50px;height:50px;border-radius:50%;border:1px solid var(--borde2);background:rgba(13,24,56,.92);color:#fff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s,transform .25s}
-.exp-btns{display:inline-flex;gap:6px}.exp-btns .exp{display:inline-flex;align-items:center;gap:5px}.exp-btns svg{width:13px;height:13px}
-.subir.on{opacity:1;transform:none;pointer-events:auto}
-.subir:hover{border-color:var(--asis);color:var(--asis)}
-
-@keyframes latido{0%{box-shadow:0 0 0 0 rgba(47,211,140,.55)}70%{box-shadow:0 0 0 8px rgba(47,211,140,0)}100%{box-shadow:0 0 0 0 rgba(47,211,140,0)}}
-@keyframes sube{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
-@keyframes entra{from{transform:translateY(10px);opacity:.0}to{transform:none;opacity:1}}
-.aviso.nuevo{animation:entra .4s ease-out}
-@media (max-width:640px){.pest,.cod,.sim{min-height:38px;padding-left:12px;padding-right:12px}.buscar input,.campo input,#vCodigo{font-size:16px}.caja{padding:16px;border-radius:18px}.atajo{min-height:52px}.entrar-eq{min-height:36px}.abierta{min-height:52px}.instalar{gap:10px}}
-/* Con el zoom del navegador reducido (o en monitores muy anchos) la página se agranda para llenar la pantalla en vez de quedarse en el centro */
-@media (min-width:1950px){.envoltura{zoom:1.12}}
-@media (min-width:2150px){.envoltura{zoom:1.24}}
-@media (min-width:2400px){.envoltura{zoom:1.38}}
-@media (min-width:2700px){.envoltura{zoom:1.55}}
-@media (min-width:3100px){.envoltura{zoom:1.78}}
-@media (min-width:3600px){.envoltura{zoom:2.05}}
-/* Ajuste del Inicio (25 oct): menos texto, tarjeta del código centrada y todo más grande en pantallas anchas */
-.estado .lead{display:none}
-.entrar{display:flex;flex-direction:column;justify-content:center}
-.entrar h2{font-size:clamp(30px,2.6vw,46px)}
-.campo input{font-size:clamp(22px,1.6vw,30px);padding:16px 18px}
-.campo .boton{padding:14px 22px;font-size:16px}
-@media (min-width:1400px){body{font-size:16px}.eti{font-size:12px}.cuenta b{font-size:36px}.cuenta span,.dia small,.kpi span,.eq-cab small,.titulo p{font-size:13px}.dia b{font-size:19px}.momento p,.eq-ahora{font-size:15px}.kpi b{font-size:30px}.atajo b{font-size:15px}.caja{padding:24px}}
-@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-/* pantallas grandes: la página ocupa todo el ancho y los atajos van de tres en tres */
-@media (min-width:1500px){.atajos{grid-template-columns:repeat(3,minmax(0,1fr))}.atajo:last-child:nth-child(odd){grid-column:auto}}
-/* teléfono: más fluido (sin desenfoque pesado al desplazarse, toque inmediato y sin zoom al escribir) */
-button,a,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-@media (max-width:760px){.barra{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(var(--fondo) 80%,transparent)}input,select{font-size:16px}.deco .d2,.deco .d3{display:none}}
-@media (hover:none){.atajo:active,.boton:active,.abierta:active{transform:scale(.97)}}
-/* Rediseño del Inicio (25 oct): menos cajas, más jerarquía. Título grande sin marco, cifras en una franja,
-   los tres días como línea de tiempo, la entrada con código como tarjeta principal y equipos más limpios. */
-.arriba{gap:clamp(16px,3vw,40px);align-items:stretch;margin-top:18px}
-.caja.estado{background:none;border:0;padding:8px 0 0}
-.estado .eti{color:var(--asis)}
-.estado h1{font-size:clamp(40px,6.2vw,84px);line-height:.92;letter-spacing:-.01em;margin:14px 0 4px;text-transform:uppercase}
-.estado h1 em{font-style:normal;background:linear-gradient(90deg,var(--asis),var(--bien));-webkit-background-clip:text;background-clip:text;color:transparent}
-.cuentas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:22px;border-block:1px solid var(--borde);padding:14px 0}
-.cuenta{background:none;border:0;border-left:1px solid var(--borde);border-radius:0;padding:2px 16px}
-.cuenta:first-child{border-left:0;padding-left:0}
-.cuenta b{font-size:clamp(28px,2.6vw,40px)}
-.dias{gap:0;margin-top:22px}
-.dia{border:0;border-top:3px solid rgba(255,255,255,.12);border-radius:0;padding:12px 10px 0 0;overflow:visible}
-.dia::before{content:'';position:absolute;top:-8px;left:0;width:13px;height:13px;border-radius:50%;background:#1a2a8a;border:2px solid rgba(255,255,255,.25)}
-.dia.hoy{background:none;border-top-color:rgba(255,210,63,.35)}
-.dia.hoy::before{background:var(--oro);border-color:var(--oro);box-shadow:0 0 0 5px rgba(255,210,63,.18)}
-.dia.paso::before{background:var(--suave);border-color:var(--suave)}
-.dia .barrita{top:-3px;bottom:auto}
-.dia b{font-size:20px;margin-top:4px}
-.momento{background:none;border:0;border-left:3px solid var(--oro);border-radius:0;padding:4px 0 4px 14px;margin-top:22px}
-.caja.entrar{position:relative;overflow:hidden;border-radius:26px;padding:clamp(22px,2.4vw,34px);
-  background:linear-gradient(155deg,rgba(0,67,197,.55),rgba(10,4,100,.82) 60%);border:1px solid rgba(0,181,255,.45);
-  box-shadow:0 30px 70px rgba(0,0,30,.45),inset 0 1px 0 rgba(255,255,255,.1)}
-.caja.entrar::before{content:'';position:absolute;width:260px;height:260px;right:-90px;top:-100px;background:url('marca/anillo-turquesa.svg') center/contain no-repeat;opacity:.22;pointer-events:none}
-.caja.entrar > *{position:relative}
-.caja.entrar .eti{color:var(--bien)}
-.campo input{background:rgba(3,6,40,.75);border-color:rgba(0,181,255,.4);text-align:left}
-.campo input:focus{border-color:var(--asis);outline:none;box-shadow:0 0 0 4px rgba(0,181,255,.18)}
-.campo .boton{background:linear-gradient(90deg,var(--azul),var(--asis))}
-.titulo{margin:44px 0 16px;border-bottom:1px solid var(--borde);padding-bottom:12px}
-.titulo h2{display:flex;align-items:center;gap:12px;text-transform:uppercase}
-.titulo h2::before{content:'';width:26px;height:5px;border-radius:4px;background:linear-gradient(90deg,var(--asis),var(--bien));flex:none}
-.equipo{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 9%,rgba(12,22,120,.55)),rgba(8,12,84,.55) 55%);border-top:3px solid var(--c);border-radius:20px}
-.equipo::before{opacity:.6}
-.eq-letra{border-radius:13px;background:linear-gradient(140deg,var(--c),color-mix(in srgb,var(--c) 55%,#000))}
-.eq-cab .entrar-eq{background:color-mix(in srgb,var(--c) 14%,transparent)}
-.kpis{gap:0;border-block:1px solid var(--borde);padding:10px 0}
-.kpi{background:none;border:0;border-left:1px solid var(--borde);border-radius:0;padding:2px 12px}
-.kpi:first-child{border-left:0;padding-left:0}
-.eq-ahora{background:none;border:0;border-left:3px solid var(--c);border-radius:0;padding:2px 0 2px 12px}
-.atajo{background:rgba(255,255,255,.035);border-color:rgba(120,170,255,.16)}
-.atajo:hover{background:color-mix(in srgb,var(--c) 12%,transparent)}
-.abajo .caja,.tres .caja,#instalar{background:rgba(10,16,96,.45)}
-@media (max-width:900px){.caja.estado{padding-top:4px}}
-@media (max-width:640px){
-  .estado h1{font-size:clamp(34px,10.5vw,48px)}
-  .cuentas{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:14px}
-  .cuenta:nth-child(3){border-left:0;padding-left:0}
-  .dia b{font-size:16px}
-  .titulo{margin-top:34px}
-  /* barra de arriba en una sola línea */
-  .barra{gap:8px}.barra .der{flex-wrap:nowrap;gap:6px}
-  .logo-marca{height:auto;width:min(172px,44vw)}
-  .reloj{font-size:15px;white-space:nowrap}#redTxt{display:none}.marca{display:none}.pastilla{padding:8px}
-  .sim{padding:6px 10px}
-  /* en el teléfono lo primero es entrar: la tarjeta del código va justo después del título */
-  .arriba{display:flex;flex-direction:column;gap:0}
-  .caja.estado{display:contents}
-  .estado .eti{order:0}.estado h1{order:1}.caja.entrar{order:2;margin:18px 0 4px}
-  .cuentas{order:3}.dias{order:4}.momento{order:5}
-  .caja.entrar::before{display:none}
-}
-.cuenta span,.dia small{display:block;line-height:1.3;margin-top:3px}
-
-/* Bienvenida (26 oct): lo primero que se ve. Cuatro pasos: bienvenida → subsecretaría → rol → código.
-   Paleta de la identidad MXVII: azul noche #07274f, azul #0043c5, celeste #00b5ff, turquesa #00fdef, rojo #e53535 y rosa #ffbeff.
-   Se escribe primero para el teléfono y crece en tres saltos: 600 px (tableta), 900 px (tableta horizontal) y 1200 px (escritorio). */
-.bv{--gut:max(16px,env(safe-area-inset-left,0px));position:fixed;inset:0;z-index:35;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;color:var(--texto);-webkit-overflow-scrolling:touch;
-  background:radial-gradient(900px 640px at 88% 8%,rgba(0,67,197,.85),transparent 62%),radial-gradient(760px 560px at 0% 100%,rgba(0,33,147,.9),transparent 60%),linear-gradient(170deg,#07274f,#06033f 70%)}
-.bv *{min-width:0}
-.bv button{touch-action:manipulation}
-/* Decoración: solo donde hay espacio, nunca encima del texto */
-.bv-deco{position:fixed;inset:0;pointer-events:none;overflow:hidden}
-.bv-deco img{position:absolute;display:none}
-.bv-deco .e3{display:block;width:260px;right:-110px;bottom:-90px;opacity:.14}
-.bv-in{position:relative;z-index:1;width:100%;max-width:1200px;min-height:100%;min-height:100dvh;margin:0 auto;display:flex;flex-direction:column;
-  padding:max(12px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) var(--gut)}
-/* Cabecera y pasos */
-.bv-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 12px}
-.bv-cab .logo-marca{width:clamp(132px,40vw,250px);height:auto}
-.bv-saltar{flex:none;min-height:44px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.22);color:#d7e3ff;border-radius:99px;padding:0 14px;font-size:13px;font-weight:600;white-space:nowrap}
-.bv-saltar:hover{border-color:var(--asis);color:#fff}
-.bv-saltar .l{display:none}
-.bv-pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;list-style:none;margin:0;padding:0}
-.bv-pasos li{display:flex;flex-direction:column;gap:6px;font-size:0;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7f8fc8}
-.bv-pasos li::before{content:'';height:4px;border-radius:4px;background:rgba(255,255,255,.14);transition:background .35s}
-.bv-pasos li.hecho::before{background:var(--asis)}
-.bv-pasos li.ahora{color:#fff}
-.bv-pasos li.ahora::before{background:linear-gradient(90deg,var(--asis),var(--bien))}
-/* Paneles */
-.bv-panel{flex:1;display:flex;flex-direction:column;justify-content:center;padding:22px 0 26px;animation:bvEntra .45s cubic-bezier(.2,.8,.2,1)}
-.bv-panel[hidden]{display:none}
-.bv-eti{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bien)}
-.bv-eti::before{content:'';flex:none;width:22px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--asis),var(--bien))}
-.bv h1{font:800 clamp(42px,13vw,112px)/.88 var(--f-tit);text-transform:uppercase;letter-spacing:-.01em;margin:14px 0 0;overflow-wrap:break-word}
-.bv h1 span{display:block;background:linear-gradient(90deg,var(--asis),var(--bien));-webkit-background-clip:text;background-clip:text;color:transparent}
-.bv h2{font:800 clamp(30px,8.5vw,62px)/.95 var(--f-tit);text-transform:uppercase;margin:10px 0 8px;text-wrap:balance;overflow-wrap:break-word}
-.bv-ed{font:500 clamp(16px,4.4vw,24px)/1.45 var(--f-ed);color:#d7e3ff;margin:14px 0 0;max-width:34ch}
-.bv-ed b{font-weight:800;letter-spacing:.02em;color:#fff}
-.bv-lead{color:#c3cff5;margin:0;max-width:60ch;font-size:15px}
-.bv-datos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:22px 0 0;border-block:1px solid rgba(255,255,255,.14);padding:12px 0;max-width:720px}
-.bv-datos div{padding:2px 10px;border-left:1px solid rgba(255,255,255,.14)}
-.bv-datos div:first-child{border-left:0;padding-left:0}
-.bv-datos b{display:block;font:800 clamp(19px,5.4vw,30px)/1 var(--f-tit);white-space:nowrap}
-.bv-datos span{display:block;margin-top:3px;font-size:11.5px;line-height:1.3;color:#aab8e6}
-.bv-acciones{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:24px}
-.bv-cta{display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;border:0;border-radius:16px;padding:0 20px;font:800 clamp(16px,4.6vw,19px)/1 var(--f-tit);letter-spacing:.03em;text-transform:uppercase;color:#04121d;background:linear-gradient(90deg,var(--asis),var(--bien));box-shadow:0 18px 40px rgba(0,181,255,.28);transition:transform .15s,box-shadow .2s,opacity .2s}
-.bv-cta:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(0,181,255,.38)}
-.bv-cta:disabled{opacity:.35;filter:saturate(.4);transform:none;box-shadow:none;cursor:default}
-.bv-cta .ic{width:22px;height:22px;stroke-width:2.4}
-.bv-atras{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:44px;margin:-8px 0 2px;background:none;border:0;color:#aab8e6;font-weight:600;font-size:14px;padding:0}
-.bv-atras:hover{color:#fff}
-.bv-atras .ic{width:18px;height:18px;transform:scaleX(-1)}
-.bv-seguir{display:grid;gap:8px;margin-top:20px;max-width:520px}
-.bv-seguir .eti{color:#aab8e6}
-.bv-seguir .abierta{min-height:56px}
-/* Tarjetas para elegir: en el teléfono son filas compactas (ícono a la derecha) */
-.bv-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:18px}
-.bv-op{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:4px;text-align:left;padding:16px 64px 16px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 22%,rgba(10,20,90,.7)),rgba(6,10,70,.75) 70%);transition:transform .18s,border-color .2s,box-shadow .2s}
-.bv-op:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 20px 44px rgba(0,0,30,.4)}
-.bv-op[aria-pressed="true"]{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 40%,transparent),0 20px 44px rgba(0,0,30,.4)}
-.bv-op > img{position:absolute;right:-14px;top:50%;width:72px;transform:translateY(-50%);opacity:.85;transition:transform .5s}
-.bv-op:hover > img{transform:translateY(-50%) rotate(18deg)}
-.bv-op .bv-sig{font:800 12px var(--f-tit);letter-spacing:.14em;color:var(--c);text-transform:uppercase}
-.bv-op b{font:800 22px/1.02 var(--f-tit)}
-.bv-op small{color:#c3cff5;font-size:13px;line-height:1.4}
-.bv-op .bv-marca{position:absolute;right:14px;bottom:14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#04121d;opacity:0;transform:scale(.6);transition:.2s}
-.bv-op[aria-pressed="true"] .bv-marca{opacity:1;transform:none}
-.bv-op .bv-marca .ic{width:16px;height:16px;stroke-width:3}
-.bv-op.ancha{flex-direction:row;align-items:center;gap:14px}
-.bv-op.ancha > img{width:96px;opacity:.45}
-.bv-op.ancha > div{display:flex;flex-direction:column;gap:4px}
-.bv-ico{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
-.bv-ico .ic{width:22px;height:22px}
-/* Roles */
-.bv-rol{padding:18px;gap:8px}
-.bv-rol .bv-ico{margin-bottom:4px}
-.bv-rol ul{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:6px}
-.bv-rol li{display:flex;gap:8px;font-size:13.5px;color:#dbe4ff;line-height:1.35}
-.bv-rol li::before{content:'';flex:none;width:7px;height:7px;border-radius:2px;margin-top:6px;background:var(--c);transform:rotate(45deg)}
-.bv-rol .bv-ve{margin-top:4px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8fa0d8}
-/* Código */
-.bv-codigo{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:center}
-.bv-resumen{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
-.bv-resumen .chip{font-size:12.5px;padding:6px 12px;white-space:normal;border:1px solid color-mix(in srgb,var(--c,#7fa0ff) 50%,transparent);color:var(--c,#c3d0ff);background:color-mix(in srgb,var(--c,#7fa0ff) 12%,transparent)}
-.bv-cambiar{min-height:36px;background:none;border:0;color:#aab8e6;text-decoration:underline;font-size:13px;padding:0 4px}
-.bv-tarjeta{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px;background:linear-gradient(155deg,rgba(0,67,197,.6),rgba(10,4,100,.85) 62%);border:1px solid rgba(0,181,255,.45);box-shadow:0 30px 70px rgba(0,0,30,.45),inset 0 1px 0 rgba(255,255,255,.1)}
-.bv-tarjeta::before{content:'';position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--c,var(--asis)),var(--bien))}
-.bv-tarjeta label{display:block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#aab8e6;margin-bottom:10px}
-.bv-tarjeta input{width:100%;background:rgba(3,6,40,.8);border:1px solid rgba(0,181,255,.4);border-radius:16px;padding:14px 12px;font:800 clamp(24px,7.5vw,36px) var(--f-tit);letter-spacing:.12em;text-transform:uppercase;text-align:center;color:#fff}
-.bv-tarjeta input::placeholder{color:rgba(255,255,255,.25)}
-.bv-tarjeta input:focus{outline:none;border-color:var(--asis);box-shadow:0 0 0 4px rgba(0,181,255,.2)}
-.bv-tarjeta .detecta{justify-content:center;text-align:center;flex-wrap:wrap;min-height:40px}
-.bv-tarjeta .bv-cta{margin-top:4px;width:100%}
-.bv h1:focus,.bv h2:focus{outline:none}
-.bv-tarjeta.sacude{animation:bvSacude .4s}
-.bv-ayuda{color:#aab8e6;font-size:13px;margin:14px 0 0;text-align:center}
-.bv-prueba{margin-top:14px;border:1px dashed rgba(255,210,63,.45);border-radius:14px;padding:10px 12px;font-size:12.5px;color:#e6dcae;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.bv-prueba button{min-height:36px;background:none;border:1px solid rgba(255,210,63,.45);color:var(--oro);border-radius:10px;padding:0 10px;font:700 12.5px var(--f-txt);letter-spacing:.04em}
-/* Pie */
-.bv-pie{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);color:#8fa0d8;font-size:12px;text-align:center}
-.bv-pie img{height:24px;width:auto;opacity:.9}
-.bv-pie .bv-pie-l{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
-/* El botón «Entrar» de la barra del centro de operaciones */
-.reabrir{min-height:36px;border:1px solid rgba(0,181,255,.5);background:linear-gradient(90deg,rgba(0,144,251,.25),rgba(0,181,255,.15));color:#fff;border-radius:99px;padding:0 14px;font-size:12px;font-weight:700;white-space:nowrap}
-@media (max-width:640px){.barra .der{min-width:0}.reabrir{padding:0 12px}}
-@media (max-width:420px){.barra .reloj{display:none}.barra #sim{padding:6px 8px}}
-
-/* ≥ 600 px: tableta vertical */
-@media (min-width:600px){
-  .bv-in{--gut:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));padding-top:max(18px,env(safe-area-inset-top,0px))}
-  .bv-saltar .l{display:inline}.bv-saltar .c{display:none}
-  .bv-pasos li{font-size:11px}
-  .bv-deco .e1{display:block;width:120px;right:5%;top:16%;opacity:.9;animation:flota 9s ease-in-out infinite}
-  .bv-deco .e3{width:400px;right:-140px;bottom:-120px}
-  .bv:not([data-paso="0"]) .bv-deco .e1{opacity:.22}
-  .bv-panel{padding:34px 0}
-  .bv h1{font-size:clamp(64px,11vw,112px);max-width:12ch}
-  .bv-lead{font-size:16px}
-  .bv-datos div{padding:2px 18px}
-  .bv-datos span{font-size:12.5px}
-  .bv-cta{width:auto}
-  .bv-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  #bvSubs .bv-op:nth-child(5){grid-column:1/-1}
-  .bv-op{padding:20px;min-height:168px}
-  .bv-op > img{top:-16px;right:-16px;width:100px;transform:none}
-  .bv-op:hover > img{transform:rotate(18deg) scale(1.06)}
-  .bv-op b{margin-top:auto;font-size:26px}
-  .bv-op.ancha{grid-column:1/-1;min-height:0;padding-right:120px}
-  .bv-op.ancha b{margin:0}
-  .bv-op.ancha > img{top:50%;width:140px;transform:translateY(-50%)}
-  .bv-op.ancha:hover > img{transform:translateY(-50%) rotate(18deg)}
-  .bv-roles{grid-template-columns:minmax(0,1fr)}
-  .bv-rol{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;align-items:start;min-height:0}
-  .bv-rol > *{grid-column:2}.bv-rol .bv-ico{grid-column:1;grid-row:1/span 5;margin:0}
-  .bv-rol b{margin:0}
-  .bv-tarjeta{padding:28px}
-  .bv-pie{flex-direction:row;justify-content:space-between;text-align:left}
-  .bv-pie img{height:28px}
-}
-/* ≥ 900 px: tableta horizontal y laptops pequeñas */
-@media (min-width:900px){
-  .bv-deco .e2{display:block;width:96px;right:30%;top:22%;animation:flota 11s ease-in-out infinite reverse}
-  .bv-deco .e4{display:block;width:84px;right:22%;bottom:9%;opacity:.5;animation:gira 40s linear infinite}
-  .bv-deco .e5{display:block;width:120px;left:-46px;bottom:7%;opacity:.28}
-  .bv:not([data-paso="0"]) .bv-deco .e2{opacity:.22}
-  .bv h2{font-size:clamp(44px,5vw,62px)}
-  /* cinco equipos en una rejilla de seis: tres arriba y dos abajo */
-  #bvSubs{grid-template-columns:repeat(6,minmax(0,1fr))}
-  #bvSubs .bv-op{grid-column:span 2}
-  #bvSubs .bv-op:nth-child(4),#bvSubs .bv-op:nth-child(5){grid-column:span 3}
-  #bvSubs .bv-op.ancha{grid-column:span 3}
-  .bv-roles{grid-template-columns:repeat(2,minmax(0,1fr));max-width:980px}
-  .bv-rol{display:flex;padding:22px}
-  .bv-rol .bv-ico{margin-bottom:6px}
-  .bv-codigo{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(28px,4vw,56px)}
-  .bv-codigo > div:first-child{align-self:center}
-}
-/* ≥ 1200 px: escritorio, los cinco equipos en una fila */
-@media (min-width:1200px){
-  .bv-deco .e1{width:160px}
-  #bvSubs{grid-template-columns:repeat(10,minmax(0,1fr))}
-  #bvSubs .bv-op,#bvSubs .bv-op:nth-child(4),#bvSubs .bv-op:nth-child(5){grid-column:span 2}
-  #bvSubs .bv-op.ancha{grid-column:span 5}
-  #bvSubs .bv-op{min-height:200px}
-  #bvSubs .bv-op b{font-size:24px}
-  .bv-lead{font-size:17px}
-}
-/* Pantallas bajas (teléfono acostado, laptops con poca altura): menos aire arriba y abajo */
-@media (max-height:620px) and (min-width:600px){
-  .bv-panel{justify-content:flex-start;padding:18px 0}
-  .bv h1{font-size:clamp(48px,8vw,76px)}
-  .bv-datos{margin-top:16px}.bv-acciones{margin-top:18px}
-  .bv-op{min-height:0}#bvSubs .bv-op{min-height:140px}
-  .bv-deco .e1,.bv-deco .e2,.bv-deco .e4{display:none}
-}
-/* Teléfono acostado: todo lo de la bienvenida cabe casi sin desplazarse */
-@media (max-height:480px) and (min-width:600px){
-  .bv-cab{padding-bottom:8px}.bv-panel{padding:12px 0}
-  .bv h1{font-size:44px;margin-top:8px;max-width:none}.bv h1 span{display:inline}
-  .bv h2{font-size:34px}
-  .bv-ed{font-size:15px;margin-top:8px;max-width:60ch}
-  .bv-datos{margin-top:12px;padding:8px 0}.bv-acciones{margin-top:12px}
-  .bv-cta{min-height:48px}
-  #bvSubs .bv-op{min-height:120px}
-}
-@keyframes bvEntra{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@keyframes bvSacude{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-@keyframes flota{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(8deg)}}
-@keyframes gira{to{transform:rotate(360deg)}}
+:root{font-family:Barlow,"Segoe UI",system-ui,sans-serif;color-scheme:dark;color:#f5f7ff;background:#06033f;--azul:#00b5ff;--turquesa:#00fdef}
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse 850px 600px at 85% 5%,#0043c5 0%,transparent 65%),radial-gradient(ellipse 700px 580px at 0% 100%,#002193 0%,transparent 65%),#06033f}
+button,input{font:inherit} button{cursor:pointer} :focus-visible{outline:3px solid var(--turquesa);outline-offset:3px}
+.decoracion{position:fixed;inset:0;overflow:hidden;pointer-events:none;opacity:.18}
+.decoracion img{position:absolute;width:300px;right:-90px;bottom:-80px}
+.contenedor{position:relative;width:min(100%,1120px);min-height:100vh;min-height:100dvh;margin:auto;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+header img{width:clamp(150px,30vw,235px);height:auto}
+.pasos{display:flex;gap:8px;list-style:none;padding:0;margin:28px 0 0}
+.pasos li{flex:1;max-width:180px;color:#aebce7;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.pasos li:before{content:"";display:block;height:4px;border-radius:5px;margin-bottom:8px;background:rgba(255,255,255,.18)}
+.pasos li.actual{color:white}.pasos li.actual:before{background:linear-gradient(90deg,var(--azul),var(--turquesa))}
+.pasos li.hecho:before{background:var(--azul)}
+main{flex:1;display:grid;align-items:center;padding:30px 0}
+.panel{width:100%;animation:entrada .3s ease-out}
+.etiqueta{display:inline-flex;align-items:center;gap:10px;color:var(--turquesa);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.etiqueta:before{content:"";width:22px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--azul),var(--turquesa))}
+h1,h2{font-weight:800;text-transform:uppercase;letter-spacing:-.02em;line-height:.95;margin:16px 0}
+h1{font-size:clamp(48px,10vw,104px);max-width:9ch}h1 span{display:block;color:var(--turquesa)}
+h2{font-size:clamp(36px,6vw,64px);max-width:11ch}
+.intro{font-size:clamp(17px,2.3vw,23px);line-height:1.4;color:#d7e3ff;max-width:42ch;margin:22px 0 0}
+.accion{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:56px;padding:12px 28px;border:0;border-radius:15px;color:#04121d;background:linear-gradient(90deg,var(--azul),var(--turquesa));font-size:18px;font-weight:800;text-transform:uppercase;box-shadow:0 18px 40px #00b5ff33}
+.accion:hover:not(:disabled){transform:translateY(-2px)}.accion:disabled{opacity:.4;box-shadow:none;cursor:default}
+.bienvenida .accion{margin-top:32px}
+.volver{border:0;background:none;color:#c5d2f6;font-weight:700;padding:12px 0;min-height:44px}
+.codigo{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(28px,5vw,70px)}
+.codigo p{color:#c5d2f6;line-height:1.5;max-width:40ch}
+.tarjeta{padding:clamp(22px,3vw,36px);border:1px solid #00b5ff77;border-radius:24px;background:linear-gradient(155deg,#0043c599,#0a0464dd 70%);box-shadow:0 30px 70px #0006}
+.tarjeta label{display:block;margin-bottom:10px;color:#c5d2f6;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.tarjeta input{width:100%;min-width:0;padding:15px 12px;border:1px solid #00b5ff77;border-radius:15px;background:#030628cc;color:white;text-align:center;text-transform:uppercase;letter-spacing:.1em;font-size:clamp(22px,3vw,34px);font-weight:800}
+.tarjeta input::placeholder{color:#aebce777}.tarjeta input:focus{outline:3px solid #00fdef55;border-color:var(--turquesa)}
+.mensaje{min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center;color:#d7e3ff;font-size:14px;line-height:1.4}
+.mensaje.error{color:#ffb7c1}.tarjeta .accion{width:100%}
+.ayuda{text-align:center;font-size:13px}
+.sesiones{display:grid;gap:8px;margin-top:20px;max-width:520px}
+.sesiones button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:60px;padding:12px 16px;border:1px solid #ffffff33;border-radius:14px;background:#ffffff0c;color:white;text-align:left}
+.sesiones button:hover{border-color:var(--turquesa)}.sesiones small{display:block;color:#aebce7}
+footer{border-top:1px solid #ffffff22;padding-top:16px;display:flex;justify-content:space-between;align-items:center;gap:18px;color:#aebce7;font-size:12px}
+footer img{height:24px;max-width:100%}
+@keyframes entrada{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media(max-width:700px){.codigo{grid-template-columns:1fr}.codigo h2{margin-top:8px}.pasos{margin-top:24px}main{align-items:start;padding:36px 0}.tarjeta{padding:20px}footer{flex-wrap:wrap}}
+@media(max-width:450px){.contenedor{padding-inline:16px}h1{font-size:clamp(46px,13vw,68px)}.accion{width:100%}.codigo{gap:20px}}
+@media(prefers-reduced-motion:reduce){.panel{animation:none}.accion:hover:not(:disabled){transform:none}}
 </style>
 </head>
 <body>
-<div class="bv" id="bv" role="dialog" aria-modal="true" aria-labelledby="bvTit0" data-paso="0">
-  <div class="bv-deco" aria-hidden="true">
-    <img class="e3" src="marca/anillo-pixel.svg" alt=""><img class="e1" src="marca/estrella-roja.svg" alt=""><img class="e2" src="marca/destello-rosa.svg" alt=""><img class="e4" src="marca/circulos.svg" alt=""><img class="e5" src="marca/cruz-azul.svg" alt="">
-  </div>
-  <div class="bv-in">
-    <header class="bv-cab">
-      <img class="logo-marca" src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones">
-      <button class="bv-saltar" id="bvSaltar" type="button"><span class="l">Ver el centro de operaciones</span><span class="c">Ver el centro</span></button>
-    </header>
-    <ol class="bv-pasos" id="bvPasos" aria-label="Pasos para entrar">
-      <li>Bienvenida</li><li>Subsecretaría</li><li>Rol</li><li>Código</li>
-    </ol>
-
-    <section class="bv-panel" data-p="0">
-      <span class="bv-eti">XVII Período de Sesiones · 2026</span>
-      <h1 id="bvTit0">Bienvenido <span>al staff</span></h1>
-      <p class="bv-ed"><b>MINUME</b> de <b>ESTRELLAS</b> · el sistema que conecta a todas las subsecretarías del modelo, en vivo y en un solo lugar.</p>
-      <div class="bv-datos">
-        <div><b>14 – 16</b><span>de noviembre</span></div>
-        <div><b>2 sedes</b><span>Renaissance Jaragua y Sheraton</span></div>
-        <div><b>5</b><span>subsecretarías conectadas</span></div>
-      </div>
-      <div class="bv-acciones">
-        <button class="bv-cta" id="bvEmpezar" type="button">Comenzar <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      </div>
-      <div class="bv-seguir" id="bvSeguir"></div>
-    </section>
-
-    <section class="bv-panel" data-p="1" hidden>
-      <button class="bv-atras" type="button" data-ir="0"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Atrás</button>
-      <span class="bv-eti">Paso 1</span>
-      <h2 id="bvTit1">¿De qué subsecretaría eres?</h2>
-      <p class="bv-lead">Elige tu equipo. Si eres de la Secretaría General o administras la plataforma, elige una de las dos últimas opciones.</p>
-      <div class="bv-grid" id="bvSubs"></div>
-    </section>
-
-    <section class="bv-panel" data-p="2" hidden>
-      <button class="bv-atras" type="button" data-ir="1"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Atrás</button>
-      <span class="bv-eti">Paso 2 · <span id="bvSubNombre"></span></span>
-      <h2 id="bvTit2">¿Cuál es tu rol?</h2>
-      <p class="bv-lead">Tu rol decide lo que ves. El código personal lo confirma al entrar. Si eres de la Secretaría General o Administrador, vuelve atrás y elige esa opción.</p>
-      <div class="bv-grid bv-roles" id="bvRoles"></div>
-    </section>
-
-    <section class="bv-panel" data-p="3" hidden>
-      <div class="bv-codigo">
-        <div>
-          <button class="bv-atras" type="button" data-ir="2"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Atrás</button>
-          <span class="bv-eti" id="bvCodEti" style="display:flex;margin-top:8px">Paso 3</span>
-          <h2 id="bvTit3">Tu código personal</h2>
-          <p class="bv-lead" id="bvCodTxt"></p>
-          <div class="bv-resumen" id="bvResumen"></div>
-        </div>
-        <form class="bv-tarjeta" id="bvForm" autocomplete="off">
-          <label for="bvCodigo">Código personal</label>
-          <input id="bvCodigo" placeholder="AS-7KQ2MX" maxlength="11" autocapitalize="characters" spellcheck="false" inputmode="text" autocomplete="one-time-code">
-          <div class="detecta" id="bvDetecta" aria-live="polite"></div>
-          <button class="bv-cta" id="bvEntrar" type="submit" disabled>Entrar al sistema <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-          <p class="bv-ayuda">¿No tienes código o lo perdiste? Pídeselo a tu coordinación. Cada código es personal y se puede anular.</p>
-          <div class="bv-prueba solo-demo" id="bvPrueba"></div>
-        </form>
-      </div>
-    </section>
-
-    <footer class="bv-pie">
-      <div class="bv-pie-l"><img src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas" style="height:20px"><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD"></div>
-      <span>Desarrollo: Albert Silvestre · Diseño: Cristian Vargas</span>
-    </footer>
-  </div>
+<div class="decoracion" aria-hidden="true"><img src="marca/anillo-pixel.svg" alt=""></div>
+<div class="contenedor">
+<header><img src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones"></header>
+<ol class="pasos" aria-label="Pasos para entrar"><li id="pasoBienvenida" class="actual">Bienvenida</li><li id="pasoCodigo">Código</li></ol>
+<main>
+<section class="panel bienvenida" id="bienvenida" aria-labelledby="tituloBienvenida">
+<span class="etiqueta">XVII Período de Sesiones · 2026</span>
+<h1 id="tituloBienvenida">Bienvenido <span>al staff</span></h1>
+<p class="intro">MINUME de ESTRELLAS · Todas las subsecretarías conectadas en un solo lugar. Tu código te lleva directamente al panel de tu equipo.</p>
+<button class="accion" id="comenzar" type="button">Entrar con mi código <span aria-hidden="true">→</span></button>
+<div class="sesiones" id="sesionesBienvenida"></div>
+</section>
+<section class="panel codigo" id="panelCodigo" aria-labelledby="tituloCodigo" hidden>
+<div>
+<button class="volver" id="volver" type="button">← Volver a bienvenida</button>
+<span class="etiqueta">Paso 2 de 2</span>
+<h2 id="tituloCodigo">Tu código personal</h2>
+<p>Escribe el código que te entregaron. Identificaremos tu equipo y abrirás su panel automáticamente.</p>
 </div>
-<div class="deco" aria-hidden="true"><img class="d1" src="marca/anillo-pixel.svg" alt=""></div>
-<div class="envoltura">
-  <header class="barra">
-    <img class="logo-marca" src="marca/minume-xvii-blanco.svg" alt="MINUME XVII Período de Sesiones">
-    <div class="marca"><small>Centro de operaciones del staff</small></div>
-    <div class="der">
-      <button class="reabrir" id="bReabrir" type="button">Entrar</button>
-      <span class="reloj" id="reloj">--:--</span>
-      <span class="pastilla" id="red"><span class="pt"></span><span id="redTxt">En línea</span></span>
-      <button class="sim solo-demo" id="sim" type="button" aria-pressed="false" title="Muestra la página como si fuera el 15 de noviembre a las 10:20">Simular<span class="largo"> día del evento</span></button>
-    </div>
-  </header>
-
-  <section class="arriba">
-    <div class="caja estado">
-      <span class="eti" id="eEti">Renaissance Jaragua y Sheraton · 14 al 16 de noviembre</span>
-      <h1 id="eTit">Faltan pocos días</h1>
-      <p class="lead" id="eLead"></p>
-      <div class="cuentas" id="cuentas"></div>
-      <div class="dias" id="dias"></div>
-      <div class="momento" id="momento"></div>
-    </div>
-    <form class="caja entrar" id="fEntrar" autocomplete="off">
-      <span class="eti">Entra a tu sistema</span>
-      <h2>Tu código personal</h2>
-      <p>Escríbelo y la página te lleva al sistema de tu equipo, con tu nombre y lo que te toca.</p>
-      <div class="campo">
-        <label for="codigo" class="eti" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Código personal</label>
-        <input id="codigo" placeholder="AS-7KQ2MX" maxlength="11" autocapitalize="characters" spellcheck="false" inputmode="text">
-        <button class="boton" id="bEntrar" type="submit" disabled>Entrar <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      </div>
-      <div class="detecta" id="detecta" aria-live="polite"></div>
-      <div class="abiertas" id="abiertas"></div>
-    </form>
-  </section>
-
-  <div class="titulo"><h2>Los equipos</h2><p>Datos en vivo de la base compartida · toca un atajo para ir directo</p></div>
-  <section class="equipos" id="equipos"></section>
-
-  <div class="titulo"><h2>Lo que todos consultan</h2><p>Avisos entre equipos, regionales, salones y a quién acudir</p></div>
-  <section class="abajo">
-    <div class="caja">
-      <div class="cab-caja">
-        <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M12 3l9 16H3zM12 10v4M12 17v.5"/></svg>
-        <h3>Avisos entre equipos</h3>
-        <div class="der">
-          <button class="pest on" type="button" data-f="abiertos">Abiertos</button>
-          <button class="pest" type="button" data-f="todos">Todos de hoy</button>
-          <div class="exp-btns" data-exportar="avisos"><button class="pest exp" type="button" data-fmt="pdf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7zM14 3v5h5M9.5 13h5M9.5 16.5h3.5"/></svg>PDF</button><button class="pest exp" type="button" data-fmt="xlsx"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg>Excel</button></div>
-        </div>
-      </div>
-      <div class="resumen" id="avResumen"></div>
-      <div class="lista" id="avLista"></div>
-    </div>
-    <div class="caja">
-      <div class="cab-caja">
-        <svg class="ic" viewBox="0 0 24 24" style="color:var(--segu)"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 11a3 3 0 0 0 0-6M21 20a6 6 0 0 0-4-5.6"/></svg>
-        <h3>Regionales</h3>
-      </div>
-      <div id="buses"></div>
-    </div>
-  </section>
-
-  <section class="tres">
-    <div class="caja">
-      <div class="cab-caja"><svg class="ic" viewBox="0 0 24 24" style="color:var(--asis)"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"/></svg><h3>¿Dónde está la comisión?</h3></div>
-      <label class="buscar" for="qCom"><input id="qCom" placeholder="Siglas o nombre: CSNU, salud, turismo…" spellcheck="false"></label>
-      <div class="res-com" id="resCom"></div>
-    </div>
-    <div class="caja">
-      <div class="cab-caja"><svg class="ic" viewBox="0 0 24 24" style="color:var(--oro)"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><h3>¿A quién escalo?</h3></div>
-      <div class="nivel" style="--c:var(--bien)"><b>Nivel 1 · Resuélvelo tú</b><p>Desubicación, consulta de salón u horario, orientación de ruta. Registra solo si se repite.</p></div>
-      <div class="nivel" style="--c:var(--amar)"><b>Nivel 2 · Avisa a coordinación</b><p>Faltan materiales, problema de acceso, falta personal, congestión o retraso que afecta la comisión.</p></div>
-      <div class="nivel" style="--c:var(--segu)"><b>Nivel 3 · Escala de inmediato</b><p>Emergencia médica o de bienestar, seguridad o protección, conflicto grave. No intervengas fuera de tu función.</p></div>
-    </div>
-    <div class="caja">
-      <div class="cab-caja"><svg class="ic" viewBox="0 0 24 24" style="color:var(--bien)"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg><h3>Responsables</h3></div>
-      <div id="contactos"></div>
-      <p style="margin:10px 0 0;color:var(--tenue);font-size:12px">Escríbeles por el canal oficial del staff.</p>
-    </div>
-  </section>
-
-  <div class="titulo"><h2>Instálala en tu teléfono</h2><p>Abre como una app y funciona aunque no haya internet</p></div>
-  <section class="caja" id="instalar">
-    <p style="margin:0;color:var(--suave);max-width:70ch">Instala el sistema de <b style="color:var(--texto)">tu equipo</b>: entra con tu código una vez con internet y después abre aunque no haya señal. Lo que hagas sin internet se guarda en el teléfono y se envía cuando vuelve.</p>
-    <div class="instalar">
-      <div class="paso-i"><b>iPhone</b><ol><li>Abre el enlace en <b>Safari</b>.</li><li>Toca <b>Compartir</b> (el cuadrito con la flecha).</li><li>Elige <b>Agregar a pantalla de inicio</b> y toca <b>Agregar</b>.</li><li>Ábrela desde el ícono y toca <b>Activar alertas</b> para que suenen los SOS.</li></ol></div>
-      <div class="paso-i"><b>Android</b><ol><li>Abre el enlace en <b>Chrome</b>.</li><li>Toca <b>Instalar app</b> cuando aparezca, o el menú ⋮ y <b>Instalar aplicación</b>.</li><li>Ábrela desde el ícono y toca <b>Activar alertas</b>.</li></ol><button class="boton" id="bInstalar" type="button" hidden style="margin-top:10px">Instalar ahora</button></div>
-    </div>
-  </section>
-
-  <div class="pie-marca"><img src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas" style="height:22px"><img src="marca/educacion-plerd-blanco.svg" alt="Educación · PLERD"></div>
-  <p class="autor">Desarrollo: Albert Silvestre · Diseño: Cristian Vargas</p>
-  <footer class="pie solo-demo">
-    <span>DEMO · datos de ejemplo. Códigos de prueba:</span>
-    <div class="cods" id="cods"></div>
-    <span>Subdirección:</span>
-    <div class="cods" id="codsSub"></div>
-    <button class="cod der" id="bPrueba" type="button" title="Crea un aviso de nivel 2 para ver cómo llega a los sistemas">Enviar aviso de prueba</button>
-  </footer>
+<div>
+<form class="tarjeta" id="formCodigo" autocomplete="off">
+<label for="codigo">Código personal</label>
+<input id="codigo" placeholder="Tu código" maxlength="11" autocapitalize="characters" spellcheck="false" inputmode="text" autocomplete="one-time-code" required>
+<div class="mensaje" id="mensaje" role="status" aria-live="polite">Tu código determina el equipo y tus permisos.</div>
+<button class="accion" id="entrar" type="submit" disabled>Entrar a mi panel <span aria-hidden="true">→</span></button>
+<p class="ayuda">¿No tienes código o lo perdiste? Pídeselo a tu coordinación.</p>
+</form>
+<div class="sesiones" id="sesionesCodigo"></div>
 </div>
-
-<div class="velo" id="velo" hidden>
-  <form class="ventana" id="fVentana" autocomplete="off">
-    <span class="eti" id="vEti">Asistencia</span>
-    <h3 id="vTit">Entra con tu código</h3>
-    <p id="vTxt">Para abrir esta parte necesitas entrar con tu código personal.</p>
-    <label for="vCodigo" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Código personal</label>
-    <div class="campo"><input id="vCodigo" placeholder="AS-7KQ2MX" maxlength="11" autocapitalize="characters" spellcheck="false"></div>
-    <div class="detecta" id="vDetecta" aria-live="polite"></div>
-    <div class="acciones"><button class="boton sec" type="button" id="vCerrar">Cancelar</button><button class="boton" type="submit">Entrar</button></div>
-  </form>
+</section>
+</main>
+<footer><img src="marca/estrellas-2026-blanco.svg" alt="2026 · MINUME de Estrellas"><span>Desarrollo: Albert Silvestre · Diseño: Cristian Vargas</span></footer>
 </div>
-<div class="toast" id="toast" role="status"></div>
-<button class="subir" id="subir" type="button" aria-label="Ir al inicio de la página" title="Ir al inicio de la página"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
-
 <script>
 (() => {
-const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const IC = {
-  qr: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2',
-  lista: 'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',
-  alerta: 'M12 3l9 16H3zM12 10v4M12 17v.5',
-  libro: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11',
-  bolsillo: 'M4 5h16v14H4zM8 9h8M8 13h5',
-  bandera: 'M5 21V4M5 4h11l-2 4 2 4H5',
-  escudo: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
-  cobertura: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
-  mapa: 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 8a2 2 0 1 1 0 4 2 2 0 1 1 0-4',
-  bus: 'M5 16V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10M5 11h14M5 16h14v2H5zM8 18v2M16 18v2',
-  gente: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 11a3 3 0 0 0 0-6M21 20a6 6 0 0 0-4-5.6',
-  corazon: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',
-  tablilla: 'M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4',
-  cruz: 'M12 5v14M5 12h14',
-  reloj: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
-  flecha: 'M5 12h14M13 6l6 6-6 6',
-  puerta: 'M14 4h5v16h-5M4 20h10V4H4zM10 12h.01'
-};
-try { console.info('%cMINUME XVII%c · Inicio del staff · desarrollo: Albert Silvestre · diseño: Cristian Vargas', 'font-weight:800;color:#00b5ff', 'color:inherit'); } catch {}
-const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"/></svg>`;
-const toast = t => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2600); };
-const leerLS = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
-const guardarLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-
-/* ---------- Datos del evento (los mismos de los sistemas) ---------- */
-const ENLACES = window.MINUME_ENLACES;
-const EQUIPOS = {
-  asistencia: { nombre: 'Asistencia, Bienvenida y Acreditación', corto: 'Asistencia', letra: 'A', color: '#00b5ff', quienes: 'Asistentes de comisión y su coordinación' },
-  acreditacion: { nombre: 'Acreditación', corto: 'Acreditación', letra: 'A', color: '#a974ff', quienes: 'Mesas de acreditación de delegados' },
-  seguridad: { nombre: 'Seguridad y Traslado', corto: 'Seguridad', letra: 'S', color: '#e53535', quienes: 'Seguridad, avisos y regionales' },
-  bienestar: { nombre: 'Bienestar', corto: 'Bienestar', letra: 'B', color: '#00fdef', quienes: 'Bienestar físico y emocional' },
-  eventos: { nombre: 'Eventos y Protocolo', corto: 'Eventos', letra: 'E', color: '#ffbeff', quienes: 'Ceremonias, montajes e invitados' },
-  coordinacion: { nombre: 'Coordinación general', corto: 'Coordinación', letra: 'C', color: '#0090fb', quienes: 'Ve todo el evento en un solo lugar' }
-};
-// Prefijo del código → sistema. El sistema valida el código completo al entrar.
-const PREFIJOS = { AD: ['coordinacion', 'Administración de la plataforma'], AS: ['asistencia', 'Asistente de comisión'], CO: ['asistencia', 'Coordinación'], AC: ['acreditacion', 'Acreditación'], SE: ['seguridad', 'Seguridad'], TR: ['seguridad', 'Traslado'], BI: ['bienestar', 'Bienestar'], EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'] };
-const PRUEBA = ['AS-4821', 'CO-0001', 'AC-3307', 'SE-1093', 'TR-5570', 'BI-2207', 'BI-3318', 'EP-2603', 'CG-0001'];
-const PRUEBA_SUB = [['SE-4400', 'Seguridad y Traslado'], ['TR-4400', 'Traslado'], ['BI-4400', 'Bienestar'], ['EP-4400', 'Eventos y Protocolo'], ['AC-4400', 'Acreditación']];   // subdirección de prueba de cada equipo
-const ATAJOS = {
-  asistencia: [
-    ['listas', 'lista', 'Checklist del momento', 'Lo que toca ahora'],
-    ['incidencias', 'alerta', 'Reportar incidencia', 'Nivel 1, 2 o 3'],
-    ['bitacora', 'libro', 'Bitácora', 'Qué pasó y cómo quedó'],
-    ['comunicados', 'bandera', 'Comunicados', 'Lo que manda dirección'],
-    ['comisiones-vivo', 'reloj', 'Mi comisión ahora', 'Estado y delegados'],
-    ['bolsillo', 'bolsillo', 'Guía de bolsillo', 'Reglas y contactos']
-  ],
-  seguridad: [
-    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
-    ['cobertura', 'cobertura', 'Cobertura de áreas', 'Quién está en cada punto'],
-    ['rondas', 'lista', 'Rondas', 'Marcar cada punto'],
-    ['seguridad', 'escudo', 'Avisos y SOS', 'Responder y despachar'],
-    ['traslado', 'gente', 'Regionales', 'Pase de lista de cada regional'],
-    ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
-    ['mapa', 'mapa', 'Mapa 3D', 'Salones y puntos']
-  ],
-  acreditacion: [
-    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y la lista oficial'],
-    ['delegados', 'qr', 'Acreditar delegados', 'Escanear el QR o buscar por nombre'],
-    ['programa', 'reloj', 'Programa', 'Horarios de acreditación'],
-    ['mapa', 'mapa', 'Mapa 3D', 'Mesas y lobby'],
-    ['bitacora', 'libro', 'Bitácora', 'Novedades de la mesa']
-  ],
-  bienestar: [
-    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
-    ['casos', 'corazon', 'Casos y triaje', 'Lo más grave, primero'],
-    ['atenciones', 'tablilla', 'Expedientes', 'Historial y PDF de cada caso'],
-    ['protocolos', 'lista', 'Protocolos', 'Qué hacer en cada caso'],
-    ['punto', 'cruz', 'Punto de bienestar', 'Dónde está y qué tiene'],
-    ['mapa', 'mapa', 'Mapa 3D', 'Llegar al salón'],
-    ['bitacora', 'libro', 'Bitácora', 'Casos del día']
-  ],
-  eventos: [
-    ['subdireccion', 'gente', 'Mi subdirección', 'Solo subdirección: tu staff y sus turnos'],
-    ['eventos', 'reloj', 'Eventos de hoy', 'Un botón por paso'],
-    ['invitados', 'gente', 'Invitados especiales', 'Marcar quién llegó'],
-    ['comunicados', 'bandera', 'Comunicados', 'Lo que manda dirección'],
-    ['programa', 'lista', 'Programa', 'Qué viene después'],
-    ['objetos', 'bolsillo', 'Objetos perdidos', 'Registrar y entregar'],
-    ['mapa', 'mapa', 'Mapa 3D', 'Salones del hotel']
-  ],
-  coordinacion: [
-    ['comunicados', 'bandera', 'Comunicados', 'Enviar y ver quién leyó'],
-    ['comisiones-vivo', 'reloj', 'Comisiones en vivo', 'Cómo va cada una'],
-    ['cobertura', 'cobertura', 'Cobertura de áreas', 'Puntos de seguridad'],
-    ['rondas', 'lista', 'Rondas', 'Atrasos y novedades'],
-    ['atenciones', 'corazon', 'Bienestar', 'Resumen sin nombres'],
-    ['objetos', 'bolsillo', 'Objetos perdidos', 'Guardados y entregados']
-  ]
-};
-const COMISIONES = [
-  ['PNUD', 'Programa de las Naciones Unidas para el Desarrollo'], ['CDT', 'Comisión de Ciencia y Tecnología para el Desarrollo'],
-  ['COP31', 'Conferencia de las Partes'], ['AMS', 'Asamblea Mundial de la Salud'], ['CSNU', 'Consejo de Seguridad de las Naciones Unidas'],
-  ['ONUDC', 'Oficina de las Naciones Unidas contra la Droga y el Delito'], ['CIJ', 'Corte Internacional de Justicia'],
-  ['FS-CDH', 'Foro Social del Consejo de Derechos Humanos'], ['ONUDI', 'Organización de las Naciones Unidas para el Desarrollo Industrial'],
-  ['UNCTAD', 'Conferencia de las Naciones Unidas sobre Comercio y Desarrollo'], ['OMA', 'Organización Mundial de Aduanas'],
-  ['OMT', 'Organización Mundial del Turismo'], ['CIME', 'Conferencia Iberoamericana de Ministros de Educación'],
-  ['CRPD', 'Comité sobre los Derechos de las Personas con Discapacidad'], ['UNESCO-JD', 'UNESCO — Comité de Juventud y Deporte']
-];
-const SEDES = { jaragua: 'Renaissance Jaragua', sheraton: 'Sheraton', malecon: 'Malecón Terrace' };
-const ASIGNA = {
-  CSNU: ['jaragua', 'Anacaona 1'], AMS: ['jaragua', 'Anacaona 2'], CIJ: ['jaragua', 'Anacaona 3'], PNUD: ['jaragua', 'Marién'],
-  COP31: ['jaragua', 'Maguá'], ONUDC: ['jaragua', 'Higüey'], CDT: ['jaragua', 'Maguana'], 'FS-CDH': ['jaragua', 'Las Olas'],
-  ONUDI: ['sheraton', 'Samaná'], UNCTAD: ['sheraton', 'Bonanza'], OMA: ['sheraton', 'Constanza'], OMT: ['sheraton', 'Yarey'],
-  CIME: ['sheraton', 'Da Vinci'], CRPD: ['sheraton', 'Este I'], 'UNESCO-JD': ['sheraton', 'Board Room']
-};
-// Movilizaciones a pie: Jaragua → Sheraton unos 240 m (3 min); Sheraton → Malecón Terrace unos 140 m (2 min)
-const VIAJES = [
-  { h: '7:30', de: 'jaragua', a: 'sheraton', nota: 'Comisiones del Sheraton después de la acreditación', estado: 'A tiempo' },
-  { h: '12:15', de: 'sheraton', a: 'malecon', nota: 'Almuerzo en el Malecón Terrace', estado: 'A tiempo' },
-  { h: '12:30', de: 'jaragua', a: 'malecon', nota: 'Almuerzo en el Malecón Terrace', estado: 'A tiempo' },
-  { h: '13:45', de: 'malecon', a: 'jaragua', nota: 'Regreso a sesiones', estado: 'A tiempo' },
-  { h: '13:45', de: 'malecon', a: 'sheraton', nota: 'Regreso a sesiones', estado: 'A tiempo' },
-  { h: '18:30', de: 'sheraton', a: 'jaragua', nota: 'Cierre de jornada en el Jaragua', estado: 'A tiempo' }
-];
-// Regionales: no hay autobuses. Aquí solo se cuenta cuántas regionales ya pasaron lista (el detalle lo ve la dirección en Seguridad y Traslado)
-let NUM_REGIONALES = 18;
-const RESPONSABLES = [
-  ['Coordinación de Asistencia', 'Beatriz Pérez'], ['Subsecretario de Asistencia', 'Baldwin Ureña'], ['Gestión de Voluntarios', 'Adrian Triunfer'],
-  ['Bienestar', 'Laura Melián'], ['Seguridad / Traslado', 'Brahyant Pérez'], ['Eventos / Protocolo', 'Daniela Sirit'], ['Soporte SGL', 'Kervin Diaz']
-];
-const MOMENTOS = {
-  pre: ['Antes · Pre-MINUME', 'Conoce tu comisión, tu mesa directiva, tus horarios y tus canales. Nunca llegues conociendo solo el nombre de tu comisión.'],
-  montaje: ['Abre · Montaje y apertura', 'Verifica salón, placards, materiales, audiovisuales y circulación. Deja la comisión lista antes de que entren los delegados.'],
-  sesiones: ['Sesión', 'Observa, apoya, conecta y registra. Orienta solo con información confirmada.'],
-  transiciones: ['Mueve · Entre actividades', 'Confirma destino y hora antes de comunicarlo. Instrucciones cortas, iguales para todos, y vigila pasillos y accesos.'],
-  cierre: ['Cierra · Cierre de comisión', 'Checklist de cierre, bitácora cerrada y novedades reportadas a coordinación antes de retirarte.'],
-  fin: ['MINUME XVII terminó', 'Gracias por tu trabajo. Revisa que tu bitácora y tus reportes estén cerrados.']
-};
-// Lo que cada equipo hace en cada momento del día
-const FOCO = {
-  acreditacion: { pre: 'Revisa que la lista oficial de delegados esté cargada.', montaje: 'Mesas listas en el lobby: acreditación de 5:00 a 9:00 p. m.', sesiones: 'Acredita a los que lleguen tarde y avisa de los que faltan.', transiciones: 'Atento a delegados sin gafete.', cierre: 'Revisa quién falta por acreditar.', fin: 'Lista final de acreditados.' },
-  asistencia: { pre: 'Llena tu ficha rápida y el checklist de Pre-MINUME.', montaje: 'Checklist de montaje: salón, placards y audiovisuales.', sesiones: 'Checklist de sesión y bitácora al día.', transiciones: 'Mueve a tu comisión con la secuencia acordada.', cierre: 'Cierre en 5 minutos y bitácora cerrada.', fin: 'Entrega tu reporte final.' },
-  seguridad: { pre: 'Revisa tu puesto y tus turnos en Cobertura de áreas.', montaje: 'Puntos de seguridad y accesos listos en el mapa.', sesiones: 'Atiende avisos y SOS; vigila accesos.', transiciones: 'Pasillos y el camino Jaragua – Sheraton.', cierre: 'Salida ordenada y último grupo.', fin: 'Cierra la bitácora del equipo.' },
-  eventos: { pre: 'Revisa los eventos y la lista de invitados.', montaje: 'Monta cada evento y marca su lista.', sesiones: 'Avanza cada evento con su botón y recibe a los invitados.', transiciones: 'Prepara el siguiente evento.', cierre: 'Marca los eventos terminados.', fin: 'Revisa que todo quedó cerrado.' },
-  coordinacion: { pre: 'Prepara los comunicados y revisa que cada equipo tenga sus datos.', montaje: 'Confirma que cada sede y cada punto esté listo.', sesiones: 'Mira comisiones, cobertura y avisos en vivo.', transiciones: 'Vigila traslados y comisiones que no han vuelto.', cierre: 'Revisa que todo quede cerrado y descarga los reportes.', fin: 'Descarga los reportes del evento.' },
-  bienestar: { pre: 'Repasa los protocolos y el punto de bienestar.', montaje: 'Punto de bienestar abierto y equipado.', sesiones: 'Cola de triaje: lo más grave primero, atender y cerrar.', transiciones: 'Atento a desmayos y calor en los traslados.', cierre: 'Cierra los casos abiertos del día.', fin: 'Reporte de casos del evento.' }
-};
-
-/* Lo que coordinación edita en «Datos del evento» (salones, movilizaciones y responsables) */
-function aplicarConfigInicio() {
-  const c = k => leerLS('minume.compartido.config.' + k, null);
-  const vieja = l => l.some(x => x && ['sede', 'de', 'a'].some(k => x[k] && !SEDES[x[k]]));
-  const com = c('comisiones');
-  if (com && !vieja(com)) {
-    const nombres = Object.fromEntries(COMISIONES);
-    COMISIONES.splice(0, COMISIONES.length, ...com.map(r => [r.com, r.nombre || nombres[r.com] || r.com]));
-    com.forEach(r => { ASIGNA[r.com] = [r.sede, r.salon]; });
-  }
-  const sed = c('sedes'); if (sed) sed.forEach(r => { if (SEDES[r.id] && r.nombre) SEDES[r.id] = r.nombre; });
-  const bus = c('autobuses'); if (bus && !vieja(bus)) VIAJES.splice(0, VIAJES.length, ...bus.slice().sort((a, b) => aMin(a.h) - aMin(b.h)));
-  const rg = c('regionales'); if (rg && rg.length) NUM_REGIONALES = rg.length;
-  const res = c('responsables'); if (res) RESPONSABLES.splice(0, RESPONSABLES.length, ...res.map(r => [r.area, r.persona]));
-  $('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${esc(a)}</span><b>${esc(p)}</b></div>`).join('');
-}
-/* ---------- Reloj (real o simulado para la reunión) ---------- */
-const SIM_INICIO = new Date('2026-11-15T10:20:00-04:00').getTime();
-let sim = window.MINUME_DEMO === false ? null : leerLS('minume.portal.sim', null); // { desde: ms reales cuando se activó }
-const ahora = () => sim ? new Date(SIM_INICIO + (Date.now() - sim.desde)) : new Date();
-$('#sim').addEventListener('click', () => {
-  sim = sim ? null : { desde: Date.now() }; guardarLS('minume.portal.sim', sim);
-  toast(sim ? 'Simulando el 15 de noviembre a las 10:20' : 'Hora real');
-  pintarTodo();
-});
-const DIAS = [
-  { f: '2026-11-14', t: 'Sáb 14', d: 'Montaje y acreditación', ini: '2026-11-14T15:00:00-04:00', fin: '2026-11-14T23:00:00-04:00' },
-  { f: '2026-11-15', t: 'Dom 15', d: 'Sesiones', ini: '2026-11-15T07:00:00-04:00', fin: '2026-11-15T20:00:00-04:00' },
-  { f: '2026-11-16', t: 'Lun 16', d: 'Sesiones y clausura', ini: '2026-11-16T07:00:00-04:00', fin: '2026-11-16T20:00:00-04:00' }
-];
-// Todo se calcula en hora de República Dominicana, aunque el teléfono tenga otra zona horaria
-const TZ = 'America/Santo_Domingo';
-const FMT = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
-const dr = d => { const p = Object.fromEntries(FMT.formatToParts(d).map(x => [x.type, x.value])); return { f: `${p.year}-${p.month}-${p.day}`, h: +p.hour % 24, m: +p.minute }; };
-const fechaLocal = d => dr(d).f;
-const minutos = d => { const x = dr(d); return x.h * 60 + x.m; };
-const aMin = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
-const hora = t => { const x = dr(new Date(t)); return `${x.h}:${String(x.m).padStart(2, '0')}`; };
-function momentoDe(d) {
-  const f = fechaLocal(d), m = minutos(d);
-  if (f < '2026-11-14') return 'pre';
-  if (f === '2026-11-14') return m >= 19 * 60 ? 'montaje' : 'pre';
-  if (f > '2026-11-16') return 'fin';
-  if (m < 8 * 60) return 'montaje';
-  if (m < aMin('12:30')) return 'sesiones';
-  if (m < aMin('14:00')) return 'transiciones';
-  if (m < aMin('18:30')) return 'sesiones';
-  return f === '2026-11-16' ? 'fin' : 'cierre';
-}
-const enEvento = d => { const f = fechaLocal(d); return f === '2026-11-15' || f === '2026-11-16'; };
-
-function pintarEstado() {
-  const d = ahora(), mo = momentoDe(d);
-  $('#reloj').textContent = d.toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit', timeZone: TZ }) + (sim ? ' · 15 nov' : '');
-  const hasta = (iso) => Math.max(0, new Date(iso).getTime() - d.getTime());
-  const fmt = ms => { const dd = Math.floor(ms / 86400000), hh = Math.floor(ms % 86400000 / 3600000), mm = Math.floor(ms % 3600000 / 60000); return dd ? [dd, dd === 1 ? 'día' : 'días', hh, 'h'] : [hh, 'h', mm, 'min']; };
-  const hm = dr(d).h;
-  const saludo = hm < 12 ? 'Buenos días' : hm < 19 ? 'Buenas tardes' : 'Buenas noches';
-  if (mo === 'pre') {
-    const ms = hasta('2026-11-14T19:00:00-04:00'), [a, ua] = fmt(ms);
-    $('#eTit').innerHTML = ms ? `Faltan <em>${a} ${ua}</em> para el montaje` : 'Hoy empieza <em>el montaje</em>';
-    $('#eLead').textContent = `${saludo}. Cada equipo entra a su propio sistema y todos comparten los avisos: un caso que Asistencia escala le llega al instante a Seguridad o a Bienestar.`;
-  } else if (mo === 'fin') {
-    $('#eTit').textContent = 'MINUME XVII terminó';
-    $('#eLead').textContent = 'Cierra tu bitácora y entrega tus reportes. Gracias por tu trabajo.';
-  } else {
-    const dia = DIAS.findIndex(x => x.f === fechaLocal(d)) + 1;
-    $('#eTit').innerHTML = `${saludo} · <em>Día ${dia}</em> de 3`;
-    $('#eLead').textContent = `Ahora: ${MOMENTOS[mo][0]}. Entra a tu sistema para ver tu checklist y lo que te toca.`;
-  }
-  const s = hasta('2026-11-15T08:00:00-04:00'), [s1, su1, s2, su2] = fmt(s);
-  const abiertos = leerAvisos().filter(a => !CERRADO(a)).length;
-  const rgs = regionalesHoy(d);
-  const nSedes = new Set(Object.values(ASIGNA).map(a => a[0])).size;
-  $('#cuentas').innerHTML = [
-    [s ? `${s1}<small style="font-size:16px"> ${su1}</small> ${s2}<small style="font-size:16px"> ${su2}</small>` : 'En curso', s ? 'para la primera sesión' : 'sesiones'],
-    [String(abiertos), abiertos === 1 ? 'aviso abierto entre equipos' : 'avisos abiertos entre equipos'],
-    [`${rgs.listas}<small style="font-size:16px">/${NUM_REGIONALES}</small>`, `regionales con lista confirmada · ${rgs.momento}`],
-    [String(COMISIONES.length), `comisiones en ${nSedes} ${nSedes === 1 ? 'hotel' : 'hoteles'}`]
-  ].map(([b, t]) => `<div class="cuenta"><b>${b}</b><span>${t}</span></div>`).join('');
-  $('#dias').innerHTML = DIAS.map(x => {
-    const ini = new Date(x.ini).getTime(), fin = new Date(x.fin).getTime(), t = d.getTime();
-    const pct = t <= ini ? 0 : t >= fin ? 100 : (t - ini) / (fin - ini) * 100;
-    const cl = fechaLocal(d) === x.f ? 'hoy' : t > fin ? 'paso' : '';
-    return `<div class="dia ${cl}"><b>${x.t} nov</b><small>${x.d}</small><span class="barrita" style="width:${pct}%"></span></div>`;
-  }).join('');
-  $('#momento').innerHTML = `${ic('reloj')}<div><b>${mo === 'pre' ? 'Ahora te toca · ' : 'Momento actual · '}${MOMENTOS[mo][0]}</b><p>${MOMENTOS[mo][1]}</p></div>`;
-  return mo;
-}
-
-/* ---------- Sesiones abiertas y entrada con código ---------- */
-const sesion = s => leerLS(`minume.${s}.usuario`, null);
-function detectar(cod) {
-  const c = (cod || '').trim().toUpperCase(), p = PREFIJOS[c.slice(0, 2)];
-  if (!c) return null;
-  if (!p) return c.length >= 2 ? { error: 'Ese código no corresponde a ningún equipo. Revisa las dos primeras letras.' } : null;
-  return { sis: p[0], rol: p[1], completo: /^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(c), codigo: c };
-}
-function pintarDetecta(el, r) {
-  if (!r) { el.innerHTML = ''; return; }
-  if (r.error) { el.innerHTML = `<span class="error">${r.error}</span>`; return; }
-  const e = EQUIPOS[r.sis];
-  el.innerHTML = `<span class="bola" style="background:${e.color}"></span>${r.rol} · entra a <b style="color:${e.color}">${e.nombre}</b>${r.completo ? '' : ' · faltan números'}`;
-}
-function abrir(sis, codigo, seccion) {
-  const base = ENLACES[sis];
-  location.href = codigo ? `${base}#entrar=${encodeURIComponent(codigo)}${seccion ? '/' + seccion : ''}` : `${base}${seccion ? '#' + seccion : ''}`;
-}
-$('#codigo').addEventListener('input', e => {
-  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  if (/^[A-Z]{2}[A-Z0-9]/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
-  const r = detectar(e.target.value); pintarDetecta($('#detecta'), r);
-  $('#bEntrar').disabled = !(r && r.completo);
-});
-$('#fEntrar').addEventListener('submit', e => { e.preventDefault(); const r = detectar($('#codigo').value); if (r && r.completo) abrir(r.sis, r.codigo); });
-function pintarAbiertas() {
-  const l = Object.keys(EQUIPOS).map(s => [s, sesion(s)]).filter(([, u]) => u);
-  $('#abiertas').innerHTML = l.length ? `<span class="eti" style="margin-top:4px">Ya entraste en este dispositivo</span>` + l.map(([s, u]) => `<button class="abierta" type="button" data-abrir="${s}" style="--c:${EQUIPOS[s].color}"><div><b>Continuar como ${esc(u.nombre)}</b><small>${EQUIPOS[s].nombre}${u.comision ? ' · ' + esc(u.comision) : ''}</small></div>${ic('flecha')}</button>`).join('') : '';
-}
-$('#abiertas').addEventListener('click', e => { const b = e.target.closest('[data-abrir]'); if (b) abrir(b.dataset.abrir); });
-
-/* ---------- Ventana para atajos sin sesión ---------- */
-let pendiente = null;
-function pedirCodigo(sis, seccion, titulo) {
-  pendiente = { sis, seccion };
-  const e = EQUIPOS[sis];
-  $('#fVentana').style.setProperty('--c', e.color);
-  $('#vEti').textContent = e.nombre; $('#vTit').textContent = titulo;
-  $('#vTxt').textContent = `Entra con tu código de ${e.corto} y te llevamos directo a esta parte.`;
-  $('#vCodigo').value = ''; $('#vDetecta').innerHTML = '';
-  $('#velo').hidden = false; $('#vCodigo').focus();
-}
-const cerrarVentana = () => { $('#velo').hidden = true; pendiente = null; };
-$('#vCerrar').addEventListener('click', cerrarVentana);
-$('#velo').addEventListener('click', e => { if (e.target.id === 'velo') cerrarVentana(); });
-addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#velo').hidden) cerrarVentana(); });
-$('#vCodigo').addEventListener('input', e => {
-  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  if (/^[A-Z]{2}[A-Z0-9]/.test(e.target.value)) e.target.value = e.target.value.slice(0, 2) + '-' + e.target.value.slice(2);
-  const r = detectar(e.target.value);
-  if (r && r.sis && pendiente && r.sis !== pendiente.sis) { $('#vDetecta').innerHTML = `<span class="error">Ese código es de ${EQUIPOS[r.sis].nombre}, no de ${EQUIPOS[pendiente.sis].nombre}.</span>`; return; }
-  pintarDetecta($('#vDetecta'), r);
-});
-$('#fVentana').addEventListener('submit', e => {
-  e.preventDefault();
-  const r = detectar($('#vCodigo').value);
-  if (!r || !r.completo || r.sis !== pendiente.sis) { $('#vCodigo').focus(); return; }
-  abrir(pendiente.sis, r.codigo, pendiente.seccion);
-});
-
-/* ---------- Avisos compartidos (la misma clave que usan los sistemas) ---------- */
-const CLAVE_AVISOS = 'minume.compartido.avisos';
-const EST = { nuevo: ['Enviado', 'amar', '#ffb547'], visto: ['Visto', 'amar', '#ffb547'], camino: ['En camino', '', '#45c8ff'], atencion: ['En atención', '', '#45c8ff'], resuelto: ['Resuelto', 'verde', '#2fd38c'], derivado: ['Derivado al 911', 'rojo', '#ff4d5e'] };
-const CERRADO = a => a.estado === 'resuelto' || a.estado === 'derivado';
-const leerAvisos = () => leerLS(CLAVE_AVISOS, []);
-const esSOS = a => /^SOS/i.test(a.tipo || '');
-const hoy = a => fechaLocal(new Date(a.t)) === fechaLocal(new Date());
-let filtro = 'abiertos', vistos = new Set(leerAvisos().map(a => a.id));
-function pintarAvisos() {
-  const todos = leerAvisos().slice().sort((a, b) => b.t - a.t);
-  const abiertos = todos.filter(a => !CERRADO(a));
-  const l = (filtro === 'abiertos' ? abiertos : todos.filter(hoy)).slice(0, 12);
-  const sos = abiertos.filter(esSOS).length;
-  $('#avResumen').innerHTML = [
-    sos ? `<span class="chip rojo">${sos} SOS activo${sos > 1 ? 's' : ''}</span>` : '',
-    ...Object.keys(EQUIPOS).map(s => { const n = abiertos.filter(a => a.para === s).length; return `<span class="chip" style="color:${EQUIPOS[s].color}">${n} para ${EQUIPOS[s].corto}</span>`; }),
-    `<span class="chip verde">${todos.filter(a => CERRADO(a) && hoy(a)).length} cerrados hoy</span>`
-  ].join('');
-  $('#avLista').innerHTML = l.length ? l.map(a => {
-    const [e, cl, col] = EST[a.estado] || EST.nuevo, lugar = a.salon ? 'Salón ' + a.salon : a.donde || a.sede || '';
-    const de = EQUIPOS[a.de]?.corto || a.de || '', para = EQUIPOS[a.para]?.corto || a.para || '';
-    const nuevo = !vistos.has(a.id) ? ' nuevo' : '';
-    return `<div class="aviso${esSOS(a) && !CERRADO(a) ? ' sos' : ''}${nuevo}"><span class="pt" style="background:${col}"></span><div><b>${esc(a.tipo)}${lugar ? ' · ' + esc(lugar) : ''}</b><small>${esc(de)} → ${esc(para)} · ${hora(a.t)}${a.por ? ' · ' + esc(a.por) : ''}${a.texto && a.texto !== a.tipo ? ' · ' + esc(a.texto) : ''}${a.quien ? ' · ' + esc(a.quien) : ''}</small></div><span class="chip ${cl}">${e}</span></div>`;
-  }).join('') : `<div class="vacio">${filtro === 'abiertos' ? 'No hay avisos abiertos. Cuando alguien escala un caso de nivel 2 o 3 o activa un SOS, aparece aquí al instante.' : 'Hoy no se ha enviado ningún aviso.'}</div>`;
-  todos.forEach(a => vistos.add(a.id));
-}
-$$('.pest[data-f]').forEach(b => b.addEventListener('click', () => { filtro = b.dataset.f; $$('.pest[data-f]').forEach(x => x.classList.toggle('on', x === b)); pintarAvisos(); }));
-window.toastMinume = toast;
-document.addEventListener('click', e => {
-  const b = e.target.closest('.exp-btns [data-fmt]'); if (!b) return;
-  const l = leerAvisos().slice().sort((a, x) => x.t - a.t), abiertos = l.filter(a => !CERRADO(a));
-  window.exportarReporte(b.dataset.fmt, {
-    titulo: 'Avisos entre equipos', archivo: `avisos-minume-${fechaLocal(new Date())}`, equipo: 'Centro de operaciones del staff', color: '#0090fb', letra: 'M', nota: 'Datos de ejemplo · MINUME XVII',
-    resumen: [[l.length, 'avisos en total'], [abiertos.length, 'abiertos'], [abiertos.filter(esSOS).length, 'SOS activos'], [l.filter(CERRADO).length, 'cerrados']],
-    columnas: [{ t: 'Fecha', w: 11, pdf: 20 }, { t: 'Hora', w: 9, pdf: 15 }, { t: 'De', w: 13, pdf: 22 }, { t: 'Para', w: 13, pdf: 22 }, { t: 'Tipo', w: 26 }, { t: 'Detalle', w: 34 }, { t: 'Comisión', w: 10, pdf: 17 }, { t: 'Lugar', w: 18 }, { t: 'Enviado por', w: 18 }, { t: 'Estado', w: 15, pdf: 22 }, { t: 'Atendió', w: 18 }],
-    filas: l.map(a => [fechaLocal(new Date(a.t)), hora(a.t), EQUIPOS[a.de]?.corto || a.de, EQUIPOS[a.para]?.corto || a.para, a.tipo, a.texto, a.comision, a.salon ? 'Salón ' + a.salon : a.donde || a.sede, a.por, (EST[a.estado] || EST.nuevo)[0], a.quien]),
-    estadoCol: 9, estado: v => /Resuelto/.test(v) ? 'verde' : /911/.test(v) ? 'rojo' : /Enviado|Visto/.test(v) ? 'amarillo' : 'azul',
-  });
-});
-$('#bPrueba').addEventListener('click', () => {
-  const l = leerAvisos();
-  l.push({ id: 'av' + Date.now().toString(36) + 'p', para: 'seguridad', de: 'asistencia', estado: 'nuevo', t: Date.now(), tipo: 'Nivel 2 · prueba', texto: 'Aviso de prueba enviado desde el Inicio', comision: 'CSNU', salon: 'Anacaona 1', sede: 'Renaissance Jaragua', por: 'Prueba del Inicio' });
-  guardarLS(CLAVE_AVISOS, l.slice(-80)); toast('Aviso de prueba enviado a Seguridad'); pintarTodo();
-});
-
-/* ---------- Traslados ---------- */
-function proximoViaje(d) { if (!enEvento(d)) return null; const m = minutos(d); return VIAJES.find(v => aMin(v.h) >= m - 5) || null; }
-// Cuántas regionales ya confirmaron el pase de lista (mañana: bajar al lobby; noche: regreso). Sin nombres: eso lo ve la dirección.
-function regionalesHoy(d) {
-  const pase = (leerLS('minume.compartido.regpase', {}) || {})[fechaLocal(d)] || {}, momento = minutos(d) < 15 * 60 ? 'manana' : 'noche';
-  const regs = Object.values(pase).map(r => r[momento]).filter(Boolean);
-  return { listas: regs.filter(x => x.ok && x.ok.t).length, empezadas: regs.filter(x => Object.values(x.m || {}).some(m => m.t)).length, faltan: regs.filter(x => x.ok && x.ok.t && x.ok.n < x.ok.total).length, momento: momento === 'manana' ? 'mañana' : 'noche' };
-}
-function pintarBuses() {
-  const r = regionalesHoy(ahora()), pct = Math.round(r.listas * 100 / Math.max(1, NUM_REGIONALES));
-  $('#buses').innerHTML = `<p style="margin:0 0 10px;color:var(--suave);font-size:13px">No hay autobuses: cada regional llega con su encargado y cada mañana y cada noche pasa lista en su sistema.</p>
-    <div class="viaje"><span class="h">${r.listas}/${NUM_REGIONALES}</span><div><b>Regionales con lista confirmada</b><small>Pase de lista de la ${r.momento}${r.empezadas > r.listas ? ` · ${r.empezadas - r.listas} pasando lista ahora` : ''}${r.faltan ? ` · ${r.faltan} confirmaron con gente que falta` : ''}</small></div><span class="chip ${pct === 100 ? 'verde' : r.listas ? 'amar' : ''}">${pct}%</span></div>`;
-}
-function pintarViajes() {
-  pintarBuses();
-  if (!$('#viajes')) return;
-  const d = ahora(), ev = enEvento(d), m = minutos(d), prox = proximoViaje(d);
-  $('#viajes').innerHTML = (ev ? '' : `<p style="margin:0 0 8px;color:var(--suave);font-size:13px">Horario de cada día de sesiones (15 y 16 de noviembre).</p>`) + VIAJES.map(v => {
-    const ya = ev && aMin(v.h) < m - 5, es = prox === v, falta = es ? aMin(v.h) - m : 0;
-    const est = es && falta > 0 ? `<span class="chip rojo">en ${falta} min</span>` : `<span class="chip ${/Retras/.test(v.estado) ? 'amar' : 'verde'}">${v.estado}</span>`;
-    return `<div class="viaje${ya ? ' ya' : ''}${es ? ' prox' : ''}"><span class="h">${v.h}</span><div><b>${SEDES[v.de]} → ${SEDES[v.a]}</b><small>${v.nota}</small></div>${est}</div>`;
-  }).join('');
-}
-
-/* ---------- Comisiones ---------- */
-const sinTilde = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-function pintarComisiones() {
-  const q = sinTilde($('#qCom').value.trim());
-  const l = COMISIONES.filter(([c, n]) => !q || sinTilde(c + ' ' + n).includes(q));
-  $('#resCom').innerHTML = l.length ? l.map(([c, n]) => { const [s, sal] = ASIGNA[c]; return `<div class="com"><b>${c}</b><span>${sal}<small>${SEDES[s]} · ${n}</small></span></div>`; }).join('') : '<div class="vacio">No encontré esa comisión. Prueba con las siglas.</div>';
-}
-$('#qCom').addEventListener('input', pintarComisiones);
-
-/* ---------- Equipos ---------- */
-const comis = () => leerLS('minume.compartido.comisiones', {});
-const evCurso = () => Object.values(leerLS('minume.compartido.eventos', {})).filter(x => x.est === 'curso').length;
-const evProblema = () => Object.values(leerLS('minume.compartido.eventos', {})).filter(x => x.problema).length;
-const invLlegaron = () => Object.values(leerLS('minume.compartido.invitados', {})).filter(x => x.est === 'llego' || x.est === 'sentado').length;
-const enSesion = () => Object.values(comis()).filter(x => x.est === 'sesion').length;
-const conProblema = () => Object.values(comis()).filter(x => x.est === 'detenida' || x.est === 'faltan').length;
-function pintarEquipos(mo) {
-  const av = leerAvisos(), abiertos = av.filter(a => !CERRADO(a)), d = ahora(), prox = proximoViaje(d);
-  const k = {
-    asistencia: [
-      [abiertos.filter(a => a.de === 'asistencia').length, 'escalados sin cerrar', 'alerta'],
-      [enSesion(), 'comisiones en sesión', 'ok'],
-      [av.filter(a => a.de === 'asistencia' && CERRADO(a) && hoy(a)).length, 'resueltos hoy', 'ok']
-    ],
-    seguridad: [
-      [abiertos.filter(a => a.para === 'seguridad' && esSOS(a)).length, 'SOS activos', 'alerta'],
-      [abiertos.filter(a => a.para === 'seguridad').length, 'avisos abiertos', ''],
-      (r => [`${r.listas}/${NUM_REGIONALES}`, `regionales listas · ${r.momento}`, r.listas === NUM_REGIONALES ? 'ok' : ''])(regionalesHoy(d))
-    ],
-    bienestar: [
-      [abiertos.filter(a => a.para === 'bienestar').length, 'casos abiertos', 'alerta'],
-      [leerLS('minume.compartido.atenciones', []).filter(x => !x.sale).length, 'en el punto ahora', ''],
-      [av.filter(a => a.para === 'bienestar' && a.estado === 'resuelto' && hoy(a)).length, 'atendidos hoy', 'ok']
-    ],
-    eventos: [
-      [evCurso(), 'eventos en curso', 'ok'],
-      [evProblema(), 'eventos con problema', 'alerta'],
-      [invLlegaron(), 'invitados llegaron', '']
-    ],
-    acreditacion: (() => { const a = leerLS('minume.compartido.acreditados', {}), tot = (leerLS('minume.compartido.config.delegados', null) || []).length, n = Object.keys(a).length; return [
-      [tot ? `${n}/${tot}` : String(n), 'delegados acreditados', 'ok'],
-      [tot ? String(Math.max(0, tot - n)) : '—', 'faltan por llegar', ''],
-      [Object.values(a).filter(x => x && x.t && hoy(x)).length, 'acreditados hoy', 'ok']
-    ]; })(),
-    coordinacion: [
-      [enSesion(), 'comisiones en sesión', 'ok'],
-      [conProblema(), 'comisiones con problema', 'alerta'],
-      [abiertos.length, 'avisos abiertos', '']
-    ]
+  const enlaces = window.MINUME_ENLACES;
+  const equipos = {
+    AS: ['asistencia', 'Asistencia'], CO: ['asistencia', 'Asistencia'],
+    AC: ['acreditacion', 'Acreditación'], SE: ['seguridad', 'Seguridad y Traslado'],
+    TR: ['seguridad', 'Seguridad y Traslado'], BI: ['bienestar', 'Bienestar'],
+    EP: ['eventos', 'Eventos y Protocolo'], CG: ['coordinacion', 'Coordinación general'],
+    AD: ['coordinacion', 'Administración de la plataforma']
   };
-  $('#equipos').innerHTML = Object.entries(EQUIPOS).map(([s, e]) => {
-    const u = sesion(s);
-    return `<article class="equipo" style="--c:${e.color}">
-      <div class="eq-cab"><span class="eq-letra">${e.letra}</span><div><b>${e.nombre}</b><small>${u ? 'Entraste como ' + esc(u.nombre) : e.quienes}</small></div><button class="entrar-eq" type="button" data-eq="${s}">${u ? 'Abrir' : 'Entrar'}</button></div>
-      <div class="kpis">${k[s].map(([n, t, cl]) => `<div class="kpi ${cl && Number(n) > 0 ? cl : ''}"><b>${n}</b><span>${t}</span></div>`).join('')}</div>
-      <div class="eq-ahora"><b>Ahora:</b> ${FOCO[s][mo]}</div>
-      <div class="atajos">${ATAJOS[s].map(([sec, i, t, sub]) => `<button class="atajo" type="button" data-eq="${s}" data-sec="${sec}" data-t="${t}">${ic(i)}<span>${t}<small>${sub}</small></span></button>`).join('')}</div>
-    </article>`;
-  }).join('');
-}
-$('#equipos').addEventListener('click', e => {
-  const b = e.target.closest('[data-eq]'); if (!b) return;
-  const s = b.dataset.eq, sec = b.dataset.sec || '';
-  if (sesion(s)) abrir(s, null, sec);
-  else pedirCodigo(s, sec, b.dataset.t || 'Entra con tu código');
-});
-
-/* ---------- Resto ---------- */
-$('#contactos').innerHTML = RESPONSABLES.map(([a, p]) => `<div class="contacto"><span>${a}</span><b>${p}</b></div>`).join('');
-$('#cods').innerHTML = PRUEBA.map(c => `<button class="cod" type="button" data-c="${c}">${c}</button>`).join('');
-$('#codsSub').innerHTML = PRUEBA_SUB.map(([c, n]) => `<button class="cod sub" type="button" data-c="${c}" title="Subdirección de ${n}">${c} · ${n}</button>`).join('');
-$('#codsSub').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; const i = $('#codigo'); i.value = b.dataset.c; i.dispatchEvent(new Event('input')); i.focus(); });
-$('#cods').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; const i = $('#codigo'); i.value = b.dataset.c; i.dispatchEvent(new Event('input')); i.focus(); });
-function red() { const on = navigator.onLine !== false; $('#red').classList.toggle('off', !on); $('#redTxt').textContent = on ? 'En línea' : 'Sin internet · se guarda y sincroniza después'; }
-addEventListener('online', red); addEventListener('offline', red);
-$('#sim').setAttribute('aria-pressed', String(!!sim));
-
-function pintarTodo() {
-  $('#sim').setAttribute('aria-pressed', String(!!sim));
-  const mo = pintarEstado(); pintarEquipos(mo); pintarAvisos(); pintarViajes(); pintarAbiertas();
-}
-let firma = JSON.stringify(leerAvisos().map(a => [a.id, a.estado]));
-addEventListener('storage', e => { if (!e.key || e.key.startsWith('minume.compartido.') || e.key.endsWith('.usuario')) { aplicarConfigInicio(); pintarComisiones(); pintarTodo(); } });
-setInterval(() => {
-  const f = JSON.stringify(leerAvisos().map(a => [a.id, a.estado]));
-  if (f !== firma) { const antes = JSON.parse(firma).map(x => x[0]); firma = f; const nuevos = leerAvisos().filter(a => !antes.includes(a.id)); if (nuevos.length) toast(`Nuevo aviso para ${EQUIPOS[nuevos.at(-1).para]?.corto || 'un equipo'}: ${nuevos.at(-1).tipo}`); pintarTodo(); }
-  else { pintarEstado(); pintarViajes(); }
-}, 2000);
-addEventListener('pageshow', pintarTodo);
-let pedidoInstalar = null;
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstalar = e; $('#bInstalar').hidden = false; });
-$('#bInstalar').addEventListener('click', async () => { if (!pedidoInstalar) return; pedidoInstalar.prompt(); await pedidoInstalar.userChoice.catch(() => {}); pedidoInstalar = null; $('#bInstalar').hidden = true; });
-addEventListener('scroll', () => $('#subir').classList.toggle('on', scrollY > 600), { passive: true });
-$('#subir').addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
-/* ---------- Bienvenida: subsecretaría → rol → código ---------- */
-// Lo primero que ve el staff. En las subsecretarías se elige Voluntario o Coordinación; Secretaría General (SGL)
-// y Administrador no eligen rol: van directo al código. El nivel real lo manda el código (lo pone la Secretaría General).
-const SUBS = {
-  asistencia: { img: 'marca/circulos.svg', sig: 'AS · CO', txt: 'Asistentes de comisión, bienvenida y su coordinación' },
-  acreditacion: { img: 'marca/estrella-azul.svg', sig: 'AC', txt: 'Mesas de acreditación: QR, gafetes y llegada de delegados' },
-  seguridad: { img: 'marca/estrella-roja.svg', sig: 'SE · TR', txt: 'Puntos, turnos, rondas, regionales y SOS' },
-  bienestar: { img: 'marca/arcos-turquesa.svg', sig: 'BI', txt: 'Bienestar físico y emocional: casos, triaje y protocolos' },
-  eventos: { img: 'marca/rombo-coral.svg', sig: 'EP', txt: 'Ceremonias, montajes, invitados y plano de asientos' }
-};
-const ROLES_BV = {
-  voluntario: { nombre: 'Voluntario', color: '#00fdef', ic: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0', txt: 'Ves solo lo que te toca', ve: ['Tu punto, tu turno y tus tareas', 'Las órdenes que te mandan', 'Chat y comunicados de tu equipo'] },
-  coordinacion: { nombre: 'Coordinación', color: '#00b5ff', ic: IC.gente, txt: 'Supervisas tu subsecretaría', ve: ['Todo tu equipo y quién está activo', 'Asignas puntos, turnos y refuerzos', 'Los reportes por día de tu equipo'] }
-};
-// Las dos entradas sin paso de rol: van a Coordinación general, cada una con su prefijo
-const UNICOS = {
-  sgl: { nombre: 'SGL · Secretaría General', titulo: 'Secretaría General', sig: 'SGL · CG', pre: 'CG', color: '#ffbeff', img: 'marca/tablero-azul.svg', ic: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', txt: 'Supervisa todas las subsecretarías y ve todo el movimiento del evento.' },
-  admin: { nombre: 'Administrador', titulo: 'Administrador', sig: 'AD', pre: 'AD', color: '#00fdef', img: 'marca/diagonales-azul.svg', ic: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4', txt: 'Observa cada cosa de la plataforma: entra a todos los paneles, los códigos de acceso y la actividad en vivo.' }
-};
-const PRUEBA_BV = { asistencia: { voluntario: ['AS-4821'], coordinacion: ['CO-0001'] }, acreditacion: { voluntario: ['AC-3307'], coordinacion: ['AC-4400'] }, seguridad: { voluntario: ['SE-1093', 'TR-5570'], coordinacion: ['SE-4400', 'TR-4400'] }, bienestar: { voluntario: ['BI-2207', 'BI-3318'], coordinacion: ['BI-4400'] }, eventos: { voluntario: ['EP-2603'], coordinacion: ['EP-4400'] }, sgl: ['CG-0001'], admin: ['AD-0001'] };
-const ICHECK = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
-// bvSub: la subsecretaría, 'sgl' o 'admin'; bvRol: 'voluntario' o 'coordinacion' (solo en las subsecretarías)
-let { sub: bvSub = null, rol: bvRol = null } = leerLS('minume.inicio.eleccion', {});
-if (bvSub === 'coordinacion') bvSub = 'sgl';   // elección guardada con la versión anterior
-if (!SUBS[bvSub] && !UNICOS[bvSub]) bvSub = null;
-if (!ROLES_BV[bvRol]) bvRol = null;
-const esUnico = () => !!UNICOS[bvSub];
-const bvSis = () => esUnico() ? 'coordinacion' : bvSub;
-const prefijosDe = s => Object.keys(PREFIJOS).filter(p => PREFIJOS[p][0] === s && p !== 'AD');
-const prefijosBv = () => esUnico() ? [UNICOS[bvSub].pre] : prefijosDe(bvSub);
-const atrasDesdeCodigo = () => esUnico() ? 1 : 2;
-function bvAbrir(si) {
-  $('#bv').hidden = !si; document.documentElement.style.overflow = si ? 'hidden' : '';
-  try { si ? sessionStorage.removeItem('minume.inicio.centro') : sessionStorage.setItem('minume.inicio.centro', '1'); } catch {}
-  if (si) bvIr(0);
-}
-function bvIr(p) {
-  $('#bv').dataset.paso = p;
-  $$('.bv-panel').forEach(x => x.hidden = +x.dataset.p !== p);
-  $$('#bvPasos li').forEach((li, i) => { li.className = i < p ? 'hecho' : i === p ? 'ahora' : ''; li.toggleAttribute('aria-current', i === p); });
-  $$('#bvPasos li')[2].textContent = p === 3 && esUnico() ? `Rol · ${UNICOS[bvSub].sig.split(' ')[0]}` : 'Rol';
-  $('.bv-panel[data-p="3"] .bv-atras').dataset.ir = atrasDesdeCodigo();
-  if (p === 0) bvSeguir();
-  if (p === 1) bvPintarSubs();
-  if (p === 2) bvPintarRoles();
-  if (p === 3) bvPrepararCodigo();
-  const t = $(`#bvTit${p}`); if (t) { t.tabIndex = -1; t.focus({ preventScroll: true }); }
-  $('#bv').scrollTop = 0; requestAnimationFrame(() => { $('#bv').scrollTop = 0; });
-}
-function bvSeguir() {
-  const l = Object.keys(EQUIPOS).map(s => [s, sesion(s)]).filter(([, u]) => u);
-  $('#bvSeguir').innerHTML = l.length ? `<span class="eti">Ya entraste en este dispositivo</span>` + l.map(([s, u]) => `<button class="abierta" type="button" data-abrir="${s}" style="--c:${EQUIPOS[s].color}"><div><b>Continuar como ${esc(u.nombre)}</b><small>${EQUIPOS[s].nombre}</small></div>${ic('flecha')}</button>`).join('') : '';
-}
-function bvPintarSubs() {
-  $('#bvSubs').innerHTML = Object.entries(SUBS).map(([s, d]) => `<button class="bv-op" type="button" data-sub="${s}" aria-pressed="${bvSub === s}" style="--c:${EQUIPOS[s].color}"><img src="${d.img}" alt=""><span class="bv-sig">${d.sig}</span><b>${EQUIPOS[s].nombre}</b><small>${d.txt}</small><span class="bv-marca">${ICHECK}</span></button>`).join('')
-    + Object.entries(UNICOS).map(([k, d]) => `<button class="bv-op ancha" type="button" data-sub="${k}" aria-pressed="${bvSub === k}" style="--c:${d.color}"><img src="${d.img}" alt=""><span class="bv-ico"><svg class="ic" viewBox="0 0 24 24"><path d="${d.ic}"/></svg></span><div><span class="bv-sig">${d.sig}</span><b>${d.titulo}</b><small>${d.txt}</small></div><span class="bv-marca">${ICHECK}</span></button>`).join('');
-}
-function bvPintarRoles() {
-  $('#bvSubNombre').textContent = EQUIPOS[bvSub].nombre;
-  $('#bvRoles').innerHTML = Object.entries(ROLES_BV).map(([r, d]) => `<button class="bv-op bv-rol" type="button" data-rol="${r}" aria-pressed="${bvRol === r}" style="--c:${d.color}"><span class="bv-ico"><svg class="ic" viewBox="0 0 24 24"><path d="${d.ic}"/></svg></span><b>${d.nombre}</b><small>${d.txt} de ${EQUIPOS[bvSub].corto}</small><span class="bv-ve">Lo que ves</span><ul>${d.ve.map(v => `<li>${v}</li>`).join('')}</ul><span class="bv-marca">${ICHECK}</span></button>`).join('');
-}
-function bvPrepararCodigo() {
-  const s = bvSis(), e = EQUIPOS[s], u = UNICOS[bvSub], r = u || ROLES_BV[bvRol], pre = prefijosBv();
-  const ej = u ? u.pre : bvRol === 'coordinacion' && s === 'asistencia' ? 'CO' : pre[0];
-  $('#bvForm').style.setProperty('--c', u ? u.color : e.color);
-  $('#bvCodEti').textContent = u ? `Paso 2 · ${u.titulo}` : 'Paso 3';
-  $('#bvCodTxt').textContent = `Escribe el código que te dieron. Empieza con ${pre.join(' o ')}, un guion y el resto. Al entrar vas directo a tu panel.`;
-  $('#bvResumen').innerHTML = (u ? '' : `<span class="chip" style="--c:${e.color}">${esc(e.nombre)}</span>`) + `<span class="chip" style="--c:${r.color}">${r.nombre}</span><button class="bv-cambiar" type="button" data-ir="1">Cambiar</button>`;
-  $('#bvCodigo').placeholder = `${ej}-7KQ2MX`; $('#bvCodigo').value = ''; $('#bvDetecta').innerHTML = ''; $('#bvEntrar').disabled = true;
-  const pr = (u ? PRUEBA_BV[bvSub] : (PRUEBA_BV[s] || {})[bvRol]) || [];
-  $('#bvPrueba').hidden = !pr.length;
-  $('#bvPrueba').innerHTML = `<span>Códigos de prueba:</span>` + pr.map(c => `<button type="button" data-c="${c}">${c}</button>`).join('');
-  setTimeout(() => $('#bvCodigo').focus(), 80);
-}
-function bvRevisar() {
-  const i = $('#bvCodigo');
-  i.value = i.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  if (/^[A-Z]{2}[A-Z0-9]/.test(i.value)) i.value = i.value.slice(0, 2) + '-' + i.value.slice(2);
-  const r = detectar(i.value), pre = i.value.slice(0, 2);
-  if (r && r.sis && !prefijosBv().includes(pre)) {
-    const de = pre === 'AD' ? 'Administración' : pre === 'CG' ? 'Secretaría General' : EQUIPOS[r.sis].nombre, elegido = esUnico() ? UNICOS[bvSub].titulo : EQUIPOS[bvSub].nombre;
-    $('#bvDetecta').innerHTML = `<span class="error">Ese código es de ${de}. Elegiste ${elegido}: <button class="bv-cambiar" type="button" data-ir="1">cambiar</button></span>`; $('#bvEntrar').disabled = true; return null;
+  const nombres = { asistencia: 'Asistencia', acreditacion: 'Acreditación', seguridad: 'Seguridad y Traslado', bienestar: 'Bienestar', eventos: 'Eventos y Protocolo', coordinacion: 'Coordinación general' };
+  const $ = id => document.getElementById(id);
+  const mostrar = (paso, foco = true) => {
+    $('bienvenida').hidden = paso !== 0;
+    $('panelCodigo').hidden = paso !== 1;
+    $('pasoBienvenida').className = paso ? 'hecho' : 'actual';
+    $('pasoCodigo').className = paso ? 'actual' : '';
+    if (foco) (paso ? $('tituloCodigo') : $('tituloBienvenida')).focus({ preventScroll: true });
+    if (paso) setTimeout(() => $('codigo').focus(), 80);
+  };
+  $('tituloBienvenida').tabIndex = $('tituloCodigo').tabIndex = -1;
+  const sesiones = Object.entries(nombres).flatMap(([s, nombre]) => {
+    try { const u = JSON.parse(localStorage.getItem('minume.' + s + '.usuario')); return u && u.nombre ? [[s, nombre, u.nombre]] : []; }
+    catch { return []; }
+  });
+  for (const id of ['sesionesBienvenida', 'sesionesCodigo']) {
+    const caja = $(id);
+    if (!sesiones.length) continue;
+    const etiqueta = document.createElement('span');
+    etiqueta.textContent = 'Ya entraste en este dispositivo';
+    caja.append(etiqueta);
+    for (const [s, nombre, persona] of sesiones) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      const info = document.createElement('span');
+      const titulo = document.createElement('strong');
+      titulo.textContent = 'Continuar como ' + persona;
+      const sub = document.createElement('small');
+      sub.textContent = nombre;
+      info.append(titulo, sub);
+      b.append(info, document.createTextNode('→'));
+      b.addEventListener('click', () => { location.href = enlaces[s]; });
+      caja.append(b);
+    }
   }
-  pintarDetecta($('#bvDetecta'), r);
-  $('#bvEntrar').disabled = !(r && r.completo);
-  return r;
-}
-$('#bvEmpezar').addEventListener('click', () => bvIr(1));
-$('#bvSaltar').addEventListener('click', () => bvAbrir(false));
-$('#bReabrir').addEventListener('click', () => bvAbrir(true));
-$('#bv').addEventListener('click', e => {
-  const ir = e.target.closest('[data-ir]'), ab = e.target.closest('[data-abrir]'), su = e.target.closest('[data-sub]'), ro = e.target.closest('[data-rol]'), pc = e.target.closest('#bvPrueba [data-c]');
-  if (ir) bvIr(+ir.dataset.ir);
-  else if (ab) abrir(ab.dataset.abrir);
-  else if (su) { bvSub = su.dataset.sub; bvIr(esUnico() ? 3 : 2); }
-  else if (ro) { bvRol = ro.dataset.rol; bvIr(3); }
-  else if (pc) { $('#bvCodigo').value = pc.dataset.c; bvRevisar(); $('#bvCodigo').focus(); }
-});
-$('#bvCodigo').addEventListener('input', bvRevisar);
-$('#bvForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const r = bvRevisar();
-  if (!r || !r.completo) { const f = $('#bvForm'); f.classList.remove('sacude'); void f.offsetWidth; f.classList.add('sacude'); $('#bvCodigo').focus(); return; }
-  guardarLS('minume.inicio.eleccion', { sub: bvSub, rol: bvRol });
-  if (!esUnico()) guardarLS('minume.eleccion', { sis: r.sis, rol: bvRol, t: Date.now() });   // el sistema lo compara con el nivel real del código
-  abrir(r.sis, r.codigo);
-});
-addEventListener('keydown', e => { if (e.key !== 'Escape' || $('#bv').hidden || !$('#velo').hidden) return; const p = +$('#bv').dataset.paso; if (p > 0) bvIr(p === 3 ? atrasDesdeCodigo() : p - 1); });
-let bvCentro = false; try { bvCentro = sessionStorage.getItem('minume.inicio.centro') === '1'; } catch {}
-// De vuelta desde un sistema (sin sesión, código que falló o sesión vencida): la bienvenida abre en el código de ese sistema
-const vuelta = new URLSearchParams(location.hash.slice(1));
-if (vuelta.has('volver')) {
-  const s = vuelta.get('volver'), err = vuelta.get('error');
-  try { history.replaceState(null, '', location.pathname + location.search); } catch {}
-  if (s === 'coordinacion') { if (!UNICOS[bvSub]) bvSub = 'sgl'; } else if (SUBS[s]) bvSub = s;
-  bvAbrir(true);
-  if (bvSub) bvIr(esUnico() || bvRol ? 3 : 2);
-  if (err) $('#bvDetecta').innerHTML = `<span class="error">${esc(err)}</span>`;
-} else bvAbrir(!bvCentro);
-
-red(); aplicarConfigInicio(); pintarComisiones(); pintarTodo();
+  function normalizar(valor) {
+    const plano = valor.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+    return plano.length > 2 ? plano.slice(0, 2) + '-' + plano.slice(2) : plano;
+  }
+  function revisar() {
+    const i = $('codigo');
+    i.value = normalizar(i.value);
+    const pre = i.value.slice(0, 2), equipo = equipos[pre];
+    const completo = !!equipo && /^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(i.value);
+    $('entrar').disabled = !completo;
+    const m = $('mensaje');
+    m.classList.remove('error');
+    if (!i.value) m.textContent = 'Tu código determina el equipo y tus permisos.';
+    else if (i.value.length < 2) m.textContent = 'Escribe las dos primeras letras de tu código.';
+    else if (!equipo) { m.textContent = 'No reconocemos ese prefijo. Revisa las dos primeras letras.'; m.classList.add('error'); }
+    else m.textContent = completo ? 'Te llevaremos a ' + equipo[1] + '.' : 'Código de ' + equipo[1] + ' · falta el resto.';
+    return completo ? equipo[0] : null;
+  }
+  $('comenzar').addEventListener('click', () => mostrar(1));
+  $('volver').addEventListener('click', () => mostrar(0));
+  $('codigo').addEventListener('input', revisar);
+  $('formCodigo').addEventListener('submit', e => {
+    e.preventDefault();
+    const destino = revisar();
+    if (!destino) { $('codigo').focus(); return; }
+    location.href = enlaces[destino] + '#entrar=' + encodeURIComponent($('codigo').value);
+  });
+  const vuelta = new URLSearchParams(location.hash.slice(1));
+  if (vuelta.has('volver')) {
+    history.replaceState(null, '', location.pathname + location.search);
+    mostrar(1, false);
+    const error = vuelta.get('error');
+    if (error) { $('mensaje').textContent = error; $('mensaje').classList.add('error'); }
+  } else mostrar(0, false);
 })();
 </script>
 </body>

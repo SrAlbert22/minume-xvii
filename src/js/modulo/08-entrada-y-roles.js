@@ -55,16 +55,7 @@ async function entrar(cod) {
   // Administración entra a cualquier subsecretaría con la vista de su dirección
   if (u.admin && SISTEMA !== 'coordinacion' && SISTEMA !== 'todo') u = { ...u, rol: SISTEMA === 'asistencia' ? 'coordinacion' : SIS.roles[0], nivel: 'subdirector' };
   if (!SIS.roles.includes(u.rol)) { if (window.MINUME_SALIR) window.MINUME_SALIR(); $('#codError').textContent = `Ese código es del equipo de ${ROLES[u.rol][0]}: entra en su propia página.`; return; }
-  estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0); avisarEleccion();
-}
-// En la bienvenida del Inicio la persona dice su rol; si el nivel real de su código es otro, se lo decimos (el nivel lo manda el código)
-function avisarEleccion() {
-  let el = null; try { el = JSON.parse(localStorage.getItem('minume.eleccion')); localStorage.removeItem('minume.eleccion'); } catch {}
-  if (!el || Date.now() - el.t > 15 * 60e3 || (SISTEMA !== 'todo' && el.sis !== SISTEMA)) return;
-  const dir = esDir();
-  const msg = el.rol === 'voluntario' && dir ? `Tu código es de ${cargoDe(estado.usuario) || 'coordinación'}: supervisas todo tu equipo.`
-    : el.rol === 'coordinacion' && !dir ? 'Tu código es de voluntario: ves solo lo que te toca. Si coordinas, pídele a la Secretaría General que suba tu nivel.' : '';
-  if (msg) setTimeout(() => toast(msg), 700);
+  estado.usuario = { ...u, codigo: c }; guardar('usuario', estado.usuario); aplicarRol(); scrollTo(0, 0);
 }
 // Si la sesión vence o coordinación anula el código, se vuelve a pedir
 addEventListener('minume-yo', e => { const u = estado.usuario, y = e.detail || {}; if (!u || !y.nivel || u.nivel === y.nivel) return; const antes = u.nivel; u.nivel = y.nivel; guardar('usuario', u); aplicarRol(); if (antes) toast(y.nivel === 'voluntario' ? 'Tu acceso cambió a voluntario' : `Ahora tienes el panel de ${NIVELES[y.nivel] || 'administración'}`); });
