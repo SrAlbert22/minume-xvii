@@ -1,0 +1,39 @@
+{
+ "$schema": "https://openapi.vercel.sh/vercel.json",
+ "framework": null,
+ "installCommand": "python3 -m pip install --target .build-python -r requirements.txt",
+ "buildCommand": "PYTHONPATH=.build-python python3 herramientas/armar.py",
+ "outputDirectory": "dist",
+ "cleanUrls": false,
+ "redirects": [
+  {"source":"/index.html","destination":"/","permanent":true},
+  {"source":"/asistencia/index.html","destination":"/asistencia/","permanent":true},
+  {"source":"/acreditacion/index.html","destination":"/acreditacion/","permanent":true},
+  {"source":"/seguridad/index.html","destination":"/seguridad/","permanent":true},
+  {"source":"/bienestar/index.html","destination":"/bienestar/","permanent":true},
+  {"source":"/eventos/index.html","destination":"/eventos/","permanent":true},
+  {"source":"/coordinacion/index.html","destination":"/coordinacion/","permanent":true}
+ ],
+ "rewrites": [
+  {"source":"/asistencia/:seccion([a-z-]+)","destination":"/asistencia/index.html"},
+  {"source":"/acreditacion/:seccion([a-z-]+)","destination":"/acreditacion/index.html"},
+  {"source":"/seguridad/:seccion([a-z-]+)","destination":"/seguridad/index.html"},
+  {"source":"/bienestar/:seccion([a-z-]+)","destination":"/bienestar/index.html"},
+  {"source":"/eventos/:seccion([a-z-]+)","destination":"/eventos/index.html"},
+  {"source":"/coordinacion/:seccion([a-z-]+)","destination":"/coordinacion/index.html"}
+ ],
+ "headers": [
+  {"source":"/sw.js","headers":[{"key":"Cache-Control","value":"no-cache"},{"key":"Service-Worker-Allowed","value":"/"}]},
+  {"source":"/(.*).html","headers":[{"key":"Cache-Control","value":"no-cache"}]},
+  {"source":"/(.*)/","headers":[{"key":"Cache-Control","value":"no-cache"}]},
+  {"source":"/(.*)","headers":[
+   {"key":"Content-Security-Policy","value":"default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' data: blob: https://fakkqpwgidjvodippxup.supabase.co wss://fakkqpwgidjvodippxup.supabase.co https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"},
+   {"key":"Strict-Transport-Security","value":"max-age=63072000; includeSubDomains; preload"},
+   {"key":"X-Content-Type-Options","value":"nosniff"},
+   {"key":"X-Frame-Options","value":"DENY"},
+   {"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"},
+   {"key":"Permissions-Policy","value":"geolocation=(self), camera=(self), microphone=(), payment=(), usb=()"},
+   {"key":"Cross-Origin-Opener-Policy","value":"same-origin"}
+  ]}
+ ]
+}
